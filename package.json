@@ -6,12 +6,15 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "build": "npm run client:build",
     "start": "npm run server:start",
+    "test": "echo \"No tests specified\" && exit 0",
     "server:dev": "cd server && npm run dev",
     "server:start": "cd server && npm start",
     "client:dev": "cd client && npm run dev",
     "client:build": "cd client && npm run build",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
-    "vercel-build": "cd client && npm install && npm run build"
+    "vercel-build": "cd client && npm install && npm run build",
+    "lint:css": "cd client && npm run lint:css",
+    "lint:css:check": "cd client && npm run lint:css:check"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
