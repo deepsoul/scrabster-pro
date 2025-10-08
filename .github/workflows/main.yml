@@ -1,0 +1,64 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm run install:all
+
+      - name: Build client
+        run: |
+          npm run client:build
+
+      - name: Run tests
+        run: |
+          npm test
+
+      - name: Check build artifacts
+        run: |
+          ls -la client/dist/
+          test -f client/dist/index.html
+
+  deploy-preview:
+    if: github.event_name == 'pull_request'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy Preview
+        run: |
+          echo "Deploy preview for PR #${{ github.event.number }}"
+          echo "Branch: ${{ github.head_ref }}"
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production..."
+          echo "This would trigger Vercel deployment"
