@@ -6,6 +6,7 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "build": "npm run client:build",
     "start": "npm run server:start",
+    "test": "echo \"No tests specified\" && exit 0",
     "server:dev": "cd server && npm run dev",
     "server:start": "cd server && npm start",
     "client:dev": "cd client && npm run dev",
