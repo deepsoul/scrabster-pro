@@ -6,7 +6,7 @@ Ein Echtzeit-Multiplayer-Wortspiel, bei dem Spieler aus einer zufälligen Auswah
 
 - **Frontend**: Vue 3 (Composition API), Vite, Tailwind CSS
 - **Backend**: Node.js, Express.js, Socket.IO
-- **Deployment**: render.com
+- **Deployment**: Vercel (empfohlen) oder Render.com
 
 ## Features
 
@@ -22,7 +22,7 @@ Ein Echtzeit-Multiplayer-Wortspiel, bei dem Spieler aus einer zufälligen Auswah
 
 ```bash
 # Repository klonen
-git clone <repository-url>
+git clone https://github.com/deepsoul/scrabster-pro.git
 cd scrabster-pro
 
 # Setup-Script ausführen
@@ -155,7 +155,7 @@ docker run -p 3000:3000 scrabster-pro
 
 ```bash
 # Server vorbereiten
-git clone <repository-url>
+git clone https://github.com/deepsoul/scrabster-pro.git
 cd scrabster-pro
 ./setup.sh
 
