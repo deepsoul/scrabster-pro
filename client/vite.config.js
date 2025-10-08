@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import {defineConfig} from 'vite';
+import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
   plugins: [vue()],
@@ -8,16 +8,16 @@ export default defineConfig({
     proxy: {
       '/ws': {
         target: 'ws://localhost:3001',
-        ws: true
-      }
-    }
+        ws: true,
+      },
+    },
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets'
+    assetsDir: 'assets',
   },
   define: {
     __VUE_OPTIONS_API__: true,
     __VUE_PROD_DEVTOOLS__: false,
-  }
-})
+  },
+});

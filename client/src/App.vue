@@ -5,7 +5,11 @@
       <p class="subtitle">Das lustige Buchstaben-Salat Spiel</p>
     </div>
 
-    <div v-if="connectionStatus" class="connection-status" :class="{ connected: isConnected, disconnected: !isConnected }">
+    <div
+      v-if="connectionStatus"
+      class="connection-status"
+      :class="{connected: isConnected, disconnected: !isConnected}"
+    >
       {{ isConnected ? '✓ Connected' : '✗ Disconnected' }}
     </div>
 
@@ -13,25 +17,38 @@
       <div class="rules">
         <h3>🎮 How to Play</h3>
         <ul>
-          <li><strong>Goal:</strong> Use all letters by forming the FEWEST words possible</li>
-          <li><strong>Scrabster Bonus:</strong> Win instantly by using all letters in ONE word!</li>
-          <li><strong>Time Limit:</strong> 2 minutes to complete the challenge</li>
-          <li><strong>Voice Input:</strong> Experimental feature - speak your words!</li>
+          <li>
+            <strong>Goal:</strong> Use all letters by forming the FEWEST words
+            possible
+          </li>
+          <li>
+            <strong>Scrabster Bonus:</strong> Win instantly by using all letters
+            in ONE word!
+          </li>
+          <li>
+            <strong>Time Limit:</strong> 2 minutes to complete the challenge
+          </li>
+          <li>
+            <strong>Voice Input:</strong> Experimental feature - speak your
+            words!
+          </li>
         </ul>
       </div>
-      <button class="btn btn-primary" @click="startGame" :disabled="!isConnected">
+      <button
+        class="btn btn-primary"
+        @click="startGame"
+        :disabled="!isConnected"
+      >
         Start Game
       </button>
     </div>
 
     <div v-if="gameStarted && !gameOver">
       <div class="game-status">
-        <div class="timer" :class="{ warning: timeRemaining < 30 }">
+        <div class="timer" :class="{warning: timeRemaining < 30}">
           ⏱️ {{ formatTime(timeRemaining) }}
         </div>
-        <div class="score">
-          Words: {{ submittedWords.length }}
-        </div>
+        <div class="score">Words: {{ submittedWords.length }}</div>
       </div>
 
       <div v-if="message" class="message" :class="`message-${message.type}`">
@@ -41,11 +58,11 @@
       <div class="letters-container">
         <h3>Available Letters:</h3>
         <div class="letters-grid">
-          <div 
-            v-for="(letter, index) in letters" 
-            :key="index" 
+          <div
+            v-for="(letter, index) in letters"
+            :key="index"
             class="letter-tile"
-            :class="{ used: isLetterUsed(index) }"
+            :class="{used: isLetterUsed(index)}"
           >
             {{ letter }}
           </div>
@@ -62,33 +79,41 @@
             :disabled="isListening"
             ref="wordInput"
           />
-          <button class="btn btn-primary" @click="submitWord" :disabled="!currentWord || isListening">
+          <button
+            class="btn btn-primary"
+            @click="submitWord"
+            :disabled="!currentWord || isListening"
+          >
             Submit
           </button>
         </div>
 
         <div class="voice-controls">
-          <button 
-            class="btn btn-voice" 
-            :class="{ listening: isListening }"
+          <button
+            class="btn btn-voice"
+            :class="{listening: isListening}"
             @click="toggleVoiceInput"
             v-if="voiceSupported"
           >
             {{ isListening ? '🎤 Listening...' : '🎤 Voice Input' }}
           </button>
-          <span v-if="isListening" class="voice-status">Say your word clearly...</span>
-          <span v-if="!voiceSupported" class="voice-status">Voice input not supported in this browser</span>
+          <span v-if="isListening" class="voice-status"
+            >Say your word clearly...</span
+          >
+          <span v-if="!voiceSupported" class="voice-status"
+            >Voice input not supported in this browser</span
+          >
         </div>
       </div>
 
       <div v-if="submittedWords.length > 0" class="submitted-words">
         <h3>Your Words ({{ submittedWords.length }}):</h3>
         <div class="words-list">
-          <span 
-            v-for="word in submittedWords" 
-            :key="word" 
+          <span
+            v-for="word in submittedWords"
+            :key="word"
             class="word-chip"
-            :class="{ scrabster: word.length === letters.length }"
+            :class="{scrabster: word.length === letters.length}"
           >
             {{ word }}
           </span>
@@ -99,7 +124,7 @@
     <div v-if="gameOver" class="game-over">
       <div class="trophy">🏆</div>
       <h2>{{ gameOverMessage }}</h2>
-      
+
       <div class="stats">
         <h3>Your Statistics:</h3>
         <div class="stat-item">
@@ -112,9 +137,7 @@
         </div>
       </div>
 
-      <button class="btn btn-primary" @click="startGame">
-        Play Again
-      </button>
+      <button class="btn btn-primary" @click="startGame">Play Again</button>
     </div>
   </div>
 </template>
@@ -138,12 +161,12 @@ export default {
       timerInterval: null,
       usedLetterIndices: [],
       gameOverMessage: '',
-      
+
       // Voice recognition
       recognition: null,
       isListening: false,
-      voiceSupported: false
-    }
+      voiceSupported: false,
+    };
   },
   mounted() {
     this.connectToAPI();
@@ -183,8 +206,8 @@ export default {
           },
           body: JSON.stringify({
             playerId: this.playerId,
-            gameId: this.gameId
-          })
+            gameId: this.gameId,
+          }),
         });
 
         const data = await response.json();
@@ -200,8 +223,12 @@ export default {
     },
 
     initVoiceRecognition() {
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (
+        'webkitSpeechRecognition' in window ||
+        'SpeechRecognition' in window
+      ) {
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
         this.recognition = new SpeechRecognition();
         this.recognition.lang = 'en-US';
         this.recognition.continuous = false;
@@ -211,7 +238,7 @@ export default {
           const transcript = event.results[0][0].transcript;
           this.currentWord = transcript.trim().toUpperCase();
           this.isListening = false;
-          
+
           // Auto-submit the word
           setTimeout(() => {
             this.submitWord();
@@ -253,8 +280,8 @@ export default {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            gameId: this.gameId
-          })
+            gameId: this.gameId,
+          }),
         });
 
         const data = await response.json();
@@ -267,7 +294,10 @@ export default {
           this.currentWord = '';
           this.timeRemaining = data.gameState.timeRemaining;
           this.startTimer();
-          this.showMessage('Game started! Use all letters with the fewest words!', 'info');
+          this.showMessage(
+            'Game started! Use all letters with the fewest words!',
+            'info',
+          );
           this.$nextTick(() => {
             this.$refs.wordInput?.focus();
           });
@@ -292,23 +322,27 @@ export default {
           body: JSON.stringify({
             playerId: this.playerId,
             word: this.currentWord.toUpperCase(),
-            gameId: this.gameId
-          })
+            gameId: this.gameId,
+          }),
         });
 
         const data = await response.json();
         if (data.success) {
           this.submittedWords.push(data.word);
           this.currentWord = '';
-          
+
           if (data.isScrabster) {
-            this.gameOverMessage = '🎉 SCRABSTER! You used all letters in one word!';
+            this.gameOverMessage =
+              '🎉 SCRABSTER! You used all letters in one word!';
             this.endGame();
           } else if (data.allLettersUsed) {
             this.gameOverMessage = `Great job! You used all letters in ${this.submittedWords.length} words!`;
             this.endGame();
           } else {
-            this.showMessage(`✓ Word accepted! ${data.lettersRemaining} letters remaining`, 'success');
+            this.showMessage(
+              `✓ Word accepted! ${data.lettersRemaining} letters remaining`,
+              'success',
+            );
           }
         } else {
           this.showMessage(`✗ ${data.message}`, 'error');
@@ -326,7 +360,7 @@ export default {
 
       this.timerInterval = setInterval(() => {
         this.timeRemaining--;
-        
+
         if (this.timeRemaining <= 0) {
           this.gameOverMessage = `Time's up! You found ${this.submittedWords.length} words`;
           this.endGame();
@@ -356,13 +390,13 @@ export default {
     },
 
     showMessage(text, type) {
-      this.message = { text, type };
+      this.message = {text, type};
       setTimeout(() => {
         this.message = null;
       }, 3000);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
@@ -398,7 +432,7 @@ body {
 .title {
   font-size: 3rem;
   margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .subtitle {
@@ -430,7 +464,7 @@ body {
   background: white;
   padding: 30px;
   border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   text-align: center;
 }
 
@@ -498,9 +532,15 @@ body {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .game-status {
@@ -511,7 +551,7 @@ body {
   padding: 20px;
   border-radius: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .timer {
@@ -526,8 +566,14 @@ body {
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0.5; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.5;
+  }
 }
 
 .score {
@@ -567,7 +613,7 @@ body {
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .letters-container h3 {
@@ -609,7 +655,7 @@ body {
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .word-input-container {
@@ -649,7 +695,7 @@ body {
   padding: 25px;
   border-radius: 15px;
   margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .submitted-words h3 {
@@ -680,8 +726,13 @@ body {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px #ffcc02; }
-  50% { box-shadow: 0 0 20px #ffcc02, 0 0 30px #ffcc02; }
+  0%,
+  100% {
+    box-shadow: 0 0 5px #ffcc02;
+  }
+  50% {
+    box-shadow: 0 0 20px #ffcc02, 0 0 30px #ffcc02;
+  }
 }
 
 .game-over {
@@ -689,7 +740,7 @@ body {
   padding: 40px;
   border-radius: 15px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .trophy {
@@ -730,20 +781,20 @@ body {
   .game-container {
     padding: 10px;
   }
-  
+
   .title {
     font-size: 2rem;
   }
-  
+
   .word-input-container {
     flex-direction: column;
   }
-  
+
   .letters-grid {
     grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
     gap: 10px;
   }
-  
+
   .letter-tile {
     font-size: 1.2rem;
   }
