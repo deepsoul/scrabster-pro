@@ -1,0 +1,209 @@
+<template>
+  <div
+    id="app"
+    class="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50"
+  >
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <h1 class="text-2xl font-bold text-primary-600">Scrabster Pro</h1>
+            <span class="ml-2 text-sm text-gray-500"
+              >Multiplayer Wortspiel</span
+            >
+          </div>
+          <div v-if="currentUser" class="flex items-center space-x-4">
+            <span class="text-sm text-gray-600">Hallo, {{ currentUser }}</span>
+            <button
+              @click="disconnect"
+              class="text-sm text-gray-500 hover:text-gray-700"
+            >
+              Abmelden
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Login Screen -->
+      <LoginScreen v-if="!currentUser" @login="handleLogin" />
+
+      <!-- Lobby -->
+      <Lobby
+        v-else-if="currentView === 'lobby'"
+        @createGame="handleCreateGame"
+        @joinGame="handleJoinGame"
+      />
+
+      <!-- Game Screen -->
+      <GameScreen
+        v-else-if="currentView === 'game'"
+        :gameData="gameData"
+        :socket="socket"
+        @leaveGame="handleLeaveGame"
+        @gameOver="handleGameOver"
+      />
+
+      <!-- Game Over Screen -->
+      <GameOverScreen
+        v-else-if="currentView === 'gameOver'"
+        :gameResult="gameResult"
+        @playAgain="handlePlayAgain"
+        @backToLobby="handleBackToLobby"
+      />
+    </main>
+
+    <!-- Toast Notifications -->
+    <div class="fixed top-4 right-4 z-50 space-y-2">
+      <div
+        v-for="toast in toasts"
+        :key="toast.id"
+        :class="[
+          'max-w-sm p-4 rounded-lg shadow-lg transition-all duration-300',
+          toast.type === 'success'
+            ? 'bg-green-500 text-white'
+            : toast.type === 'error'
+            ? 'bg-red-500 text-white'
+            : toast.type === 'warning'
+            ? 'bg-yellow-500 text-white'
+            : 'bg-blue-500 text-white',
+        ]"
+      >
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium">{{ toast.message }}</span>
+          <button
+            @click="removeToast(toast.id)"
+            class="ml-2 text-white hover:text-gray-200"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import {ref, onMounted, onUnmounted} from 'vue';
+import {io} from 'socket.io-client';
+import LoginScreen from './components/LoginScreen.vue';
+import Lobby from './components/Lobby.vue';
+import GameScreen from './components/GameScreen.vue';
+import GameOverScreen from './components/GameOverScreen.vue';
+
+// Reactive state
+const currentUser = ref(null);
+const currentView = ref('lobby');
+const gameData = ref(null);
+const gameResult = ref(null);
+const socket = ref(null);
+const toasts = ref([]);
+
+// Toast management
+let toastId = 0;
+
+const addToast = (message, type = 'info') => {
+  const id = ++toastId;
+  toasts.value.push({id, message, type});
+  setTimeout(() => removeToast(id), 5000);
+};
+
+const removeToast = (id) => {
+  const index = toasts.value.findIndex((t) => t.id === id);
+  if (index > -1) {
+    toasts.value.splice(index, 1);
+  }
+};
+
+// Socket connection
+const connectSocket = () => {
+  const serverUrl = import.meta.env.PROD
+    ? window.location.origin
+    : 'http://localhost:3000';
+  socket.value = io(serverUrl);
+
+  socket.value.on('connect', () => {
+    console.log('Connected to server');
+  });
+
+  socket.value.on('disconnect', () => {
+    console.log('Disconnected from server');
+    addToast('Verbindung zum Server verloren', 'error');
+  });
+
+  socket.value.on('gameError', (data) => {
+    addToast(data.message, 'error');
+  });
+};
+
+// Event handlers
+const handleLogin = (username) => {
+  currentUser.value = username;
+  currentView.value = 'lobby';
+  connectSocket();
+};
+
+const handleCreateGame = (gameData) => {
+  currentView.value = 'game';
+  gameData.value = gameData;
+};
+
+const handleJoinGame = (gameData) => {
+  currentView.value = 'game';
+  gameData.value = gameData;
+};
+
+const handleLeaveGame = () => {
+  if (socket.value) {
+    socket.value.emit('leaveGame', {gameCode: gameData.value?.gameCode});
+  }
+  currentView.value = 'lobby';
+  gameData.value = null;
+};
+
+const handleGameOver = (result) => {
+  gameResult.value = result;
+  currentView.value = 'gameOver';
+};
+
+const handlePlayAgain = () => {
+  currentView.value = 'lobby';
+  gameResult.value = null;
+  gameData.value = null;
+};
+
+const handleBackToLobby = () => {
+  currentView.value = 'lobby';
+  gameResult.value = null;
+  gameData.value = null;
+};
+
+const disconnect = () => {
+  if (socket.value) {
+    socket.value.disconnect();
+  }
+  currentUser.value = null;
+  currentView.value = 'lobby';
+  gameData.value = null;
+  gameResult.value = null;
+};
+
+// Lifecycle
+onMounted(() => {
+  // Check if user is already logged in (localStorage)
+  const savedUser = localStorage.getItem('scrabster-username');
+  if (savedUser) {
+    currentUser.value = savedUser;
+    connectSocket();
+  }
+});
+
+onUnmounted(() => {
+  if (socket.value) {
+    socket.value.disconnect();
+  }
+});
+</script>

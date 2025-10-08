@@ -1,0 +1,276 @@
+<template>
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">Spiel-Lobby</h1>
+      <p class="text-lg text-gray-600">
+        Erstelle ein neues Spiel oder trete einem bestehenden bei
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Create Game -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div class="text-center mb-6">
+          <div
+            class="mx-auto h-16 w-16 bg-primary-500 rounded-full flex items-center justify-center mb-4"
+          >
+            <svg
+              class="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900">
+            Neues Spiel erstellen
+          </h2>
+          <p class="text-gray-600 mt-2">
+            Erstelle ein Spiel und lade Freunde ein
+          </p>
+        </div>
+
+        <form @submit.prevent="createGame" class="space-y-6">
+          <div>
+            <label
+              for="difficulty"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Schwierigkeitsstufe
+            </label>
+            <select
+              id="difficulty"
+              v-model="selectedDifficulty"
+              class="input-field"
+            >
+              <option value="easy">Leicht (9 Buchstaben, 120s)</option>
+              <option value="medium">Mittel (8 Buchstaben, 90s)</option>
+              <option value="hard">Schwer (7 Buchstaben, 60s)</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            :disabled="isCreating"
+            class="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="isCreating" class="flex items-center justify-center">
+              <svg
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Erstelle Spiel...
+            </span>
+            <span v-else>Spiel erstellen</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Join Game -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div class="text-center mb-6">
+          <div
+            class="mx-auto h-16 w-16 bg-secondary-500 rounded-full flex items-center justify-center mb-4"
+          >
+            <svg
+              class="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+              />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900">Spiel beitreten</h2>
+          <p class="text-gray-600 mt-2">Gib den Spiel-Code ein</p>
+        </div>
+
+        <form @submit.prevent="joinGame" class="space-y-6">
+          <div>
+            <label
+              for="gameCode"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Spiel-Code
+            </label>
+            <input
+              id="gameCode"
+              v-model="gameCode"
+              type="text"
+              placeholder="z.B. ABC123"
+              class="input-field text-center text-lg font-mono tracking-wider"
+              maxlength="6"
+              @input="gameCode = gameCode.toUpperCase()"
+            />
+          </div>
+
+          <button
+            type="submit"
+            :disabled="!gameCode.trim() || isJoining"
+            class="w-full btn-secondary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span v-if="isJoining" class="flex items-center justify-center">
+              <svg
+                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Beitreten...
+            </span>
+            <span v-else>Spiel beitreten</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Game Code Display (when game is created) -->
+    <div
+      v-if="createdGameCode"
+      class="mt-8 bg-primary-50 rounded-xl p-6 border border-primary-200"
+    >
+      <div class="text-center">
+        <h3 class="text-xl font-bold text-primary-800 mb-2">Spiel erstellt!</h3>
+        <p class="text-primary-600 mb-4">
+          Teile diesen Code mit deinen Freunden:
+        </p>
+        <div
+          class="bg-white rounded-lg p-4 border-2 border-primary-300 border-dashed"
+        >
+          <span
+            class="text-3xl font-bold text-primary-600 font-mono tracking-wider"
+          >
+            {{ createdGameCode }}
+          </span>
+        </div>
+        <p class="text-sm text-primary-500 mt-2">
+          Warte auf Spieler oder starte das Spiel alleine
+        </p>
+      </div>
+    </div>
+
+    <!-- Quick Tips -->
+    <div class="mt-8 bg-gray-50 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        💡 Tipps für besseres Spielen
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+        <div class="flex items-start">
+          <span class="text-primary-500 mr-2">🎤</span>
+          <span>Nutze die Spracheingabe für schnellere Wort-Eingabe</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-primary-500 mr-2">🎯</span>
+          <span>Ziel ist es, WENIGE Wörter zu bilden, nicht viele!</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-primary-500 mr-2">⚡</span>
+          <span>Ein "Scrabster" (alle Buchstaben) gewinnt sofort</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-primary-500 mr-2">🧠</span>
+          <span>Überlege dir Strategien für kurze, präzise Wörter</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import {ref} from 'vue';
+
+const emit = defineEmits(['createGame', 'joinGame']);
+
+const selectedDifficulty = ref('medium');
+const gameCode = ref('');
+const isCreating = ref(false);
+const isJoining = ref(false);
+const createdGameCode = ref('');
+
+const createGame = async () => {
+  isCreating.value = true;
+
+  try {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const gameData = {
+      difficulty: selectedDifficulty.value,
+      gameCode: generateGameCode(),
+    };
+
+    createdGameCode.value = gameData.gameCode;
+    emit('createGame', gameData);
+  } catch (error) {
+    console.error('Error creating game:', error);
+  } finally {
+    isCreating.value = false;
+  }
+};
+
+const joinGame = async () => {
+  if (!gameCode.value.trim()) return;
+
+  isJoining.value = true;
+
+  try {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const gameData = {
+      gameCode: gameCode.value.trim().toUpperCase(),
+    };
+
+    emit('joinGame', gameData);
+  } catch (error) {
+    console.error('Error joining game:', error);
+  } finally {
+    isJoining.value = false;
+  }
+};
+
+const generateGameCode = () => {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+};
+</script>
