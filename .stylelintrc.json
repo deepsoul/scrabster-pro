@@ -1,5 +1,6 @@
 {
   "extends": ["stylelint-config-standard", "stylelint-config-tailwindcss"],
+  "customSyntax": "postcss-html",
   "rules": {
     "at-rule-no-unknown": [
       true,
@@ -21,6 +22,9 @@
       {
         "ignoreFunctions": ["theme", "screen"]
       }
-    ]
+    ],
+    "font-family-name-quotes": "always-where-required",
+    "color-function-notation": "modern",
+    "alpha-value-notation": "number"
   }
 }
