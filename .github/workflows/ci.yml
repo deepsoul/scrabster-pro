@@ -23,19 +23,33 @@ jobs:
         run: |
           npm cache clean --force
 
+      - name: Clean workspace
+        run: |
+          rm -rf node_modules package-lock.json
+          rm -rf client/node_modules client/package-lock.json
+          rm -rf server/node_modules server/package-lock.json
+
       - name: Install root dependencies
         run: |
-          npm install --no-optional --no-audit --no-fund
+          npm install --no-audit --no-fund
 
       - name: Install client dependencies
         run: |
           cd client
-          npm install --no-optional --no-audit --no-fund
+          npm install --no-audit --no-fund
+          # Fix Rollup platform-specific dependencies
+          npm install @rollup/rollup-linux-x64-gnu --save-dev || true
 
       - name: Install server dependencies
         run: |
           cd server
-          npm install --no-optional --no-audit --no-fund
+          npm install --no-audit --no-fund
+
+      - name: Verify client dependencies
+        run: |
+          cd client
+          npm list rollup
+          npm list @rollup/rollup-linux-x64-gnu || echo "Rollup platform dependency not found, but continuing..."
 
       - name: Build client
         run: |
