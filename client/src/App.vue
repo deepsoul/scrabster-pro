@@ -16,8 +16,20 @@
           <div v-if="currentUser" class="flex items-center space-x-4">
             <span class="text-sm text-gray-600">Hallo, {{ currentUser }}</span>
             <button
+              @click="showInstructions"
+              class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
+            >
+              📖 Anleitung
+            </button>
+            <button
+              @click="showImprint"
+              class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
+            >
+              📄 Impressum
+            </button>
+            <button
               @click="disconnect"
-              class="text-sm text-gray-500 hover:text-gray-700"
+              class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
             >
               Abmelden
             </button>
@@ -55,6 +67,18 @@
         :gameResult="gameResult"
         @playAgain="handlePlayAgain"
         @backToLobby="handleBackToLobby"
+      />
+
+      <!-- Instructions Page -->
+      <InstructionsPage
+        v-else-if="currentView === 'instructions'"
+        @backToGame="handleBackToGame"
+      />
+
+      <!-- Imprint Page -->
+      <ImprintPage
+        v-else-if="currentView === 'imprint'"
+        @backToGame="handleBackToGame"
       />
     </main>
 
@@ -95,6 +119,8 @@ import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
 import GameScreen from './components/GameScreen.vue';
 import GameOverScreen from './components/GameOverScreen.vue';
+import InstructionsPage from './components/InstructionsPage.vue';
+import ImprintPage from './components/ImprintPage.vue';
 
 // Reactive state
 const currentUser = ref(null);
@@ -235,6 +261,18 @@ const handleBackToLobby = () => {
   currentView.value = 'lobby';
   gameResult.value = null;
   gameData.value = null;
+};
+
+const showInstructions = () => {
+  currentView.value = 'instructions';
+};
+
+const showImprint = () => {
+  currentView.value = 'imprint';
+};
+
+const handleBackToGame = () => {
+  currentView.value = 'lobby';
 };
 
 const disconnect = () => {

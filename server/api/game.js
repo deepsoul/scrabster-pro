@@ -471,12 +471,12 @@ app.post('/game/submit-word', (req, res) => {
 
   // Wort hinzufügen
   player.words.push(word.toUpperCase());
-  
+
   // Punkte basierend auf verwendeten Buchstaben berechnen
   const wordLetters = word.toUpperCase().split('');
   const availableLetters = [...gameRoom.letters];
   let usedLetters = 0;
-  
+
   // Zählen, wie viele Buchstaben aus der verfügbaren Liste verwendet wurden
   for (const letter of wordLetters) {
     const index = availableLetters.indexOf(letter);
@@ -485,7 +485,7 @@ app.post('/game/submit-word', (req, res) => {
       availableLetters.splice(index, 1); // Buchstabe "verbrauchen"
     }
   }
-  
+
   // Punkte basierend auf verwendeten Buchstaben (mindestens 1 Punkt pro Wort)
   const wordScore = Math.max(1, usedLetters);
   player.score += wordScore;
