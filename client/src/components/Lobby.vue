@@ -218,7 +218,11 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
+
+const props = defineProps({
+  socket: Object,
+});
 
 const emit = defineEmits(['createGame', 'joinGame']);
 
@@ -232,15 +236,18 @@ const createGame = async () => {
   isCreating.value = true;
 
   try {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     const gameData = {
       difficulty: selectedDifficulty.value,
       gameCode: generateGameCode(),
     };
 
     createdGameCode.value = gameData.gameCode;
+
+    // Send to server
+    if (props.socket) {
+      props.socket.emit('createGame', gameData);
+    }
+
     emit('createGame', gameData);
   } catch (error) {
     console.error('Error creating game:', error);
@@ -255,12 +262,14 @@ const joinGame = async () => {
   isJoining.value = true;
 
   try {
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     const gameData = {
       gameCode: gameCode.value.trim().toUpperCase(),
     };
+
+    // Send to server
+    if (props.socket) {
+      props.socket.emit('joinGame', gameData);
+    }
 
     emit('joinGame', gameData);
   } catch (error) {
