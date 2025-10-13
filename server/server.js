@@ -15,19 +15,22 @@ app.use(
         return callback(null, true);
       }
 
-      // In Produktion: Vercel und Render Domains erlauben
+      // In Produktion: Custom Domain und Render Domains erlauben
       const allowedOrigins = [
+        'https://scrabster-pro.de',
+        'https://www.scrabster-pro.de',
         'https://scrabster-pro.vercel.app',
         'https://scrabster-pro-git-hybrid-deployment-boris-horns-projects.vercel.app',
         'https://scrabster-pro-git-develop-boris-horns-projects.vercel.app',
         'https://scrabster-pro.onrender.com',
       ];
 
-      // Wildcard für alle Vercel Preview URLs
+      // Wildcard für alle Vercel Preview URLs und scrabster-pro Domains
       if (
         origin &&
         (origin.includes('vercel.app') ||
           origin.includes('scrabster-pro') ||
+          origin.includes('scrabster-pro.de') ||
           allowedOrigins.includes(origin))
       ) {
         return callback(null, true);
