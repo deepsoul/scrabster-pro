@@ -13,6 +13,8 @@ app.use(
         ? [
             'https://scrabster-pro.vercel.app',
             'https://scrabster-pro.vercel.app/',
+            'https://scrabster-pro.onrender.com',
+            'https://scrabster-pro.onrender.com/',
           ]
         : 'http://localhost:5173',
     credentials: true,
@@ -34,10 +36,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-// Nur in lokaler Entwicklung den Server starten
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
-}
+// Server starten (sowohl lokal als auch in Produktion)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
