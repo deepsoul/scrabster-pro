@@ -6,42 +6,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+// CORS - Einfache Konfiguration
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // In Entwicklung: alle localhost Ports erlauben
-      if (process.env.NODE_ENV !== 'production') {
-        return callback(null, true);
-      }
-
-      // In Produktion: Vercel und Render Domains erlauben
-      const allowedOrigins = [
-        'https://scrabster-pro.vercel.app',
-        'https://scrabster-pro-git-hybrid-deployment-boris-horns-projects.vercel.app',
-        'https://scrabster-pro-git-develop-boris-horns-projects.vercel.app',
-        'https://scrabster-pro.onrender.com',
-      ];
-
-      // Wildcard für alle Vercel Preview URLs
-      if (
-        origin &&
-        (origin.includes('vercel.app') ||
-          origin.includes('scrabster-pro') ||
-          allowedOrigins.includes(origin))
-      ) {
-        return callback(null, true);
-      }
-
-      // Fallback: Origin erlauben wenn nicht gesetzt (z.B. Postman)
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      callback(new Error('Not allowed by CORS'));
-    },
+    origin: true, // Alle Origins erlauben
     credentials: true,
   })
 );
+
+// Debug: CORS-Header manuell setzen
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  next();
+});
 app.use(express.json());
 
 // Import API routes

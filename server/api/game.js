@@ -1,5 +1,14 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+// CORS für alle API-Routen
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 // In-memory storage für Spiele (in Produktion würde man Redis verwenden)
 const gameRooms = new Map();

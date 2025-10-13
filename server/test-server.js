@@ -1,0 +1,1 @@
+const express = require("express"); const cors = require("cors"); const app = express(); app.use(cors({origin: true, credentials: true})); app.use(express.json()); app.post("/api/game/create", (req, res) => { res.json({gameCode: "TEST123", message: "CORS test"}); }); app.listen(3000, () => console.log("Test server running"));
