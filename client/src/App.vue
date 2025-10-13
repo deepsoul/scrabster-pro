@@ -8,8 +8,8 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-primary-600">Scrabster Pro</h1>
-            <span class="ml-2 text-sm text-gray-500">
+            <h1 class="text-2xl font-bold text-primary-600 font-display">Scrabster Pro</h1>
+            <span class="ml-2 text-sm text-gray-500 font-sans">
               Multiplayer Wortspiel
             </span>
           </div>

@@ -1,0 +1,50 @@
+/* Google Fonts Optimization */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Font Display Optimization */
+.font-display {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  font-display: swap;
+}
+
+.font-sans {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-display: swap;
+}
+
+/* Typography Improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  font-display: swap;
+}
+
+body, p, span, div, input, button {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-display: swap;
+}
+
+/* Letter tiles special styling */
+.letter-tile {
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  font-weight: 600;
+  font-display: swap;
+}
+
+/* Game code special styling */
+.font-mono {
+  font-family: 'Poppins', monospace;
+  font-display: swap;
+}
+
+/* Button improvements */
+.btn-primary, .btn-success, .btn-danger {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 500;
+  font-display: swap;
+}
+
+/* Input field improvements */
+.input-field {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-display: swap;
+}

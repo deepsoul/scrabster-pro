@@ -23,7 +23,7 @@
           <div class="flex items-center space-x-4 mb-4 sm:mb-0">
             <div class="text-center">
               <div class="text-sm text-gray-500">Spiel-Code</div>
-              <div class="text-xl font-bold text-primary-600 font-mono">
+              <div class="text-xl font-bold text-primary-600 font-mono font-display">
                 {{ gameData.gameCode }}
               </div>
             </div>
