@@ -23,7 +23,9 @@
           <div class="flex items-center space-x-4 mb-4 sm:mb-0">
             <div class="text-center">
               <div class="text-sm text-gray-500">Spiel-Code</div>
-              <div class="text-xl font-bold text-primary-600 font-mono">
+              <div
+                class="text-xl font-bold text-primary-600 font-mono font-display"
+              >
                 {{ gameData.gameCode }}
               </div>
             </div>
@@ -36,6 +38,13 @@
           </div>
 
           <div class="flex items-center space-x-4">
+            <button
+              @click="openShareModal"
+              class="btn-success text-sm py-2 px-4 flex items-center"
+            >
+              <span class="mr-2">📤</span>
+              Teilen
+            </button>
             <button @click="leaveGame" class="btn-danger text-sm py-2 px-4">
               Spiel verlassen
             </button>
@@ -65,10 +74,16 @@
               <div
                 v-for="(letter, index) in letters"
                 :key="index"
-                class="letter-tile"
+                class="letter-tile relative"
                 :class="{ highlighted: highlightedLetters.includes(index) }"
               >
                 {{ letter }}
+                <div
+                  v-if="letterFrequency[letter] > 1"
+                  class="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                >
+                  {{ letterFrequency[letter] }}
+                </div>
               </div>
             </div>
           </div>
@@ -94,6 +109,19 @@
               >
                 Senden
               </button>
+            </div>
+
+            <!-- Punkte-Anzeige für aktuelles Wort -->
+            <div
+              v-if="currentWord.trim() && gameState === 'playing'"
+              class="mt-3 text-center"
+            >
+              <span class="text-sm text-gray-600">
+                Dieses Wort bringt:
+                <span class="font-bold text-primary-600">
+                  {{ currentWordScore }} Punkte
+                </span>
+              </span>
             </div>
 
             <!-- Voice Input -->
@@ -175,7 +203,7 @@
                     </div>
                   </div>
                   <div class="text-2xl font-bold text-primary-600">
-                    {{ player.words.length }}
+                    {{ player.score }} Pkt
                   </div>
                 </div>
               </div>
@@ -205,6 +233,28 @@
             </div>
           </div>
 
+          <!-- Game Over Display -->
+          <div
+            v-if="gameState === 'finished'"
+            class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 text-center"
+          >
+            <div class="text-2xl font-bold mb-4">
+              <span v-if="gameData?.isDraw" class="text-yellow-600">
+                Unentschieden! 🎯
+              </span>
+              <span v-else-if="gameData?.winner" class="text-green-600">
+                🏆 {{ gameData.winner.username }} hat gewonnen!
+              </span>
+              <span v-else class="text-gray-600">Spiel beendet</span>
+            </div>
+            <div v-if="gameData?.winner" class="text-lg text-gray-600 mb-4">
+              Mit {{ gameData.winner.score }} Punkten
+            </div>
+            <div class="text-sm text-gray-500">
+              Alle Spieler haben ihre Wörter eingegeben
+            </div>
+          </div>
+
           <!-- Start Game Button -->
           <div
             v-if="gameState === 'waiting' && isHost"
@@ -224,11 +274,20 @@
         </div>
       </div>
     </div>
+
+    <!-- Share Game Modal -->
+    <ShareGame
+      :gameCode="gameData?.gameCode"
+      :difficulty="gameData?.difficulty"
+      :showModal="showShareModal"
+      @close="closeShareModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import ShareGame from './ShareGame.vue';
 
 const props = defineProps({
   gameData: Object,
@@ -245,6 +304,9 @@ const players = ref([]);
 const myWords = ref([]);
 const currentWord = ref('');
 const currentPlayerId = ref('');
+
+// Share modal state
+const showShareModal = ref(false);
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -308,7 +370,35 @@ const statusClass = computed(() => {
 });
 
 const sortedPlayers = computed(() => {
-  return [...players.value].sort((a, b) => a.words.length - b.words.length);
+  return [...players.value].sort((a, b) => b.score - a.score);
+});
+
+// Buchstaben-Häufigkeit berechnen
+const letterFrequency = computed(() => {
+  const frequency = {};
+  letters.value.forEach(letter => {
+    frequency[letter] = (frequency[letter] || 0) + 1;
+  });
+  return frequency;
+});
+
+// Punkte für aktuelles Wort berechnen
+const currentWordScore = computed(() => {
+  if (!currentWord.value.trim() || !letters.value.length) return 0;
+
+  const wordLetters = currentWord.value.toUpperCase().split('');
+  const availableLetters = [...letters.value];
+  let usedLetters = 0;
+
+  for (const letter of wordLetters) {
+    const index = availableLetters.indexOf(letter);
+    if (index !== -1) {
+      usedLetters++;
+      availableLetters.splice(index, 1);
+    }
+  }
+
+  return Math.max(1, usedLetters);
 });
 
 const isHost = computed(() => {
@@ -337,6 +427,14 @@ const submitWord = async () => {
 
   try {
     await props.gameApi.submitWord(currentWord.value.trim());
+
+    // Track word submission
+    if (window.analytics) {
+      const wordLength = currentWord.value.length;
+      const score = currentWordScore.value;
+      window.analytics.trackWordSubmitted(wordLength, score);
+    }
+
     currentWord.value = '';
   } catch (error) {
     console.error('Error submitting word:', error);
@@ -348,6 +446,13 @@ const startGame = async () => {
 
   try {
     await props.gameApi.startGame();
+    // Track game started event
+    if (window.analytics) {
+      window.analytics.trackGameStarted(
+        props.gameData.difficulty,
+        players.value.length
+      );
+    }
   } catch (error) {
     console.error('Error starting game:', error);
   }
@@ -363,6 +468,15 @@ const leaveGame = async () => {
   } finally {
     emit('leaveGame');
   }
+};
+
+// Share modal methods
+const openShareModal = () => {
+  showShareModal.value = true;
+};
+
+const closeShareModal = () => {
+  showShareModal.value = false;
 };
 
 // Voice input methods
@@ -472,6 +586,13 @@ const setupGameApiListeners = () => {
     players.value = data.players;
     if (data.gameState) {
       gameState.value = data.gameState;
+    }
+    // Gewinner-Information aktualisieren
+    if (data.winner !== undefined) {
+      props.gameData.winner = data.winner;
+    }
+    if (data.isDraw !== undefined) {
+      props.gameData.isDraw = data.isDraw;
     }
   });
 

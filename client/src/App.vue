@@ -8,16 +8,30 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center">
-            <h1 class="text-2xl font-bold text-primary-600">Scrabster Pro</h1>
-            <span class="ml-2 text-sm text-gray-500">
+            <h1 class="text-2xl font-bold text-primary-600 font-display">
+              Scrabster Pro
+            </h1>
+            <span class="ml-2 text-sm text-gray-500 font-sans">
               Multiplayer Wortspiel
             </span>
           </div>
           <div v-if="currentUser" class="flex items-center space-x-4">
             <span class="text-sm text-gray-600">Hallo, {{ currentUser }}</span>
             <button
+              @click="showInstructions"
+              class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
+            >
+              📖 Anleitung
+            </button>
+            <button
+              @click="showImprint"
+              class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
+            >
+              📄 Impressum
+            </button>
+            <button
               @click="disconnect"
-              class="text-sm text-gray-500 hover:text-gray-700"
+              class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
             >
               Abmelden
             </button>
@@ -56,7 +70,26 @@
         @playAgain="handlePlayAgain"
         @backToLobby="handleBackToLobby"
       />
+
+      <!-- Instructions Page -->
+      <InstructionsPage
+        v-else-if="currentView === 'instructions'"
+        @backToGame="handleBackToGame"
+      />
+
+      <!-- Imprint Page -->
+      <ImprintPage
+        v-else-if="currentView === 'imprint'"
+        @backToGame="handleBackToGame"
+      />
     </main>
+
+    <!-- Cookie Disclaimer -->
+    <CookieDisclaimer
+      @analyticsChanged="handleAnalyticsChanged"
+      @settingsOpened="handleSettingsOpened"
+      @openImprint="showImprint"
+    />
 
     <!-- Toast Notifications -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
@@ -95,6 +128,10 @@ import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
 import GameScreen from './components/GameScreen.vue';
 import GameOverScreen from './components/GameOverScreen.vue';
+import InstructionsPage from './components/InstructionsPage.vue';
+import ImprintPage from './components/ImprintPage.vue';
+import CookieDisclaimer from './components/CookieDisclaimer.vue';
+import analytics from './services/analytics.js';
 
 // Reactive state
 const currentUser = ref(null);
@@ -205,11 +242,13 @@ const handleLogin = username => {
 const handleCreateGame = data => {
   currentView.value = 'game';
   gameData.value = data;
+  analytics.trackGameCreated(data.difficulty);
 };
 
 const handleJoinGame = data => {
   currentView.value = 'game';
   gameData.value = data;
+  analytics.trackGameJoined();
 };
 
 const handleLeaveGame = () => {
@@ -237,6 +276,41 @@ const handleBackToLobby = () => {
   gameData.value = null;
 };
 
+const showInstructions = () => {
+  currentView.value = 'instructions';
+  analytics.trackInstructionsViewed();
+};
+
+const showImprint = () => {
+  currentView.value = 'imprint';
+  analytics.trackImprintViewed();
+};
+
+const handleBackToGame = () => {
+  currentView.value = 'lobby';
+};
+
+// Analytics event handlers
+const handleAnalyticsChanged = enabled => {
+  if (enabled) {
+    analytics.enable();
+    analytics.trackEvent('analytics_enabled', {
+      event_category: 'privacy',
+    });
+  } else {
+    analytics.disable();
+    analytics.trackEvent('analytics_disabled', {
+      event_category: 'privacy',
+    });
+  }
+};
+
+const handleSettingsOpened = () => {
+  analytics.trackEvent('cookie_settings_opened', {
+    event_category: 'privacy',
+  });
+};
+
 const disconnect = () => {
   if (gameApi.value) {
     gameApi.value.disconnect();
@@ -249,6 +323,9 @@ const disconnect = () => {
 
 // Lifecycle
 onMounted(() => {
+  // Initialize analytics
+  analytics.init();
+
   // Check if user is already logged in (localStorage)
   const savedUser = localStorage.getItem('scrabster-username');
   if (savedUser) {

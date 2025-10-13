@@ -3,6 +3,10 @@ export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'system-ui', 'sans-serif'],
+      },
       colors: {
         primary: {
           50: '#f0f9ff',
@@ -36,9 +40,12 @@ export default {
       },
       keyframes: {
         highlight: {
-          '0%': {transform: 'scale(1)', backgroundColor: 'rgb(59 130 246)'},
-          '50%': {transform: 'scale(1.1)', backgroundColor: 'rgb(147 197 253)'},
-          '100%': {transform: 'scale(1)', backgroundColor: 'rgb(59 130 246)'},
+          '0%': { transform: 'scale(1)', backgroundColor: 'rgb(59 130 246)' },
+          '50%': {
+            transform: 'scale(1.1)',
+            backgroundColor: 'rgb(147 197 253)',
+          },
+          '100%': { transform: 'scale(1)', backgroundColor: 'rgb(59 130 246)' },
         },
       },
     },

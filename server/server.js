@@ -6,22 +6,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+// CORS - Einfache Konfiguration
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === 'production'
-        ? [
-            'https://scrabster-pro.vercel.app',
-            'https://scrabster-pro.vercel.app/',
-            'https://scrabster-pro-git-develop-boris-horns-projects.vercel.app',
-            'https://scrabster-pro-git-develop-boris-horns-projects.vercel.app/',
-            'https://scrabster-pro.onrender.com',
-            'https://scrabster-pro.onrender.com/',
-          ]
-        : 'http://localhost:5174',
+    origin: true, // Alle Origins erlauben
     credentials: true,
   })
 );
+
+// Debug: CORS-Header manuell setzen
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  next();
+});
 app.use(express.json());
 
 // Import API routes
@@ -38,10 +41,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
-// Nur in lokaler Entwicklung den Server starten
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
-}
+// Server starten (sowohl lokal als auch in Produktion)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});

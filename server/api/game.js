@@ -1,5 +1,14 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+// CORS für alle API-Routen
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 // In-memory storage für Spiele (in Produktion würde man Redis verwenden)
 const gameRooms = new Map();
@@ -233,9 +242,9 @@ const weightedAlphabet = [
 ];
 
 const DIFFICULTY_LEVELS = {
-  easy: { letters: 9, time: 120 },
-  medium: { letters: 8, time: 90 },
-  hard: { letters: 7, time: 60 },
+  easy: { letters: 12, time: 120 },
+  medium: { letters: 10, time: 90 },
+  hard: { letters: 8, time: 60 },
 };
 
 // Hilfsfunktionen
@@ -462,7 +471,24 @@ app.post('/game/submit-word', (req, res) => {
 
   // Wort hinzufügen
   player.words.push(word.toUpperCase());
-  player.score = player.words.length;
+
+  // Punkte basierend auf verwendeten Buchstaben berechnen
+  const wordLetters = word.toUpperCase().split('');
+  const availableLetters = [...gameRoom.letters];
+  let usedLetters = 0;
+
+  // Zählen, wie viele Buchstaben aus der verfügbaren Liste verwendet wurden
+  for (const letter of wordLetters) {
+    const index = availableLetters.indexOf(letter);
+    if (index !== -1) {
+      usedLetters++;
+      availableLetters.splice(index, 1); // Buchstabe "verbrauchen"
+    }
+  }
+
+  // Punkte basierend auf verwendeten Buchstaben (mindestens 1 Punkt pro Wort)
+  const wordScore = Math.max(1, usedLetters);
+  player.score += wordScore;
   gameRoom.lastUpdate = Date.now();
 
   // Prüfen auf Scrabster
@@ -502,6 +528,14 @@ app.get('/game/status/:gameCode', (req, res) => {
 
     if (gameRoom.timeLeft <= 0) {
       gameRoom.gameState = 'finished';
+      // Gewinner ermitteln (höchste Punktzahl)
+      const players = Array.from(gameRoom.players.values());
+      const maxScore = Math.max(...players.map(p => p.score));
+      const winners = players.filter(p => p.score === maxScore);
+
+      // Gewinner-Information hinzufügen
+      gameRoom.winner = winners.length === 1 ? winners[0] : null; // Bei Gleichstand: kein Gewinner
+      gameRoom.isDraw = winners.length > 1;
     }
   }
 
@@ -513,6 +547,8 @@ app.get('/game/status/:gameCode', (req, res) => {
     gameState: gameRoom.gameState,
     players: Array.from(gameRoom.players.values()),
     lastUpdate: gameRoom.lastUpdate,
+    winner: gameRoom.winner || null,
+    isDraw: gameRoom.isDraw || false,
   });
 });
 
