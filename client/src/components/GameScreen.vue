@@ -65,10 +65,16 @@
               <div
                 v-for="(letter, index) in letters"
                 :key="index"
-                class="letter-tile"
+                class="letter-tile relative"
                 :class="{ highlighted: highlightedLetters.includes(index) }"
               >
                 {{ letter }}
+                <div 
+                  v-if="letterFrequency[letter] > 1" 
+                  class="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                >
+                  {{ letterFrequency[letter] }}
+                </div>
               </div>
             </div>
           </div>
@@ -94,6 +100,14 @@
               >
                 Senden
               </button>
+            </div>
+            
+            <!-- Punkte-Anzeige für aktuelles Wort -->
+            <div v-if="currentWord.trim() && gameState === 'playing'" class="mt-3 text-center">
+              <span class="text-sm text-gray-600">
+                Dieses Wort bringt: 
+                <span class="font-bold text-primary-600">{{ currentWordScore }} Punkte</span>
+              </span>
             </div>
 
             <!-- Voice Input -->
@@ -175,7 +189,7 @@
                     </div>
                   </div>
                   <div class="text-2xl font-bold text-primary-600">
-                    {{ player.words.length }}
+                    {{ player.score }} Pkt
                   </div>
                 </div>
               </div>
@@ -217,9 +231,7 @@
               <span v-else-if="gameData?.winner" class="text-green-600">
                 🏆 {{ gameData.winner.username }} hat gewonnen!
               </span>
-              <span v-else class="text-gray-600">
-                Spiel beendet
-              </span>
+              <span v-else class="text-gray-600">Spiel beendet</span>
             </div>
             <div v-if="gameData?.winner" class="text-lg text-gray-600 mb-4">
               Mit {{ gameData.winner.score }} Punkten
@@ -332,7 +344,35 @@ const statusClass = computed(() => {
 });
 
 const sortedPlayers = computed(() => {
-  return [...players.value].sort((a, b) => a.words.length - b.words.length);
+  return [...players.value].sort((a, b) => b.score - a.score);
+});
+
+// Buchstaben-Häufigkeit berechnen
+const letterFrequency = computed(() => {
+  const frequency = {};
+  letters.value.forEach(letter => {
+    frequency[letter] = (frequency[letter] || 0) + 1;
+  });
+  return frequency;
+});
+
+// Punkte für aktuelles Wort berechnen
+const currentWordScore = computed(() => {
+  if (!currentWord.value.trim() || !letters.value.length) return 0;
+  
+  const wordLetters = currentWord.value.toUpperCase().split('');
+  const availableLetters = [...letters.value];
+  let usedLetters = 0;
+  
+  for (const letter of wordLetters) {
+    const index = availableLetters.indexOf(letter);
+    if (index !== -1) {
+      usedLetters++;
+      availableLetters.splice(index, 1);
+    }
+  }
+  
+  return Math.max(1, usedLetters);
 });
 
 const isHost = computed(() => {
