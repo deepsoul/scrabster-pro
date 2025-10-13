@@ -217,6 +217,13 @@ const connectGameApi = () => {
     if (gameData.value) {
       gameData.value.timeLeft = data.timeLeft;
       gameData.value.players = data.players;
+      // Gewinner-Information aktualisieren
+      if (data.winner !== undefined) {
+        gameData.value.winner = data.winner;
+      }
+      if (data.isDraw !== undefined) {
+        gameData.value.isDraw = data.isDraw;
+      }
     }
   });
 

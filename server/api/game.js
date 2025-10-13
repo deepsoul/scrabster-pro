@@ -532,7 +532,7 @@ app.get('/game/status/:gameCode', (req, res) => {
       const players = Array.from(gameRoom.players.values());
       const maxScore = Math.max(...players.map(p => p.score));
       const winners = players.filter(p => p.score === maxScore);
-
+      
       // Gewinner-Information hinzufügen
       gameRoom.winner = winners.length === 1 ? winners[0] : null; // Bei Gleichstand: kein Gewinner
       gameRoom.isDraw = winners.length > 1;
