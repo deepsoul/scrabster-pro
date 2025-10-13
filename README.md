@@ -91,6 +91,15 @@ npm start
 - **Mittel**: 8 Buchstaben, 90 Sekunden
 - **Schwer**: 7 Buchstaben, 60 Sekunden
 
+## 🌳 Branch-Strategie
+
+- **main**: Produktionsreifer Code (geschützt)
+- **develop**: Entwicklungsintegration
+- **feature/\***: Feature-Entwicklung
+- **hotfix/\***: Kritische Bugfixes
+
+Siehe [Git Workflow](GIT_WORKFLOW.md) für Details.
+
 ## Deployment
 
 ### Vercel (Empfohlen für Frontend + Backend)

@@ -9,9 +9,9 @@
         <div class="flex justify-between items-center h-16">
           <div class="flex items-center">
             <h1 class="text-2xl font-bold text-primary-600">Scrabster Pro</h1>
-            <span class="ml-2 text-sm text-gray-500"
-              >Multiplayer Wortspiel</span
-            >
+            <span class="ml-2 text-sm text-gray-500">
+              Multiplayer Wortspiel
+            </span>
           </div>
           <div v-if="currentUser" class="flex items-center space-x-4">
             <span class="text-sm text-gray-600">Hallo, {{ currentUser }}</span>
@@ -34,6 +34,7 @@
       <!-- Lobby -->
       <Lobby
         v-else-if="currentView === 'lobby'"
+        :socket="socket"
         @createGame="handleCreateGame"
         @joinGame="handleJoinGame"
       />
@@ -87,8 +88,8 @@
 </template>
 
 <script setup>
-import {ref, onMounted, onUnmounted} from 'vue';
-import {io} from 'socket.io-client';
+import { ref, onMounted, onUnmounted } from 'vue';
+import { io } from 'socket.io-client';
 import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
 import GameScreen from './components/GameScreen.vue';
@@ -107,12 +108,12 @@ let toastId = 0;
 
 const addToast = (message, type = 'info') => {
   const id = ++toastId;
-  toasts.value.push({id, message, type});
+  toasts.value.push({ id, message, type });
   setTimeout(() => removeToast(id), 5000);
 };
 
-const removeToast = (id) => {
-  const index = toasts.value.findIndex((t) => t.id === id);
+const removeToast = id => {
+  const index = toasts.value.findIndex(t => t.id === id);
   if (index > -1) {
     toasts.value.splice(index, 1);
   }
@@ -134,37 +135,55 @@ const connectSocket = () => {
     addToast('Verbindung zum Server verloren', 'error');
   });
 
-  socket.value.on('gameError', (data) => {
+  socket.value.on('gameError', data => {
     addToast(data.message, 'error');
+  });
+
+  socket.value.on('gameCreated', data => {
+    console.log('Game created:', data);
+    gameData.value = {
+      ...gameData.value,
+      ...data,
+      gameState: 'waiting',
+    };
+  });
+
+  socket.value.on('gameJoined', data => {
+    console.log('Game joined:', data);
+    gameData.value = {
+      ...gameData.value,
+      ...data,
+      gameState: 'waiting',
+    };
   });
 };
 
 // Event handlers
-const handleLogin = (username) => {
+const handleLogin = username => {
   currentUser.value = username;
   currentView.value = 'lobby';
   connectSocket();
 };
 
-const handleCreateGame = (gameData) => {
+const handleCreateGame = data => {
   currentView.value = 'game';
-  gameData.value = gameData;
+  gameData.value = data;
 };
 
-const handleJoinGame = (gameData) => {
+const handleJoinGame = data => {
   currentView.value = 'game';
-  gameData.value = gameData;
+  gameData.value = data;
 };
 
 const handleLeaveGame = () => {
   if (socket.value) {
-    socket.value.emit('leaveGame', {gameCode: gameData.value?.gameCode});
+    socket.value.emit('leaveGame', { gameCode: gameData.value?.gameCode });
   }
   currentView.value = 'lobby';
   gameData.value = null;
 };
 
-const handleGameOver = (result) => {
+const handleGameOver = result => {
   gameResult.value = result;
   currentView.value = 'gameOver';
 };
