@@ -221,7 +221,8 @@
 import { ref } from 'vue';
 
 const props = defineProps({
-  socket: Object,
+  gameApi: Object,
+  currentUser: String,
 });
 
 const emit = defineEmits(['createGame', 'joinGame']);
@@ -237,18 +238,27 @@ const createGame = async () => {
 
   try {
     const gameData = {
+      username: props.currentUser || 'Spieler',
       difficulty: selectedDifficulty.value,
-      gameCode: generateGameCode(),
     };
 
-    createdGameCode.value = gameData.gameCode;
-
-    // Send to server
-    if (props.socket) {
-      props.socket.emit('createGame', gameData);
+    // Send to server via API
+    if (props.gameApi) {
+      const result = await props.gameApi.createGame(
+        gameData.username,
+        gameData.difficulty
+      );
+      createdGameCode.value = result.gameCode;
+      emit('createGame', result);
+    } else {
+      // Fallback for testing
+      const fallbackData = {
+        ...gameData,
+        gameCode: generateGameCode(),
+      };
+      createdGameCode.value = fallbackData.gameCode;
+      emit('createGame', fallbackData);
     }
-
-    emit('createGame', gameData);
   } catch (error) {
     console.error('Error creating game:', error);
   } finally {
@@ -262,16 +272,22 @@ const joinGame = async () => {
   isJoining.value = true;
 
   try {
-    const gameData = {
-      gameCode: gameCode.value.trim().toUpperCase(),
-    };
+    const gameCodeValue = gameCode.value.trim().toUpperCase();
 
-    // Send to server
-    if (props.socket) {
-      props.socket.emit('joinGame', gameData);
+    // Send to server via API
+    if (props.gameApi) {
+      const result = await props.gameApi.joinGame(
+        gameCodeValue,
+        props.currentUser || 'Spieler'
+      );
+      emit('joinGame', result);
+    } else {
+      // Fallback for testing
+      const fallbackData = {
+        gameCode: gameCodeValue,
+      };
+      emit('joinGame', fallbackData);
     }
-
-    emit('joinGame', gameData);
   } catch (error) {
     console.error('Error joining game:', error);
   } finally {
