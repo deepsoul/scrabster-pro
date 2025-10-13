@@ -242,9 +242,9 @@ const weightedAlphabet = [
 ];
 
 const DIFFICULTY_LEVELS = {
-  easy: { letters: 9, time: 120 },
-  medium: { letters: 8, time: 90 },
-  hard: { letters: 7, time: 60 },
+  easy: { letters: 12, time: 120 },
+  medium: { letters: 10, time: 90 },
+  hard: { letters: 8, time: 60 },
 };
 
 // Hilfsfunktionen
@@ -511,6 +511,14 @@ app.get('/game/status/:gameCode', (req, res) => {
 
     if (gameRoom.timeLeft <= 0) {
       gameRoom.gameState = 'finished';
+      // Gewinner ermitteln (höchste Punktzahl)
+      const players = Array.from(gameRoom.players.values());
+      const maxScore = Math.max(...players.map(p => p.score));
+      const winners = players.filter(p => p.score === maxScore);
+
+      // Gewinner-Information hinzufügen
+      gameRoom.winner = winners.length === 1 ? winners[0] : null; // Bei Gleichstand: kein Gewinner
+      gameRoom.isDraw = winners.length > 1;
     }
   }
 
@@ -522,6 +530,8 @@ app.get('/game/status/:gameCode', (req, res) => {
     gameState: gameRoom.gameState,
     players: Array.from(gameRoom.players.values()),
     lastUpdate: gameRoom.lastUpdate,
+    winner: gameRoom.winner || null,
+    isDraw: gameRoom.isDraw || false,
   });
 });
 

@@ -229,6 +229,8 @@ class GameApiService {
                 timeLeft: data.timeLeft,
                 players: data.players,
                 gameState: data.gameState,
+                winner: data.winner,
+                isDraw: data.isDraw,
               });
             }
           }
