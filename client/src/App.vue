@@ -294,7 +294,7 @@ const showInstructions = () => {
 
 const showImprint = () => {
   currentView.value = 'imprint';
-  analytics.trackImprintViewed();
+  analytics.trackImprintViewed(); // Debug log
 };
 
 const handleBackToGame = () => {

@@ -148,9 +148,6 @@ const handleLogin = () => {
 };
 
 const handleShowImprint = () => {
-  console.log('Imprint button clicked'); // Debug log
-  console.log('Emitting showImprint event'); // Debug log
   emit('showImprint');
-  console.log('Event emitted'); // Debug log
 };
 </script>
