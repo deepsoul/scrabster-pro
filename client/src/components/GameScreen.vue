@@ -245,9 +245,7 @@
               <span v-else-if="winner" class="text-green-600">
                 🏆 {{ winner.username }} hat gewonnen!
               </span>
-              <span v-else class="text-gray-600">
-                Spiel beendet
-              </span>
+              <span v-else class="text-gray-600">Spiel beendet</span>
             </div>
             <div v-if="winner" class="text-lg text-gray-600 mb-4">
               Mit {{ winner.score }} Punkten
@@ -307,14 +305,12 @@ const myWords = ref([]);
 const currentWord = ref('');
 const currentPlayerId = ref('');
 
-<<<<<<< HEAD
 // Share modal state
 const showShareModal = ref(false);
-=======
+
 // Winner state
 const winner = ref(null);
 const isDraw = ref(false);
->>>>>>> render-deployment
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -597,17 +593,10 @@ const setupGameApiListeners = () => {
     }
     // Gewinner-Information aktualisieren
     if (data.winner !== undefined) {
-<<<<<<< HEAD
-      props.gameData.winner = data.winner;
-    }
-    if (data.isDraw !== undefined) {
-      props.gameData.isDraw = data.isDraw;
-=======
       winner.value = data.winner;
     }
     if (data.isDraw !== undefined) {
       isDraw.value = data.isDraw;
->>>>>>> render-deployment
     }
   });
 
