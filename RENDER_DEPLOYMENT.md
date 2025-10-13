@@ -32,16 +32,19 @@ git push origin render-deployment
 **Environment:** `Node`
 
 **Build Command:**
+
 ```bash
 cd client && npm install && npm run build && cd ../server && npm install
 ```
 
 **Start Command:**
+
 ```bash
 cd server && npm start
 ```
 
 **Environment Variables:**
+
 - `NODE_ENV` = `production`
 - `PORT` = `10000` (wird automatisch von Render gesetzt)
 
@@ -69,21 +72,25 @@ services:
 ## Vorteile von Render.com
 
 ### ✅ **Einfache Konfiguration**
+
 - Keine komplexen serverless Function-Konfigurationen
 - Traditioneller Express-Server funktioniert out-of-the-box
 - Automatische HTTPS und Domain
 
 ### ✅ **Bessere Performance**
+
 - Keine Cold Starts wie bei Vercel
 - Persistente Verbindungen möglich
 - Geteilter Speicher zwischen Requests
 
 ### ✅ **Einfacheres Debugging**
+
 - Standard Node.js-Logs
 - Keine serverless-spezifischen Probleme
 - Einfache Umgebungsvariablen
 
 ### ✅ **Kosten**
+
 - Kostenloser Plan verfügbar
 - Keine Function-Aufruf-Limits
 - 750 Stunden/Monat kostenlos
@@ -118,6 +125,7 @@ Alle API-Endpunkte funktionieren wie gewohnt:
 ## Monitoring
 
 Render.com bietet integriertes Monitoring:
+
 - Logs in Echtzeit
 - Performance-Metriken
 - Automatische Deployments bei Git-Pushes
@@ -125,6 +133,7 @@ Render.com bietet integriertes Monitoring:
 ## Skalierung
 
 Für höhere Lasten:
+
 - Upgrade auf bezahlten Plan
 - Horizontal Scaling möglich
 - Load Balancing verfügbar
