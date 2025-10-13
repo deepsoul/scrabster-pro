@@ -205,6 +205,30 @@
             </div>
           </div>
 
+          <!-- Game Over Display -->
+          <div
+            v-if="gameState === 'finished'"
+            class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 text-center"
+          >
+            <div class="text-2xl font-bold mb-4">
+              <span v-if="isDraw" class="text-yellow-600">
+                Unentschieden! 🎯
+              </span>
+              <span v-else-if="winner" class="text-green-600">
+                🏆 {{ winner.username }} hat gewonnen!
+              </span>
+              <span v-else class="text-gray-600">
+                Spiel beendet
+              </span>
+            </div>
+            <div v-if="winner" class="text-lg text-gray-600 mb-4">
+              Mit {{ winner.score }} Punkten
+            </div>
+            <div class="text-sm text-gray-500">
+              Alle Spieler haben ihre Wörter eingegeben
+            </div>
+          </div>
+
           <!-- Start Game Button -->
           <div
             v-if="gameState === 'waiting' && isHost"
@@ -245,6 +269,10 @@ const players = ref([]);
 const myWords = ref([]);
 const currentWord = ref('');
 const currentPlayerId = ref('');
+
+// Winner state
+const winner = ref(null);
+const isDraw = ref(false);
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -472,6 +500,13 @@ const setupGameApiListeners = () => {
     players.value = data.players;
     if (data.gameState) {
       gameState.value = data.gameState;
+    }
+    // Gewinner-Information aktualisieren
+    if (data.winner !== undefined) {
+      winner.value = data.winner;
+    }
+    if (data.isDraw !== undefined) {
+      isDraw.value = data.isDraw;
     }
   });
 
