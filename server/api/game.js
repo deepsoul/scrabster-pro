@@ -495,12 +495,18 @@ app.post('/game/submit-word', (req, res) => {
   if (isScrabster(word, gameRoom.letters)) {
     player.score += 2;
     gameRoom.gameState = 'finished';
+    
+    // Bei Scrabster gewinnt der Spieler automatisch
+    gameRoom.winner = player;
+    gameRoom.isDraw = false;
 
     return res.json({
       success: true,
       scrabster: true,
       scrabsterWord: word.toUpperCase(),
       players: Array.from(gameRoom.players.values()),
+      winner: gameRoom.winner,
+      isDraw: gameRoom.isDraw,
     });
   }
 
@@ -528,14 +534,24 @@ app.get('/game/status/:gameCode', (req, res) => {
 
     if (gameRoom.timeLeft <= 0) {
       gameRoom.gameState = 'finished';
-      // Gewinner ermitteln (höchste Punktzahl)
+      // Gewinner ermitteln (höchste Punktzahl, aber nur Spieler mit Wörtern)
       const players = Array.from(gameRoom.players.values());
-      const maxScore = Math.max(...players.map(p => p.score));
-      const winners = players.filter(p => p.score === maxScore);
-
-      // Gewinner-Information hinzufügen
-      gameRoom.winner = winners.length === 1 ? winners[0] : null; // Bei Gleichstand: kein Gewinner
-      gameRoom.isDraw = winners.length > 1;
+      
+      // Nur Spieler mit mindestens einem Wort berücksichtigen
+      const playersWithWords = players.filter(p => p.words && p.words.length > 0);
+      
+      if (playersWithWords.length === 0) {
+        // Kein Spieler hat Wörter eingegeben
+        gameRoom.winner = null;
+        gameRoom.isDraw = false;
+      } else {
+        const maxScore = Math.max(...playersWithWords.map(p => p.score));
+        const winners = playersWithWords.filter(p => p.score === maxScore);
+        
+        // Gewinner-Information hinzufügen
+        gameRoom.winner = winners.length === 1 ? winners[0] : null; // Bei Gleichstand: kein Gewinner
+        gameRoom.isDraw = winners.length > 1;
+      }
     }
   }
 

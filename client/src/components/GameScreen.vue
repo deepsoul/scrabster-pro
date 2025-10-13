@@ -251,7 +251,12 @@
               Mit {{ winner.score }} Punkten
             </div>
             <div class="text-sm text-gray-500">
-              Alle Spieler haben ihre Wörter eingegeben
+              <span v-if="winner || isDraw">
+                Alle Spieler haben ihre Wörter eingegeben
+              </span>
+              <span v-else>
+                Kein Spieler hat Wörter eingegeben
+              </span>
             </div>
           </div>
 
