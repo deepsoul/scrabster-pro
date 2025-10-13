@@ -187,7 +187,7 @@
         <p class="text-sm text-primary-500 mt-2 mb-4">
           Warte auf Spieler oder starte das Spiel alleine
         </p>
-        
+
         <!-- Share Buttons -->
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <button

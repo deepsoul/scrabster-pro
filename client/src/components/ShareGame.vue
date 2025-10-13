@@ -5,10 +5,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click="closeModal"
   >
-    <div
-      class="bg-white rounded-xl shadow-2xl max-w-md w-full"
-      @click.stop
-    >
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full" @click.stop>
       <!-- Header -->
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
@@ -41,9 +38,7 @@
         <!-- Game Code Display -->
         <div class="bg-gray-50 rounded-lg p-4">
           <div class="text-center">
-            <div class="text-sm text-gray-600 font-sans mb-2">
-              Spiel-Code
-            </div>
+            <div class="text-sm text-gray-600 font-sans mb-2">Spiel-Code</div>
             <div
               class="text-3xl font-bold text-primary-600 font-mono font-display mb-2"
             >
@@ -69,7 +64,9 @@
             @click="shareWhatsApp"
             class="w-full flex items-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors duration-200 group"
           >
-            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-green-600 transition-colors duration-200">
+            <div
+              class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-green-600 transition-colors duration-200"
+            >
               <span class="text-2xl text-white">📱</span>
             </div>
             <div class="flex-1 text-left">
@@ -80,9 +77,7 @@
                 Teile den Link direkt in WhatsApp
               </div>
             </div>
-            <div class="text-gray-400 group-hover:text-gray-600">
-              →
-            </div>
+            <div class="text-gray-400 group-hover:text-gray-600">→</div>
           </button>
 
           <!-- Email -->
@@ -90,20 +85,18 @@
             @click="shareEmail"
             class="w-full flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 group"
           >
-            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-600 transition-colors duration-200">
+            <div
+              class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-blue-600 transition-colors duration-200"
+            >
               <span class="text-2xl text-white">✉️</span>
             </div>
             <div class="flex-1 text-left">
-              <div class="font-semibold text-gray-900 font-display">
-                E-Mail
-              </div>
+              <div class="font-semibold text-gray-900 font-display">E-Mail</div>
               <div class="text-sm text-gray-600 font-sans">
                 Sende eine Einladung per E-Mail
               </div>
             </div>
-            <div class="text-gray-400 group-hover:text-gray-600">
-              →
-            </div>
+            <div class="text-gray-400 group-hover:text-gray-600">→</div>
           </button>
 
           <!-- Copy Link -->
@@ -111,7 +104,9 @@
             @click="copyLink"
             class="w-full flex items-center p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200 group"
           >
-            <div class="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-gray-600 transition-colors duration-200">
+            <div
+              class="w-12 h-12 bg-gray-500 rounded-full flex items-center justify-center mr-4 group-hover:bg-gray-600 transition-colors duration-200"
+            >
               <span class="text-2xl text-white">🔗</span>
             </div>
             <div class="flex-1 text-left">
@@ -122,9 +117,7 @@
                 Kopiere den direkten Spiel-Link
               </div>
             </div>
-            <div class="text-gray-400 group-hover:text-gray-600">
-              →
-            </div>
+            <div class="text-gray-400 group-hover:text-gray-600">→</div>
           </button>
         </div>
 
@@ -133,7 +126,9 @@
           <h4 class="font-semibold text-gray-900 font-display mb-2">
             Nachricht:
           </h4>
-          <div class="text-sm text-gray-700 font-sans bg-white p-3 rounded border">
+          <div
+            class="text-sm text-gray-700 font-sans bg-white p-3 rounded border"
+          >
             {{ shareMessage }}
           </div>
         </div>
@@ -141,10 +136,7 @@
 
       <!-- Actions -->
       <div class="p-6 border-t border-gray-200">
-        <button
-          @click="closeModal"
-          class="w-full btn-primary py-3 font-sans"
-        >
+        <button @click="closeModal" class="w-full btn-primary py-3 font-sans">
           Fertig
         </button>
       </div>
@@ -193,16 +185,19 @@ const gameUrl = computed(() => {
 });
 
 const shareMessage = computed(() => {
-  const difficultyText = {
-    easy: 'Leicht',
-    medium: 'Mittel',
-    hard: 'Schwer',
-  }[props.difficulty] || 'Mittel';
+  const difficultyText =
+    {
+      easy: 'Leicht',
+      medium: 'Mittel',
+      hard: 'Schwer',
+    }[props.difficulty] || 'Mittel';
 
-  return `🎮 Komm mit mir Scrabster Pro spielen!\n\n` +
+  return (
+    `🎮 Komm mit mir Scrabster Pro spielen!\n\n` +
     `Spiel-Code: ${props.gameCode}\n` +
     `Schwierigkeit: ${difficultyText}\n\n` +
-    `Klicke hier zum Mitspielen: ${gameUrl.value}`;
+    `Klicke hier zum Mitspielen: ${gameUrl.value}`
+  );
 });
 
 // Methods
@@ -233,9 +228,9 @@ const copyLink = async () => {
 const shareWhatsApp = () => {
   const message = encodeURIComponent(shareMessage.value);
   const whatsappUrl = `https://wa.me/?text=${message}`;
-  
+
   window.open(whatsappUrl, '_blank');
-  
+
   // Track analytics
   if (window.analytics) {
     window.analytics.trackEvent('game_shared', {
@@ -245,7 +240,7 @@ const shareWhatsApp = () => {
       event_category: 'sharing',
     });
   }
-  
+
   showToastMessage('WhatsApp geöffnet!');
 };
 
@@ -253,9 +248,9 @@ const shareEmail = () => {
   const subject = encodeURIComponent('🎮 Komm mit mir Scrabster Pro spielen!');
   const body = encodeURIComponent(shareMessage.value);
   const emailUrl = `mailto:?subject=${subject}&body=${body}`;
-  
+
   window.location.href = emailUrl;
-  
+
   // Track analytics
   if (window.analytics) {
     window.analytics.trackEvent('game_shared', {
@@ -265,32 +260,35 @@ const shareEmail = () => {
       event_category: 'sharing',
     });
   }
-  
+
   showToastMessage('E-Mail-Client geöffnet!');
 };
 
-const showToastMessage = (message) => {
+const showToastMessage = message => {
   toastMessage.value = message;
   showToast.value = true;
-  
+
   setTimeout(() => {
     showToast.value = false;
   }, 3000);
 };
 
 // Watch for modal changes
-watch(() => props.showModal, (newValue) => {
-  if (newValue) {
-    // Track analytics when modal opens
-    if (window.analytics) {
-      window.analytics.trackEvent('share_modal_opened', {
-        game_code: props.gameCode,
-        difficulty: props.difficulty,
-        event_category: 'sharing',
-      });
+watch(
+  () => props.showModal,
+  newValue => {
+    if (newValue) {
+      // Track analytics when modal opens
+      if (window.analytics) {
+        window.analytics.trackEvent('share_modal_opened', {
+          game_code: props.gameCode,
+          difficulty: props.difficulty,
+          event_category: 'sharing',
+        });
+      }
     }
   }
-});
+);
 </script>
 
 <style scoped>
