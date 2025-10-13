@@ -180,7 +180,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 
-const emit = defineEmits(['analyticsChanged', 'settingsOpened']);
+const emit = defineEmits(['analyticsChanged', 'settingsOpened', 'openImprint']);
 
 // State
 const showDisclaimer = ref(false);

@@ -122,7 +122,7 @@
       <!-- Footer Links -->
       <div class="mt-8 text-center">
         <button
-          @click="$emit('showImprint')"
+          @click="handleShowImprint"
           class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors duration-200"
         >
           📄 Impressum
@@ -145,5 +145,9 @@ const handleLogin = () => {
     localStorage.setItem('scrabster-username', username.value.trim());
     emit('login', username.value.trim());
   }
+};
+
+const handleShowImprint = () => {
+  emit('showImprint');
 };
 </script>
