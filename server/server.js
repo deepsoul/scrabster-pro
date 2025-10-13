@@ -9,11 +9,9 @@ const PORT = process.env.PORT || 3000;
 app.use(
   cors({
     origin: (origin, callback) => {
-      // In Entwicklung: localhost Ports erlauben
+      // In Entwicklung: alle localhost Ports erlauben
       if (process.env.NODE_ENV !== 'production') {
-        if (!origin || origin.startsWith('http://localhost:')) {
-          return callback(null, true);
-        }
+        return callback(null, true);
       }
 
       // In Produktion: Vercel und Render Domains erlauben
