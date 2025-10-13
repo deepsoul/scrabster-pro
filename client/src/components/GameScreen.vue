@@ -406,6 +406,14 @@ const submitWord = async () => {
 
   try {
     await props.gameApi.submitWord(currentWord.value.trim());
+    
+    // Track word submission
+    if (window.analytics) {
+      const wordLength = currentWord.value.length;
+      const score = currentWordScore.value;
+      window.analytics.trackWordSubmitted(wordLength, score);
+    }
+    
     currentWord.value = '';
   } catch (error) {
     console.error('Error submitting word:', error);
@@ -417,6 +425,10 @@ const startGame = async () => {
 
   try {
     await props.gameApi.startGame();
+    // Track game started event
+    if (window.analytics) {
+      window.analytics.trackGameStarted(props.gameData.difficulty, players.value.length);
+    }
   } catch (error) {
     console.error('Error starting game:', error);
   }

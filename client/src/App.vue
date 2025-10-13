@@ -82,6 +82,13 @@
       />
     </main>
 
+    <!-- Cookie Disclaimer -->
+    <CookieDisclaimer
+      @analyticsChanged="handleAnalyticsChanged"
+      @settingsOpened="handleSettingsOpened"
+      @openImprint="showImprint"
+    />
+
     <!-- Toast Notifications -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
       <div
@@ -121,6 +128,8 @@ import GameScreen from './components/GameScreen.vue';
 import GameOverScreen from './components/GameOverScreen.vue';
 import InstructionsPage from './components/InstructionsPage.vue';
 import ImprintPage from './components/ImprintPage.vue';
+import CookieDisclaimer from './components/CookieDisclaimer.vue';
+import analytics from './services/analytics.js';
 
 // Reactive state
 const currentUser = ref(null);
@@ -231,11 +240,13 @@ const handleLogin = username => {
 const handleCreateGame = data => {
   currentView.value = 'game';
   gameData.value = data;
+  analytics.trackGameCreated(data.difficulty);
 };
 
 const handleJoinGame = data => {
   currentView.value = 'game';
   gameData.value = data;
+  analytics.trackGameJoined();
 };
 
 const handleLeaveGame = () => {
@@ -265,14 +276,37 @@ const handleBackToLobby = () => {
 
 const showInstructions = () => {
   currentView.value = 'instructions';
+  analytics.trackInstructionsViewed();
 };
 
 const showImprint = () => {
   currentView.value = 'imprint';
+  analytics.trackImprintViewed();
 };
 
 const handleBackToGame = () => {
   currentView.value = 'lobby';
+};
+
+// Analytics event handlers
+const handleAnalyticsChanged = (enabled) => {
+  if (enabled) {
+    analytics.enable();
+    analytics.trackEvent('analytics_enabled', {
+      event_category: 'privacy'
+    });
+  } else {
+    analytics.disable();
+    analytics.trackEvent('analytics_disabled', {
+      event_category: 'privacy'
+    });
+  }
+};
+
+const handleSettingsOpened = () => {
+  analytics.trackEvent('cookie_settings_opened', {
+    event_category: 'privacy'
+  });
 };
 
 const disconnect = () => {
@@ -287,6 +321,9 @@ const disconnect = () => {
 
 // Lifecycle
 onMounted(() => {
+  // Initialize analytics
+  analytics.init();
+  
   // Check if user is already logged in (localStorage)
   const savedUser = localStorage.getItem('scrabster-username');
   if (savedUser) {

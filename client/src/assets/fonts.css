@@ -13,12 +13,22 @@
 }
 
 /* Typography Improvements */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Poppins', system-ui, -apple-system, sans-serif;
   font-display: swap;
 }
 
-body, p, span, div, input, button {
+body,
+p,
+span,
+div,
+input,
+button {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-display: swap;
 }
@@ -37,7 +47,9 @@ body, p, span, div, input, button {
 }
 
 /* Button improvements */
-.btn-primary, .btn-success, .btn-danger {
+.btn-primary,
+.btn-success,
+.btn-danger {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-weight: 500;
   font-display: swap;

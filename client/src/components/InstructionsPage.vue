@@ -2,8 +2,12 @@
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- Header -->
     <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4 font-display">🎮 Scrabster Pro</h1>
-      <p class="text-xl text-gray-600 font-sans">Das ultimative Multiplayer-Wortspiel</p>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4 font-display">
+        🎮 Scrabster Pro
+      </h1>
+      <p class="text-xl text-gray-600 font-sans">
+        Das ultimative Multiplayer-Wortspiel
+      </p>
     </div>
 
     <!-- Navigation -->
@@ -26,7 +30,9 @@
           >
             <span class="text-2xl">🎯</span>
           </div>
-            <h2 class="text-2xl font-bold text-gray-900 font-display">Ziel des Spiels</h2>
+          <h2 class="text-2xl font-bold text-gray-900 font-display">
+            Ziel des Spiels
+          </h2>
         </div>
         <p class="text-lg text-gray-700 leading-relaxed">
           Bilde so viele Wörter wie möglich aus den verfügbaren Buchstaben und
@@ -42,7 +48,9 @@
           >
             <span class="text-2xl">🚀</span>
           </div>
-            <h2 class="text-2xl font-bold text-gray-900 font-display">Spielablauf</h2>
+          <h2 class="text-2xl font-bold text-gray-900 font-display">
+            Spielablauf
+          </h2>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
@@ -145,7 +153,9 @@
           >
             <span class="text-2xl">⚡</span>
           </div>
-            <h2 class="text-2xl font-bold text-gray-900 font-display">Schwierigkeitsgrade</h2>
+          <h2 class="text-2xl font-bold text-gray-900 font-display">
+            Schwierigkeitsgrade
+          </h2>
         </div>
 
         <div class="grid md:grid-cols-3 gap-6">
@@ -183,7 +193,9 @@
           >
             <span class="text-2xl">⭐</span>
           </div>
-            <h2 class="text-2xl font-bold text-gray-900 font-display">Punktevergabe</h2>
+          <h2 class="text-2xl font-bold text-gray-900 font-display">
+            Punktevergabe
+          </h2>
         </div>
 
         <div class="space-y-4">
@@ -262,7 +274,9 @@
           >
             <span class="text-2xl">💡</span>
           </div>
-            <h2 class="text-2xl font-bold text-gray-900 font-display">Tipps & Tricks</h2>
+          <h2 class="text-2xl font-bold text-gray-900 font-display">
+            Tipps & Tricks
+          </h2>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
@@ -344,7 +358,9 @@
           >
             <span class="text-2xl">🎨</span>
           </div>
-            <h2 class="text-2xl font-bold text-gray-900 font-display">Features</h2>
+          <h2 class="text-2xl font-bold text-gray-900 font-display">
+            Features
+          </h2>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">

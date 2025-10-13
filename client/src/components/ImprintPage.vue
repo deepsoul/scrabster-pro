@@ -2,7 +2,9 @@
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- Header -->
     <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4 font-display">📄 Impressum</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4 font-display">
+        📄 Impressum
+      </h1>
       <p class="text-xl text-gray-600 font-sans">Rechtliche Informationen</p>
     </div>
 
@@ -20,9 +22,9 @@
     <div class="space-y-8">
       <!-- Angaben nach § 5 TMG -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-         <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
-           Angaben nach § 5 TMG
-         </h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+          Angaben nach § 5 TMG
+        </h2>
 
         <div class="space-y-4">
           <div>
@@ -68,9 +70,9 @@
 
       <!-- Haftungsausschluss -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-         <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
-           Haftungsausschluss
-         </h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+          Haftungsausschluss
+        </h2>
 
         <div class="space-y-6">
           <div>
@@ -118,7 +120,9 @@
 
       <!-- Datenschutz -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">Datenschutz</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+          Datenschutz
+        </h2>
 
         <div class="space-y-6">
           <div>
@@ -159,9 +163,9 @@
 
       <!-- Technische Informationen -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-         <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
-           Technische Informationen
-         </h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+          Technische Informationen
+        </h2>
 
         <div class="space-y-4">
           <div>
@@ -209,9 +213,9 @@
 
       <!-- Spielregeln -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-         <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
-           Spielregeln & Nutzungsbedingungen
-         </h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+          Spielregeln & Nutzungsbedingungen
+        </h2>
 
         <div class="space-y-4">
           <div>
@@ -244,7 +248,9 @@
 
       <!-- Kontakt -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">Kontakt & Support</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 font-display">
+          Kontakt & Support
+        </h2>
 
         <div class="space-y-4">
           <div>
