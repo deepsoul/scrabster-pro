@@ -15,7 +15,7 @@ app.use(
         return callback(null, true);
       }
 
-      // In Produktion: Custom Domain und Render Domains erlauben
+      // In Produktion: Custom Domain und Render Domains erlauben (Updated)
       const allowedOrigins = [
         'https://scrabster-pro.de',
         'https://www.scrabster-pro.de',
