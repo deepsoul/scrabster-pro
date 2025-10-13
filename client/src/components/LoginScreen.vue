@@ -118,14 +118,24 @@
           </div>
         </div>
       </div>
+
+      <!-- Footer Links -->
+      <div class="mt-8 text-center">
+        <button
+          @click="$emit('showImprint')"
+          class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors duration-200"
+        >
+          📄 Impressum
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
 
-const emit = defineEmits(['login']);
+const emit = defineEmits(['login', 'showImprint']);
 
 const username = ref('');
 

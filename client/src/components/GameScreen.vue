@@ -239,19 +239,22 @@
             class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 text-center"
           >
             <div class="text-2xl font-bold mb-4">
-              <span v-if="gameData?.isDraw" class="text-yellow-600">
+              <span v-if="isDraw" class="text-yellow-600">
                 Unentschieden! 🎯
               </span>
-              <span v-else-if="gameData?.winner" class="text-green-600">
-                🏆 {{ gameData.winner.username }} hat gewonnen!
+              <span v-else-if="winner" class="text-green-600">
+                🏆 {{ winner.username }} hat gewonnen!
               </span>
               <span v-else class="text-gray-600">Spiel beendet</span>
             </div>
-            <div v-if="gameData?.winner" class="text-lg text-gray-600 mb-4">
-              Mit {{ gameData.winner.score }} Punkten
+            <div v-if="winner" class="text-lg text-gray-600 mb-4">
+              Mit {{ winner.score }} Punkten
             </div>
             <div class="text-sm text-gray-500">
-              Alle Spieler haben ihre Wörter eingegeben
+              <span v-if="winner || isDraw">
+                Alle Spieler haben ihre Wörter eingegeben
+              </span>
+              <span v-else>Kein Spieler hat Wörter eingegeben</span>
             </div>
           </div>
 
@@ -307,6 +310,10 @@ const currentPlayerId = ref('');
 
 // Share modal state
 const showShareModal = ref(false);
+
+// Winner state
+const winner = ref(null);
+const isDraw = ref(false);
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -589,10 +596,10 @@ const setupGameApiListeners = () => {
     }
     // Gewinner-Information aktualisieren
     if (data.winner !== undefined) {
-      props.gameData.winner = data.winner;
+      winner.value = data.winner;
     }
     if (data.isDraw !== undefined) {
-      props.gameData.isDraw = data.isDraw;
+      isDraw.value = data.isDraw;
     }
   });
 

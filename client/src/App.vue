@@ -43,7 +43,11 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Login Screen -->
-      <LoginScreen v-if="!currentUser" @login="handleLogin" />
+      <LoginScreen
+        v-if="!currentUser"
+        @login="handleLogin"
+        @showImprint="showImprint"
+      />
 
       <!-- Lobby -->
       <Lobby
@@ -217,6 +221,13 @@ const connectGameApi = () => {
     if (gameData.value) {
       gameData.value.timeLeft = data.timeLeft;
       gameData.value.players = data.players;
+      // Gewinner-Information aktualisieren
+      if (data.winner !== undefined) {
+        gameData.value.winner = data.winner;
+      }
+      if (data.isDraw !== undefined) {
+        gameData.value.isDraw = data.isDraw;
+      }
     }
   });
 
