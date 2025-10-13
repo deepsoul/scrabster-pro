@@ -13,6 +13,10 @@ app.use(
         ? [
             'https://scrabster-pro.vercel.app',
             'https://scrabster-pro.vercel.app/',
+            'https://scrabster-pro-git-develop-boris-horns-projects.vercel.app',
+            'https://scrabster-pro-git-develop-boris-horns-projects.vercel.app/',
+            'https://scrabster-pro.onrender.com',
+            'https://scrabster-pro.onrender.com/',
           ]
         : 'http://localhost:5173',
     credentials: true,
