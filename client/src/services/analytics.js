@@ -36,7 +36,7 @@ class AnalyticsService {
     gtag('js', new Date());
     gtag('config', this.gaId, {
       anonymize_ip: true,
-      cookie_flags: 'SameSite=None;Secure'
+      cookie_flags: 'SameSite=None;Secure',
     });
 
     this.isLoaded = true;
@@ -54,11 +54,11 @@ class AnalyticsService {
   disable() {
     this.isEnabled = false;
     localStorage.setItem('scrabster-analytics-consent', 'false');
-    
+
     // Clear existing data
     if (window.gtag) {
       gtag('config', this.gaId, {
-        send_page_view: false
+        send_page_view: false,
       });
     }
   }
@@ -68,7 +68,7 @@ class AnalyticsService {
     if (!this.isEnabled || !window.gtag) return;
 
     gtag('config', this.gaId, {
-      page_path: pagePath
+      page_path: pagePath,
     });
   }
 
@@ -83,13 +83,13 @@ class AnalyticsService {
   trackGameCreated(difficulty) {
     this.trackEvent('game_created', {
       game_difficulty: difficulty,
-      event_category: 'game'
+      event_category: 'game',
     });
   }
 
   trackGameJoined() {
     this.trackEvent('game_joined', {
-      event_category: 'game'
+      event_category: 'game',
     });
   }
 
@@ -97,7 +97,7 @@ class AnalyticsService {
     this.trackEvent('game_started', {
       game_difficulty: difficulty,
       player_count: playerCount,
-      event_category: 'game'
+      event_category: 'game',
     });
   }
 
@@ -105,7 +105,7 @@ class AnalyticsService {
     this.trackEvent('word_submitted', {
       word_length: wordLength,
       score: score,
-      event_category: 'gameplay'
+      event_category: 'gameplay',
     });
   }
 
@@ -113,19 +113,19 @@ class AnalyticsService {
     this.trackEvent('game_finished', {
       final_score: finalScore,
       game_duration: gameDuration,
-      event_category: 'game'
+      event_category: 'game',
     });
   }
 
   trackInstructionsViewed() {
     this.trackEvent('instructions_viewed', {
-      event_category: 'navigation'
+      event_category: 'navigation',
     });
   }
 
   trackImprintViewed() {
     this.trackEvent('imprint_viewed', {
-      event_category: 'navigation'
+      event_category: 'navigation',
     });
   }
 

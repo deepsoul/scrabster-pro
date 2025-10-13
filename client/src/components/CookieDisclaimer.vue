@@ -4,11 +4,15 @@
     v-if="showDisclaimer"
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
   >
-    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div
+      class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+    >
       <!-- Header -->
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center">
-          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+          <div
+            class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4"
+          >
             <span class="text-2xl">🍪</span>
           </div>
           <div>
@@ -32,12 +36,17 @@
                 Notwendige Cookies
               </h3>
               <p class="text-sm text-gray-600 font-sans">
-                Diese Cookies sind für die Grundfunktionen der Website erforderlich
+                Diese Cookies sind für die Grundfunktionen der Website
+                erforderlich
               </p>
             </div>
             <div class="flex items-center">
-              <span class="text-sm text-gray-500 font-sans mr-2">Immer aktiv</span>
-              <div class="w-12 h-6 bg-gray-300 rounded-full flex items-center justify-end px-1">
+              <span class="text-sm text-gray-500 font-sans mr-2">
+                Immer aktiv
+              </span>
+              <div
+                class="w-12 h-6 bg-gray-300 rounded-full flex items-center justify-end px-1"
+              >
                 <div class="w-5 h-5 bg-white rounded-full shadow-sm"></div>
               </div>
             </div>
@@ -52,12 +61,18 @@
                 Analyse-Cookies
               </h3>
               <p class="text-sm text-gray-600 font-sans">
-                Google Analytics hilft uns zu verstehen, wie Sie unsere Website nutzen
+                Google Analytics hilft uns zu verstehen, wie Sie unsere Website
+                nutzen
               </p>
               <div class="mt-2 text-xs text-gray-500 font-sans">
-                <span class="font-semibold">Anbieter:</span> Google Analytics<br>
-                <span class="font-semibold">Zweck:</span> Website-Analyse und Verbesserung<br>
-                <span class="font-semibold">Speicherdauer:</span> 2 Jahre
+                <span class="font-semibold">Anbieter:</span>
+                Google Analytics
+                <br />
+                <span class="font-semibold">Zweck:</span>
+                Website-Analyse und Verbesserung
+                <br />
+                <span class="font-semibold">Speicherdauer:</span>
+                2 Jahre
               </div>
             </div>
             <div class="flex items-center">
@@ -65,13 +80,13 @@
                 @click="toggleAnalytics"
                 :class="[
                   'w-12 h-6 rounded-full flex items-center transition-colors duration-200',
-                  analyticsEnabled ? 'bg-primary-600' : 'bg-gray-300'
+                  analyticsEnabled ? 'bg-primary-600' : 'bg-gray-300',
                 ]"
               >
                 <div
                   :class="[
                     'w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200',
-                    analyticsEnabled ? 'translate-x-6' : 'translate-x-0'
+                    analyticsEnabled ? 'translate-x-6' : 'translate-x-0',
                   ]"
                 ></div>
               </button>
@@ -90,12 +105,17 @@
                 Diese Cookies werden derzeit nicht verwendet
               </p>
               <div class="mt-2 text-xs text-gray-500 font-sans">
-                <span class="font-semibold">Status:</span> Deaktiviert
+                <span class="font-semibold">Status:</span>
+                Deaktiviert
               </div>
             </div>
             <div class="flex items-center">
-              <span class="text-sm text-gray-500 font-sans mr-2">Deaktiviert</span>
-              <div class="w-12 h-6 bg-gray-300 rounded-full flex items-center justify-start px-1">
+              <span class="text-sm text-gray-500 font-sans mr-2">
+                Deaktiviert
+              </span>
+              <div
+                class="w-12 h-6 bg-gray-300 rounded-full flex items-center justify-start px-1"
+              >
                 <div class="w-5 h-5 bg-white rounded-full shadow-sm"></div>
               </div>
             </div>
@@ -108,20 +128,29 @@
             Datenschutz-Hinweis
           </h4>
           <p class="text-sm text-gray-600 font-sans leading-relaxed">
-            Ihre Privatsphäre ist uns wichtig. Sie können Ihre Cookie-Einstellungen jederzeit 
-            in den <button @click="openSettings" class="text-primary-600 hover:text-primary-800 underline">Cookie-Einstellungen</button> 
-            ändern. Weitere Informationen finden Sie in unserem 
-            <button @click="openImprint" class="text-primary-600 hover:text-primary-800 underline">Impressum</button>.
+            Ihre Privatsphäre ist uns wichtig. Sie können Ihre
+            Cookie-Einstellungen jederzeit in den
+            <button
+              @click="openSettings"
+              class="text-primary-600 hover:text-primary-800 underline"
+            >
+              Cookie-Einstellungen
+            </button>
+            ändern. Weitere Informationen finden Sie in unserem
+            <button
+              @click="openImprint"
+              class="text-primary-600 hover:text-primary-800 underline"
+            >
+              Impressum
+            </button>
+            .
           </p>
         </div>
       </div>
 
       <!-- Actions -->
       <div class="p-6 border-t border-gray-200 flex flex-col sm:flex-row gap-3">
-        <button
-          @click="acceptAll"
-          class="flex-1 btn-primary py-3 font-sans"
-        >
+        <button @click="acceptAll" class="flex-1 btn-primary py-3 font-sans">
           Alle akzeptieren
         </button>
         <button
@@ -130,10 +159,7 @@
         >
           Auswahl speichern
         </button>
-        <button
-          @click="rejectAll"
-          class="flex-1 btn-danger py-3 font-sans"
-        >
+        <button @click="rejectAll" class="flex-1 btn-danger py-3 font-sans">
           Nur notwendige
         </button>
       </div>
@@ -169,7 +195,7 @@ const ANALYTICS_CONSENT_KEY = 'scrabster-analytics-consent';
 onMounted(() => {
   const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
   const analytics = localStorage.getItem(ANALYTICS_CONSENT_KEY);
-  
+
   if (!consent) {
     // First visit - show disclaimer
     showDisclaimer.value = true;
@@ -200,11 +226,14 @@ const rejectAll = () => {
 // Save current settings
 const saveSettings = () => {
   localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
-  localStorage.setItem(ANALYTICS_CONSENT_KEY, analyticsEnabled.value.toString());
-  
+  localStorage.setItem(
+    ANALYTICS_CONSENT_KEY,
+    analyticsEnabled.value.toString()
+  );
+
   showDisclaimer.value = false;
   showSettingsButton.value = true;
-  
+
   // Emit analytics change
   emit('analyticsChanged', analyticsEnabled.value);
 };

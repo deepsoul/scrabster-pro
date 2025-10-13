@@ -23,7 +23,9 @@
           <div class="flex items-center space-x-4 mb-4 sm:mb-0">
             <div class="text-center">
               <div class="text-sm text-gray-500">Spiel-Code</div>
-              <div class="text-xl font-bold text-primary-600 font-mono font-display">
+              <div
+                class="text-xl font-bold text-primary-600 font-mono font-display"
+              >
                 {{ gameData.gameCode }}
               </div>
             </div>
@@ -36,6 +38,13 @@
           </div>
 
           <div class="flex items-center space-x-4">
+            <button
+              @click="openShareModal"
+              class="btn-success text-sm py-2 px-4 flex items-center"
+            >
+              <span class="mr-2">📤</span>
+              Teilen
+            </button>
             <button @click="leaveGame" class="btn-danger text-sm py-2 px-4">
               Spiel verlassen
             </button>
@@ -265,11 +274,20 @@
         </div>
       </div>
     </div>
+
+    <!-- Share Game Modal -->
+    <ShareGame
+      :gameCode="gameData?.gameCode"
+      :difficulty="gameData?.difficulty"
+      :showModal="showShareModal"
+      @close="closeShareModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import ShareGame from './ShareGame.vue';
 
 const props = defineProps({
   gameData: Object,
@@ -286,6 +304,9 @@ const players = ref([]);
 const myWords = ref([]);
 const currentWord = ref('');
 const currentPlayerId = ref('');
+
+// Share modal state
+const showShareModal = ref(false);
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -406,14 +427,14 @@ const submitWord = async () => {
 
   try {
     await props.gameApi.submitWord(currentWord.value.trim());
-    
+
     // Track word submission
     if (window.analytics) {
       const wordLength = currentWord.value.length;
       const score = currentWordScore.value;
       window.analytics.trackWordSubmitted(wordLength, score);
     }
-    
+
     currentWord.value = '';
   } catch (error) {
     console.error('Error submitting word:', error);
@@ -427,7 +448,10 @@ const startGame = async () => {
     await props.gameApi.startGame();
     // Track game started event
     if (window.analytics) {
-      window.analytics.trackGameStarted(props.gameData.difficulty, players.value.length);
+      window.analytics.trackGameStarted(
+        props.gameData.difficulty,
+        players.value.length
+      );
     }
   } catch (error) {
     console.error('Error starting game:', error);
@@ -444,6 +468,15 @@ const leaveGame = async () => {
   } finally {
     emit('leaveGame');
   }
+};
+
+// Share modal methods
+const openShareModal = () => {
+  showShareModal.value = true;
+};
+
+const closeShareModal = () => {
+  showShareModal.value = false;
 };
 
 // Voice input methods

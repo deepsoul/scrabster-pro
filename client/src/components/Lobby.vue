@@ -184,9 +184,27 @@
             {{ createdGameCode }}
           </span>
         </div>
-        <p class="text-sm text-primary-500 mt-2">
+        <p class="text-sm text-primary-500 mt-2 mb-4">
           Warte auf Spieler oder starte das Spiel alleine
         </p>
+        
+        <!-- Share Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            @click="openShareModal"
+            class="btn-success py-2 px-4 flex items-center justify-center"
+          >
+            <span class="mr-2">📤</span>
+            Spiel teilen
+          </button>
+          <button
+            @click="copyGameCode"
+            class="btn-secondary py-2 px-4 flex items-center justify-center"
+          >
+            <span class="mr-2">📋</span>
+            Code kopieren
+          </button>
+        </div>
       </div>
     </div>
 
@@ -214,11 +232,20 @@
         </div>
       </div>
     </div>
+
+    <!-- Share Game Modal -->
+    <ShareGame
+      :gameCode="createdGameCode"
+      :difficulty="selectedDifficulty"
+      :showModal="showShareModal"
+      @close="closeShareModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import ShareGame from './ShareGame.vue';
 
 const props = defineProps({
   gameApi: Object,
@@ -232,6 +259,9 @@ const gameCode = ref('');
 const isCreating = ref(false);
 const isJoining = ref(false);
 const createdGameCode = ref('');
+
+// Share modal state
+const showShareModal = ref(false);
 
 const createGame = async () => {
   isCreating.value = true;
@@ -292,6 +322,34 @@ const joinGame = async () => {
     console.error('Error joining game:', error);
   } finally {
     isJoining.value = false;
+  }
+};
+
+// Share modal methods
+const openShareModal = () => {
+  showShareModal.value = true;
+};
+
+const closeShareModal = () => {
+  showShareModal.value = false;
+};
+
+// Copy game code
+const copyGameCode = async () => {
+  try {
+    await navigator.clipboard.writeText(createdGameCode.value);
+    // Track analytics
+    if (window.analytics) {
+      window.analytics.trackEvent('game_code_copied', {
+        game_code: createdGameCode.value,
+        difficulty: selectedDifficulty.value,
+        event_category: 'sharing',
+      });
+    }
+    alert('Spiel-Code kopiert!');
+  } catch (error) {
+    console.error('Failed to copy game code:', error);
+    alert('Fehler beim Kopieren');
   }
 };
 
