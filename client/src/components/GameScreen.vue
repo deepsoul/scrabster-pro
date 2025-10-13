@@ -1,7 +1,6 @@
 <template>
   <div class="max-w-6xl mx-auto">
     <!-- Loading State -->
-    <pre>{{ gameData }}</pre>
     <div
       v-if="!gameData"
       class="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200 text-center"
@@ -233,7 +232,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 
 const props = defineProps({
   gameData: Object,
-  socket: Object,
+  gameApi: Object,
 });
 
 const emit = defineEmits(['leaveGame', 'gameOver']);
@@ -313,9 +312,11 @@ const sortedPlayers = computed(() => {
 });
 
 const isHost = computed(() => {
-  return (
-    players.value.length > 0 && players.value[0].id === currentPlayerId.value
-  );
+  if (!players.value || players.value.length === 0 || !currentPlayerId.value) {
+    return false;
+  }
+  // Der erste Spieler im Array ist der Host (Spielersteller)
+  return players.value[0] && players.value[0].id === currentPlayerId.value;
 });
 
 // Methods
@@ -325,35 +326,43 @@ const formatTime = seconds => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const submitWord = () => {
+const submitWord = async () => {
   if (
     !currentWord.value.trim() ||
     gameState.value !== 'playing' ||
-    !props.gameData
+    !props.gameData ||
+    !props.gameApi
   )
     return;
 
-  props.socket.emit('submitWord', {
-    gameCode: props.gameData.gameCode,
-    word: currentWord.value.trim(),
-  });
-
-  currentWord.value = '';
+  try {
+    await props.gameApi.submitWord(currentWord.value.trim());
+    currentWord.value = '';
+  } catch (error) {
+    console.error('Error submitting word:', error);
+  }
 };
 
-const startGame = () => {
-  if (!props.gameData) return;
-  props.socket.emit('startGame', {
-    gameCode: props.gameData.gameCode,
-  });
+const startGame = async () => {
+  if (!props.gameData || !props.gameApi) return;
+
+  try {
+    await props.gameApi.startGame();
+  } catch (error) {
+    console.error('Error starting game:', error);
+  }
 };
 
-const leaveGame = () => {
-  if (!props.gameData) return;
-  props.socket.emit('leaveGame', {
-    gameCode: props.gameData.gameCode,
-  });
-  emit('leaveGame');
+const leaveGame = async () => {
+  if (!props.gameData || !props.gameApi) return;
+
+  try {
+    await props.gameApi.leaveGame();
+  } catch (error) {
+    console.error('Error leaving game:', error);
+  } finally {
+    emit('leaveGame');
+  }
 };
 
 // Voice input methods
@@ -423,55 +432,61 @@ const highlightMatchingLetters = word => {
   }, 2000);
 };
 
-// Socket event handlers
-const setupSocketListeners = () => {
-  if (!props.socket) return;
+// Game API event handlers
+const setupGameApiListeners = () => {
+  if (!props.gameApi) return;
 
-  props.socket.on('gameJoined', data => {
+  props.gameApi.on('gameJoined', data => {
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     players.value = data.players;
-    currentPlayerId.value = props.socket.id;
+    currentPlayerId.value = data.playerId;
   });
 
-  props.socket.on('gameCreated', data => {
+  props.gameApi.on('gameCreated', data => {
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
-    currentPlayerId.value = props.socket.id;
+    currentPlayerId.value = data.playerId;
+    if (data.players) {
+      players.value = data.players;
+    }
   });
 
-  props.socket.on('playerJoined', data => {
+  props.gameApi.on('playerJoined', data => {
     players.value = data.players;
   });
 
-  props.socket.on('playerLeft', data => {
+  props.gameApi.on('playerLeft', data => {
     players.value = data.players;
   });
 
-  props.socket.on('gameStarted', data => {
+  props.gameApi.on('gameStarted', data => {
     gameState.value = 'playing';
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     players.value = data.players;
   });
 
-  props.socket.on('gameStateUpdate', data => {
+  props.gameApi.on('gameStateUpdate', data => {
     timeLeft.value = data.timeLeft;
     players.value = data.players;
+    if (data.gameState) {
+      gameState.value = data.gameState;
+    }
   });
 
-  props.socket.on('wordSubmitted', data => {
-    if (data.playerId === props.socket.id) {
+  props.gameApi.on('wordSubmitted', data => {
+    if (data.playerId === currentPlayerId.value) {
       myWords.value.push(data.word);
     }
     players.value = data.players;
   });
 
-  props.socket.on('wordRejected', data => {
+  props.gameApi.on('wordRejected', data => {
     alert(`Wort abgelehnt: ${data.message}`);
   });
 
-  props.socket.on('gameOver', data => {
+  props.gameApi.on('gameOver', data => {
     gameState.value = 'finished';
     emit('gameOver', data);
   });
@@ -480,7 +495,7 @@ const setupSocketListeners = () => {
 // Lifecycle
 onMounted(() => {
   initVoiceInput();
-  setupSocketListeners();
+  setupGameApiListeners();
 
   // Initialize game data
   if (props.gameData) {
@@ -489,6 +504,12 @@ onMounted(() => {
     }
     if (props.gameData.timeLeft) {
       timeLeft.value = props.gameData.timeLeft;
+    }
+    if (props.gameData.players) {
+      players.value = props.gameData.players;
+    }
+    if (props.gameData.playerId) {
+      currentPlayerId.value = props.gameData.playerId;
     }
   }
 });

@@ -34,7 +34,8 @@
       <!-- Lobby -->
       <Lobby
         v-else-if="currentView === 'lobby'"
-        :socket="socket"
+        :gameApi="gameApi"
+        :currentUser="currentUser"
         @createGame="handleCreateGame"
         @joinGame="handleJoinGame"
       />
@@ -43,7 +44,7 @@
       <GameScreen
         v-else-if="currentView === 'game'"
         :gameData="gameData"
-        :socket="socket"
+        :gameApi="gameApi"
         @leaveGame="handleLeaveGame"
         @gameOver="handleGameOver"
       />
@@ -89,7 +90,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { io } from 'socket.io-client';
+import GameApiService from './services/gameApi.js';
 import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
 import GameScreen from './components/GameScreen.vue';
@@ -100,7 +101,7 @@ const currentUser = ref(null);
 const currentView = ref('lobby');
 const gameData = ref(null);
 const gameResult = ref(null);
-const socket = ref(null);
+const gameApi = ref(null);
 const toasts = ref([]);
 
 // Toast management
@@ -119,27 +120,24 @@ const removeToast = id => {
   }
 };
 
-// Socket connection
-const connectSocket = () => {
-  const serverUrl = import.meta.env.PROD
-    ? window.location.origin
-    : 'http://localhost:3000';
-  socket.value = io(serverUrl);
+// Game API connection
+const connectGameApi = () => {
+  gameApi.value = new GameApiService();
 
-  socket.value.on('connect', () => {
-    console.log('Connected to server');
+  gameApi.value.on('connect', () => {
+    console.log('Connected to game API');
   });
 
-  socket.value.on('disconnect', () => {
-    console.log('Disconnected from server');
+  gameApi.value.on('disconnect', () => {
+    console.log('Disconnected from game API');
     addToast('Verbindung zum Server verloren', 'error');
   });
 
-  socket.value.on('gameError', data => {
+  gameApi.value.on('gameError', data => {
     addToast(data.message, 'error');
   });
 
-  socket.value.on('gameCreated', data => {
+  gameApi.value.on('gameCreated', data => {
     console.log('Game created:', data);
     gameData.value = {
       ...gameData.value,
@@ -148,7 +146,7 @@ const connectSocket = () => {
     };
   });
 
-  socket.value.on('gameJoined', data => {
+  gameApi.value.on('gameJoined', data => {
     console.log('Game joined:', data);
     gameData.value = {
       ...gameData.value,
@@ -156,13 +154,52 @@ const connectSocket = () => {
       gameState: 'waiting',
     };
   });
+
+  gameApi.value.on('playerJoined', data => {
+    if (gameData.value) {
+      gameData.value.players = data.players;
+    }
+  });
+
+  gameApi.value.on('playerLeft', data => {
+    if (gameData.value) {
+      gameData.value.players = data.players;
+    }
+  });
+
+  gameApi.value.on('gameStarted', data => {
+    if (gameData.value) {
+      gameData.value.gameState = 'playing';
+      gameData.value.letters = data.letters;
+      gameData.value.timeLeft = data.timeLeft;
+      gameData.value.players = data.players;
+    }
+  });
+
+  gameApi.value.on('gameStateUpdate', data => {
+    if (gameData.value) {
+      gameData.value.timeLeft = data.timeLeft;
+      gameData.value.players = data.players;
+    }
+  });
+
+  gameApi.value.on('wordSubmitted', data => {
+    if (gameData.value) {
+      gameData.value.players = data.players;
+    }
+  });
+
+  gameApi.value.on('gameOver', data => {
+    gameResult.value = data;
+    currentView.value = 'gameOver';
+  });
 };
 
 // Event handlers
 const handleLogin = username => {
   currentUser.value = username;
   currentView.value = 'lobby';
-  connectSocket();
+  connectGameApi();
 };
 
 const handleCreateGame = data => {
@@ -176,8 +213,8 @@ const handleJoinGame = data => {
 };
 
 const handleLeaveGame = () => {
-  if (socket.value) {
-    socket.value.emit('leaveGame', { gameCode: gameData.value?.gameCode });
+  if (gameApi.value) {
+    gameApi.value.leaveGame();
   }
   currentView.value = 'lobby';
   gameData.value = null;
@@ -201,8 +238,8 @@ const handleBackToLobby = () => {
 };
 
 const disconnect = () => {
-  if (socket.value) {
-    socket.value.disconnect();
+  if (gameApi.value) {
+    gameApi.value.disconnect();
   }
   currentUser.value = null;
   currentView.value = 'lobby';
@@ -216,13 +253,13 @@ onMounted(() => {
   const savedUser = localStorage.getItem('scrabster-username');
   if (savedUser) {
     currentUser.value = savedUser;
-    connectSocket();
+    connectGameApi();
   }
 });
 
 onUnmounted(() => {
-  if (socket.value) {
-    socket.value.disconnect();
+  if (gameApi.value) {
+    gameApi.value.disconnect();
   }
 });
 </script>

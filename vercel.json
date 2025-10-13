@@ -9,18 +9,14 @@
       }
     },
     {
-      "src": "server/server.js",
+      "src": "server/api/game.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/server.js"
-    },
-    {
-      "src": "/socket.io/(.*)",
-      "dest": "/server/server.js"
+      "dest": "/server/api/game.js"
     },
     {
       "src": "/(.*)",
@@ -31,7 +27,7 @@
     "NODE_ENV": "production"
   },
   "functions": {
-    "server/server.js": {
+    "server/api/game.js": {
       "maxDuration": 30
     }
   }
