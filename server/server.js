@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 3000;
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Debug: Log incoming origin
+      console.log('CORS Origin:', origin);
+      
       // In Entwicklung: localhost erlauben
       if (process.env.NODE_ENV !== 'production') {
         return callback(null, true);
@@ -31,6 +34,7 @@ app.use(
         (origin.includes('vercel.app') ||
           origin.includes('scrabster-pro') ||
           origin.includes('scrabster-pro.de') ||
+          origin.includes('www.scrabster-pro.de') ||
           allowedOrigins.includes(origin))
       ) {
         return callback(null, true);
