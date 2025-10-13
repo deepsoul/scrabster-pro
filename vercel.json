@@ -7,16 +7,32 @@
       "config": {
         "distDir": "dist"
       }
-    },
-    {
-      "src": "server/api/game.js",
-      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/server/api/game.js"
+      "src": "/api/game/create",
+      "dest": "/api/game/create.js"
+    },
+    {
+      "src": "/api/game/join",
+      "dest": "/api/game/join.js"
+    },
+    {
+      "src": "/api/game/start",
+      "dest": "/api/game/start.js"
+    },
+    {
+      "src": "/api/game/submit-word",
+      "dest": "/api/game/submit-word.js"
+    },
+    {
+      "src": "/api/game/status/([^/]+)",
+      "dest": "/api/game/status/[gameCode].js?gameCode=$1"
+    },
+    {
+      "src": "/api/game/leave",
+      "dest": "/api/game/leave.js"
     },
     {
       "src": "/(.*)",
@@ -25,10 +41,5 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "functions": {
-    "server/api/game.js": {
-      "maxDuration": 30
-    }
   }
 }
