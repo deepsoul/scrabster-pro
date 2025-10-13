@@ -254,9 +254,7 @@
               <span v-if="winner || isDraw">
                 Alle Spieler haben ihre Wörter eingegeben
               </span>
-              <span v-else>
-                Kein Spieler hat Wörter eingegeben
-              </span>
+              <span v-else>Kein Spieler hat Wörter eingegeben</span>
             </div>
           </div>
 

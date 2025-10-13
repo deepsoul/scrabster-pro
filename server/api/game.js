@@ -495,7 +495,7 @@ app.post('/game/submit-word', (req, res) => {
   if (isScrabster(word, gameRoom.letters)) {
     player.score += 2;
     gameRoom.gameState = 'finished';
-    
+
     // Bei Scrabster gewinnt der Spieler automatisch
     gameRoom.winner = player;
     gameRoom.isDraw = false;
@@ -536,10 +536,12 @@ app.get('/game/status/:gameCode', (req, res) => {
       gameRoom.gameState = 'finished';
       // Gewinner ermitteln (höchste Punktzahl, aber nur Spieler mit Wörtern)
       const players = Array.from(gameRoom.players.values());
-      
+
       // Nur Spieler mit mindestens einem Wort berücksichtigen
-      const playersWithWords = players.filter(p => p.words && p.words.length > 0);
-      
+      const playersWithWords = players.filter(
+        p => p.words && p.words.length > 0
+      );
+
       if (playersWithWords.length === 0) {
         // Kein Spieler hat Wörter eingegeben
         gameRoom.winner = null;
@@ -547,7 +549,7 @@ app.get('/game/status/:gameCode', (req, res) => {
       } else {
         const maxScore = Math.max(...playersWithWords.map(p => p.score));
         const winners = playersWithWords.filter(p => p.score === maxScore);
-        
+
         // Gewinner-Information hinzufügen
         gameRoom.winner = winners.length === 1 ? winners[0] : null; // Bei Gleichstand: kein Gewinner
         gameRoom.isDraw = winners.length > 1;
