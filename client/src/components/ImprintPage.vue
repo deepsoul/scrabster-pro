@@ -50,18 +50,18 @@
             <p class="text-gray-700">
               E-Mail:
               <a
-                href="mailto:info@scrabster-pro.com"
+                href="mailto:info@scrabster-pro.de"
                 class="text-primary-600 hover:text-primary-800"
               >
-                info@scrabster-pro.com
+                info@scrabster-pro.de
               </a>
               <br />
               Website:
               <a
-                href="https://scrabster-pro.vercel.app"
+                href="https://scrabster-pro.de"
                 class="text-primary-600 hover:text-primary-800"
               >
-                scrabster-pro.vercel.app
+                scrabster-pro.de
               </a>
             </p>
           </div>
@@ -260,10 +260,10 @@
               <br />
               E-Mail:
               <a
-                href="mailto:support@scrabster-pro.com"
+                href="mailto:support@scrabster-pro.de"
                 class="text-primary-600 hover:text-primary-800"
               >
-                support@scrabster-pro.com
+                support@scrabster-pro.de
               </a>
             </p>
           </div>
