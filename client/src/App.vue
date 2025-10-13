@@ -326,10 +326,24 @@ const disconnect = () => {
   if (gameApi.value) {
     gameApi.value.disconnect();
   }
+  
+  // Clear all user data
   currentUser.value = null;
-  currentView.value = 'lobby';
   gameData.value = null;
   gameResult.value = null;
+  
+  // Clear stored user data from localStorage
+  localStorage.removeItem('scrabster-username');
+  
+  // Return to start page (login screen)
+  currentView.value = 'login';
+  
+  // Track logout event
+  if (window.analytics) {
+    window.analytics.trackEvent('user_logout', {
+      event_category: 'authentication',
+    });
+  }
 };
 
 // Lifecycle
