@@ -50,9 +50,15 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
     exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   })
 );
 
@@ -60,19 +66,26 @@ app.use(
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   console.log('Request Origin:', origin);
-  
-  if (origin && (
-    origin.includes('scrabster-pro.de') ||
-    origin.includes('vercel.app') ||
-    origin.includes('scrabster-pro')
-  )) {
+
+  if (
+    origin &&
+    (origin.includes('scrabster-pro.de') ||
+      origin.includes('vercel.app') ||
+      origin.includes('scrabster-pro'))
+  ) {
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.header(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PUT, DELETE, OPTIONS'
+    );
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-Requested-With, Accept, Origin'
+    );
     console.log('CORS Headers set for:', origin);
   }
-  
+
   next();
 });
 
