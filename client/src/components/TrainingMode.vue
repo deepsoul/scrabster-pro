@@ -478,7 +478,11 @@ const letterFrequency = computed(() => {
 // Punkte für aktuelles Wort berechnen (neue Regel)
 const currentWordScore = computed(() => {
   if (!currentWord.value.trim() || !letters.value.length) return 0;
-  return calculateWordScoreUtil(currentWord.value.toUpperCase(), letters.value, scrabsterRequirements.value);
+  return calculateWordScoreUtil(
+    currentWord.value.toUpperCase(),
+    letters.value,
+    scrabsterRequirements.value
+  );
 });
 
 // Training statistics (neue Regel)
@@ -708,8 +712,12 @@ const submitWord = () => {
   // Check if word can be formed with available letters (new rule: only need some letters)
   if (canFormWord(word)) {
     // Berechne Punkte für das Wort zum Zeitpunkt der Eingabe
-    const wordScore = calculateWordScoreUtil(word, letters.value, scrabsterRequirements.value);
-    
+    const wordScore = calculateWordScoreUtil(
+      word,
+      letters.value,
+      scrabsterRequirements.value
+    );
+
     myWords.value.push(word);
     wordScores.value.push(wordScore);
 
@@ -743,7 +751,6 @@ const canFormWord = word => {
   // Check if at least one letter from the word is available
   return wordLetters.some(letter => availableLetters.includes(letter));
 };
-
 
 const getMissingLetters = word => {
   const wordLetters = word.split('');
