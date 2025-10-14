@@ -10,7 +10,10 @@ import type { DifficultyLevel } from '@/types';
  * @param availableLetters - Array of available letters
  * @returns Number of letters used from available letters
  */
-export function getUsedLettersCount(word: string, availableLetters: string[]): number {
+export function getUsedLettersCount(
+  word: string,
+  availableLetters: string[]
+): number {
   if (!word || !availableLetters || availableLetters.length === 0) return 0;
 
   const wordLetters = word.toUpperCase().split('');
@@ -76,7 +79,10 @@ export function isScrabsterWord(
  * @param scrabsterRequirement - Required letters for Scrabster
  * @returns Tailwind CSS class for badge color
  */
-export function getLettersBadgeColor(usedLetters: number, scrabsterRequirement: number = 4): string {
+export function getLettersBadgeColor(
+  usedLetters: number,
+  scrabsterRequirement: number = 4
+): string {
   if (usedLetters >= scrabsterRequirement) {
     return 'bg-yellow-100 text-yellow-800 border-yellow-200'; // Scrabster color
   } else if (usedLetters >= scrabsterRequirement - 1) {

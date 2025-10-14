@@ -45,7 +45,8 @@ class SoundService {
 
     try {
       // Web Audio API für Scrabster-Sound
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
 
       // Erstelle einen kurzen, aufsteigenden Ton
@@ -87,7 +88,8 @@ class SoundService {
 
     try {
       // Web Audio API für Gewinner-Sound
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
 
       // Erstelle einen triumphalen Ton
@@ -132,7 +134,8 @@ class SoundService {
     if (!this.enabled) return;
 
     try {
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContext =
+        window.AudioContext || (window as any).webkitAudioContext;
       const audioContext = new AudioContext();
 
       const oscillator = audioContext.createOscillator();

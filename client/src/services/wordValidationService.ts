@@ -15,11 +15,11 @@ class WordValidationService {
   // Wort validieren (Offline)
   async validateWord(word: string): Promise<WordValidation> {
     if (!this.isEnabled) {
-      return { 
-        isValid: true, 
+      return {
+        isValid: true,
         reason: 'Validation disabled',
         word: word.trim().toLowerCase(),
-        source: 'offline'
+        source: 'offline',
       };
     }
 
@@ -31,17 +31,17 @@ class WordValidationService {
         isValid: false,
         reason: 'Wort zu kurz (mindestens 2 Buchstaben)',
         word: cleanWord,
-        source: 'offline'
+        source: 'offline',
       };
     }
 
     // Nur Buchstaben erlauben
     if (!/^[a-zäöüß]+$/i.test(cleanWord)) {
-      return { 
-        isValid: false, 
+      return {
+        isValid: false,
         reason: 'Nur Buchstaben erlaubt',
         word: cleanWord,
-        source: 'offline'
+        source: 'offline',
       };
     }
 
@@ -67,7 +67,9 @@ class WordValidationService {
   }
 
   // Mehrere Wörter validieren
-  async validateWords(words: string[]): Promise<Array<WordValidation & { word: string }>> {
+  async validateWords(
+    words: string[]
+  ): Promise<Array<WordValidation & { word: string }>> {
     const results: Array<WordValidation & { word: string }> = [];
     for (const word of words) {
       const result = await this.validateWord(word);

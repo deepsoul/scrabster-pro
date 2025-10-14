@@ -1,4 +1,4 @@
-import type { AnalyticsEvent, DifficultyLevel } from '@/types';
+import type { DifficultyLevel } from '@/types';
 
 // Google Analytics Service
 class AnalyticsService {
@@ -28,7 +28,7 @@ class AnalyticsService {
     document.head.appendChild(script);
 
     // Initialize gtag
-    window.dataLayer = window.dataLayer || [];
+    (window as any).dataLayer = (window as any).dataLayer || [];
     function gtag(...args: any[]): void {
       (window as any).dataLayer.push(args);
     }
