@@ -117,17 +117,37 @@
             </button>
           </div>
 
-          <!-- Punkte-Anzeige für aktuelles Wort -->
+          <!-- Wort-Validierung und Punkte-Anzeige -->
           <div
             v-if="currentWord.trim() && gameState === 'playing'"
-            class="mt-3 text-center"
+            class="mt-3 space-y-2"
           >
-            <span class="text-sm text-gray-600">
-              Dieses Wort bringt:
-              <span class="font-bold text-primary-600">
-                {{ currentWordScore }} Punkte
+            <!-- Validierungs-Feedback -->
+            <div v-if="isValidating" class="text-center">
+              <div class="inline-flex items-center text-sm text-gray-500">
+                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
+                Wort wird validiert...
+              </div>
+            </div>
+            
+            <div v-else-if="wordValidation" class="text-center">
+              <div 
+                class="text-sm font-medium"
+                :class="wordValidation.isValid ? 'text-green-600' : 'text-red-600'"
+              >
+                {{ wordValidation.reason }}
+              </div>
+            </div>
+
+            <!-- Punkte-Anzeige -->
+            <div class="text-center">
+              <span class="text-sm text-gray-600">
+                Dieses Wort bringt:
+                <span class="font-bold text-primary-600">
+                  {{ currentWordScore }} Punkte
+                </span>
               </span>
-            </span>
+            </div>
           </div>
 
           <!-- Voice Input -->
@@ -257,7 +277,9 @@
             </div>
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">⚡</span>
-              <span>Ein "Scrabster" (3/4/5 Buchstaben je Level) = 10 Extrapunkte!</span>
+              <span>
+                Ein "Scrabster" (3/4/5 Buchstaben je Level) = 10 Extrapunkte!
+              </span>
             </div>
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">🧠</span>
@@ -297,6 +319,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import soundService from '../services/soundService.js';
+import wordValidationService from '../services/wordValidationService.js';
 
 const props = defineProps({
   difficulty: {
@@ -315,6 +338,8 @@ const myWords = ref([]);
 const currentWord = ref('');
 const isScrabster = ref(false);
 const scrabsterCount = ref(0);
+const wordValidation = ref(null);
+const isValidating = ref(false);
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -628,6 +653,12 @@ const finishTraining = () => {
 const submitWord = () => {
   if (!currentWord.value.trim() || gameState.value !== 'playing') return;
 
+  // Check validation if available
+  if (wordValidation.value && !wordValidation.value.isValid) {
+    alert(`Wort nicht gültig: ${wordValidation.value.reason}`);
+    return;
+  }
+
   const word = currentWord.value.trim().toUpperCase();
 
   // Check if word can be formed with available letters (new rule: only need some letters)
@@ -646,6 +677,7 @@ const submitWord = () => {
     }
     
     currentWord.value = '';
+    wordValidation.value = null; // Clear validation after successful submit
   } else {
     alert('Wort muss mindestens einen verfügbaren Buchstaben enthalten!');
   }
@@ -675,12 +707,12 @@ const calculateWordScore = word => {
   }
 
   let score = Math.max(1, usedLetters); // Minimum 1 point
-  
+
   // Scrabster bonus: 10 extra points
   if (isScrabsterWord(word)) {
     score += 10;
   }
-  
+
   return score;
 };
 
@@ -689,7 +721,7 @@ const isScrabsterWord = word => {
   const wordLetters = word.split('');
   const availableLetters = [...remainingLetters.value];
   const requiredLetters = scrabsterRequirements.value;
-  
+
   let usedLetters = 0;
   for (const letter of wordLetters) {
     const index = availableLetters.indexOf(letter);
@@ -698,7 +730,7 @@ const isScrabsterWord = word => {
       availableLetters.splice(index, 1);
     }
   }
-  
+
   return usedLetters >= requiredLetters;
 };
 
@@ -794,6 +826,36 @@ const highlightMatchingLetters = word => {
     highlightedLetters.value = [];
   }, 2000);
 };
+
+// Word validation
+const validateCurrentWord = async () => {
+  if (!currentWord.value.trim() || gameState.value !== 'playing') {
+    wordValidation.value = null;
+    return;
+  }
+
+  isValidating.value = true;
+  wordValidation.value = null;
+
+  try {
+    const result = await wordValidationService.validateWord(currentWord.value.trim());
+    wordValidation.value = result;
+  } catch (error) {
+    console.warn('Wort-Validierung fehlgeschlagen:', error);
+    wordValidation.value = { isValid: true, reason: 'Validierung fehlgeschlagen - Wort akzeptiert' };
+  } finally {
+    isValidating.value = false;
+  }
+};
+
+// Watch currentWord for validation
+watch(currentWord, () => {
+  // Debounce validation
+  clearTimeout(validationTimeout);
+  validationTimeout = setTimeout(validateCurrentWord, 500);
+});
+
+let validationTimeout = null;
 
 // Lifecycle
 onMounted(() => {
