@@ -2,13 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// CORS für alle API-Routen
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+// CORS wird in server.js konfiguriert - hier entfernt
 
 // In-memory storage für Spiele (in Produktion würde man Redis verwenden)
 const gameRooms = new Map();
@@ -298,27 +292,7 @@ function isScrabster(word, availableLetters) {
 // Middleware
 app.use(express.json());
 
-// CORS
-app.use((req, res, next) => {
-  res.header(
-    'Access-Control-Allow-Origin',
-    process.env.NODE_ENV === 'production'
-      ? 'https://scrabster-pro.vercel.app'
-      : 'http://localhost:5173'
-  );
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.header('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
+// CORS wird in server.js konfiguriert - hier entfernt
 
 // API Routes
 app.get('/health', (req, res) => {
