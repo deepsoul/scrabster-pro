@@ -47,14 +47,32 @@ app.post('/', (req, res) => {
     return res.status(400).json({ error: 'Wort bereits verwendet' });
   }
 
-  // Wort hinzufügen
+  // Wort hinzufügen und Punkte basierend auf verwendeten Buchstaben berechnen
   player.words.push(word.toUpperCase());
-  player.score = player.words.length;
+
+  // Berechne Punkte basierend auf verwendeten Buchstaben
+  const wordLetters = word.toUpperCase().split('');
+  const availableLetters = [...gameRoom.letters];
+  let usedLetters = 0;
+
+  for (const letter of wordLetters) {
+    const index = availableLetters.indexOf(letter);
+    if (index !== -1) {
+      usedLetters++;
+      availableLetters.splice(index, 1);
+    }
+  }
+
+  // Punkte = Anzahl der verwendeten Buchstaben (mindestens 1)
+  const wordScore = Math.max(1, usedLetters);
+  player.score += wordScore;
   gameRoom.lastUpdate = Date.now();
 
   // Prüfen auf Scrabster
   if (isScrabster(word, gameRoom.letters)) {
-    player.score += 2;
+    // Scrabster-Bonus: Zusätzliche Punkte für alle Buchstaben
+    const scrabsterBonus = gameRoom.letters.length;
+    player.score += scrabsterBonus;
     gameRoom.gameState = 'finished';
 
     return res.json({
