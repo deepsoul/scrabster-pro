@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-// CORS - Einfache Konfiguration
+// CORS - Erweiterte Konfiguration
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -49,20 +49,34 @@ app.use(
       callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
   })
 );
 
-// Debug: CORS-Header manuell setzen
+// Explizite CORS-Header für alle Requests
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
+  const origin = req.headers.origin;
+  console.log('Request Origin:', origin);
+  
+  if (origin && (
+    origin.includes('scrabster-pro.de') ||
+    origin.includes('vercel.app') ||
+    origin.includes('scrabster-pro')
+  )) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    console.log('CORS Headers set for:', origin);
+  }
+  
   next();
 });
+
+// Entfernt - doppelte CORS-Middleware verursacht Konflikte
 app.use(express.json());
 
 // Import API routes
