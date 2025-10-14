@@ -389,7 +389,7 @@ const letterFrequency = computed(() => {
   return frequency;
 });
 
-// Punkte für aktuelles Wort berechnen
+// Punkte für aktuelles Wort berechnen (neue Regel)
 const currentWordScore = computed(() => {
   if (!currentWord.value.trim() || !letters.value.length) return 0;
 

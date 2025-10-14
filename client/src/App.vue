@@ -7,15 +7,15 @@
     <header class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
           <div class="flex items-center">
             <h1 class="text-2xl font-bold text-primary-600 font-display">
               Scrabster Pro
             </h1>
-            <span class="ml-2 text-sm text-gray-500 font-sans">
-              Multiplayer Wortspiel
-            </span>
           </div>
-          <div v-if="currentUser" class="flex items-center space-x-4">
+
+          <!-- Desktop Navigation -->
+          <div v-if="currentUser" class="hidden md:flex items-center space-x-4">
             <span class="text-sm text-gray-600">Hallo, {{ currentUser }}</span>
             <button
               @click="showInstructions"
@@ -32,6 +32,77 @@
             <button
               @click="disconnect"
               class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100"
+            >
+              Abmelden
+            </button>
+          </div>
+
+          <!-- Mobile Burger Menu -->
+          <div v-if="currentUser" class="md:hidden">
+            <button
+              @click="toggleMobileMenu"
+              class="text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700"
+              :class="{ 'text-gray-700': isMobileMenuOpen }"
+            >
+              <svg
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  v-if="!isMobileMenuOpen"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+                <path
+                  v-else
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div v-if="currentUser && isMobileMenuOpen" class="md:hidden">
+          <div
+            class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50 border-t border-gray-200"
+          >
+            <div
+              class="px-3 py-2 text-sm text-gray-600 border-b border-gray-200"
+            >
+              Hallo, {{ currentUser }}
+            </div>
+            <button
+              @click="
+                showInstructions;
+                closeMobileMenu();
+              "
+              class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+            >
+              📖 Anleitung
+            </button>
+            <button
+              @click="
+                showImprint;
+                closeMobileMenu();
+              "
+              class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
+            >
+              📄 Impressum
+            </button>
+            <button
+              @click="
+                disconnect;
+                closeMobileMenu();
+              "
+              class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
             >
               Abmelden
             </button>
@@ -56,6 +127,7 @@
         :currentUser="currentUser"
         @createGame="handleCreateGame"
         @joinGame="handleJoinGame"
+        @startTraining="handleStartTraining"
       />
 
       <!-- Game Screen -->
@@ -85,6 +157,13 @@
       <ImprintPage
         v-else-if="currentView === 'imprint'"
         @backToGame="handleBackToGame"
+      />
+
+      <!-- Training Mode -->
+      <TrainingMode
+        v-else-if="currentView === 'training'"
+        :difficulty="trainingDifficulty"
+        @backToLobby="handleBackToLobby"
       />
     </main>
 
@@ -134,6 +213,7 @@ import GameScreen from './components/GameScreen.vue';
 import GameOverScreen from './components/GameOverScreen.vue';
 import InstructionsPage from './components/InstructionsPage.vue';
 import ImprintPage from './components/ImprintPage.vue';
+import TrainingMode from './components/TrainingMode.vue';
 import CookieDisclaimer from './components/CookieDisclaimer.vue';
 import analytics from './services/analytics.js';
 
@@ -144,6 +224,8 @@ const gameData = ref(null);
 const gameResult = ref(null);
 const gameApi = ref(null);
 const toasts = ref([]);
+const isMobileMenuOpen = ref(false);
+const trainingDifficulty = ref('medium');
 
 // Toast management
 let toastId = 0;
@@ -159,6 +241,15 @@ const removeToast = id => {
   if (index > -1) {
     toasts.value.splice(index, 1);
   }
+};
+
+// Mobile menu management
+const toggleMobileMenu = () => {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false;
 };
 
 // Game API connection
@@ -299,6 +390,15 @@ const showImprint = () => {
 
 const handleBackToGame = () => {
   currentView.value = 'lobby';
+};
+
+const handleStartTraining = data => {
+  trainingDifficulty.value = data.difficulty;
+  currentView.value = 'training';
+  analytics.trackEvent('training_started', {
+    difficulty: data.difficulty,
+    event_category: 'training',
+  });
 };
 
 // Analytics event handlers

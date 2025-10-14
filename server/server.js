@@ -12,7 +12,6 @@ app.use(
     origin: (origin, callback) => {
       // Debug: Log incoming origin
       console.log('CORS Origin:', origin);
-      
       // In Entwicklung: localhost erlauben
       if (process.env.NODE_ENV !== 'production') {
         return callback(null, true);
@@ -37,7 +36,9 @@ app.use(
           origin.includes('www.scrabster-pro.de') ||
           allowedOrigins.includes(origin))
       ) {
-        return callback(null, true);
+        // Explizit die Origin zurückgeben für korrekte CORS-Header
+        console.log('CORS Allowed Origin:', origin);
+        return callback(null, origin);
       }
 
       // Fallback: Origin erlauben wenn nicht gesetzt (z.B. Postman)
