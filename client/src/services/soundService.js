@@ -45,24 +45,34 @@ class SoundService {
 
     try {
       // Web Audio API für Scrabster-Sound
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
       // Erstelle einen kurzen, aufsteigenden Ton
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       // Ton-Frequenz (aufsteigend)
       oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4
-      oscillator.frequency.exponentialRampToValueAtTime(880, audioContext.currentTime + 0.2); // A5
-      
+      oscillator.frequency.exponentialRampToValueAtTime(
+        880,
+        audioContext.currentTime + 0.2
+      ); // A5
+
       // Lautstärke
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(this.volume * 0.3, audioContext.currentTime + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
-      
+      gainNode.gain.linearRampToValueAtTime(
+        this.volume * 0.3,
+        audioContext.currentTime + 0.05
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.3
+      );
+
       // Ton abspielen
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
@@ -77,25 +87,38 @@ class SoundService {
 
     try {
       // Web Audio API für Gewinner-Sound
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
       // Erstelle einen triumphalen Ton
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       // Ton-Frequenz (triumphal)
       oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
-      oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
-      oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
-      
+      oscillator.frequency.setValueAtTime(
+        659.25,
+        audioContext.currentTime + 0.1
+      ); // E5
+      oscillator.frequency.setValueAtTime(
+        783.99,
+        audioContext.currentTime + 0.2
+      ); // G5
+
       // Lautstärke
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(this.volume * 0.4, audioContext.currentTime + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-      
+      gainNode.gain.linearRampToValueAtTime(
+        this.volume * 0.4,
+        audioContext.currentTime + 0.05
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.5
+      );
+
       // Ton abspielen
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.5);
@@ -109,19 +132,26 @@ class SoundService {
     if (!this.enabled) return;
 
     try {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
+
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
+
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(this.volume * 0.1, audioContext.currentTime + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
-      
+      gainNode.gain.linearRampToValueAtTime(
+        this.volume * 0.1,
+        audioContext.currentTime + 0.01
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.1
+      );
+
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.1);
     } catch (error) {

@@ -195,9 +195,11 @@
               >
                 <div class="flex items-center justify-between">
                   <div>
-                    <div class="font-medium text-gray-900 flex items-center gap-2">
+                    <div
+                      class="font-medium text-gray-900 flex items-center gap-2"
+                    >
                       {{ player.username }}
-                      <span 
+                      <span
                         v-if="player.scrabsters && player.scrabsters > 0"
                         class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
                       >
@@ -627,9 +629,11 @@ const setupGameApiListeners = () => {
     if (data.playerId === currentPlayerId.value) {
       // Scrabster-Sound abspielen
       soundService.playScrabsterSound();
-      
+
       // Scrabster-Notification anzeigen (optional)
-      console.log(`🎉 SCRABSTER! Du hast "${data.word}" gefunden! (${data.scrabsterCount} Scrabster gesamt)`);
+      console.log(
+        `🎉 SCRABSTER! Du hast "${data.word}" gefunden! (${data.scrabsterCount} Scrabster gesamt)`
+      );
     }
     players.value = data.players;
   });

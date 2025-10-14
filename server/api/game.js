@@ -281,7 +281,7 @@ function isScrabster(word, availableLetters, difficulty) {
   // Zählen, wie viele Buchstaben aus der verfügbaren Liste verwendet wurden
   const availableLettersCopy = [...availableLetters];
   let usedLetters = 0;
-  
+
   for (const letter of wordLetters) {
     const index = availableLettersCopy.indexOf(letter);
     if (index !== -1) {
@@ -474,13 +474,13 @@ app.post('/game/submit-word', (req, res) => {
   if (isScrabster(word, gameRoom.letters, gameRoom.difficulty)) {
     // Scrabster: 10 Extrapunkte + Badge
     player.score += 10;
-    
+
     // Scrabster-Badge hinzufügen (falls noch nicht vorhanden)
     if (!player.scrabsters) {
       player.scrabsters = 0;
     }
     player.scrabsters += 1;
-    
+
     gameRoom.lastUpdate = Date.now();
 
     return res.json({

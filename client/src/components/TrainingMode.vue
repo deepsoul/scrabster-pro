@@ -213,6 +213,12 @@
                 {{ bestWordScore }} Pkt
               </span>
             </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Scrabster:</span>
+              <span class="font-medium text-yellow-600 flex items-center">
+                ⚡ {{ scrabsterCount }}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -251,7 +257,7 @@
             </div>
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">⚡</span>
-              <span>Ein "Scrabster" (alle Buchstaben) = sofortiger Sieg!</span>
+              <span>Ein "Scrabster" (3/4/5 Buchstaben je Level) = 10 Extrapunkte!</span>
             </div>
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">🧠</span>
@@ -290,6 +296,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import soundService from '../services/soundService.js';
 
 const props = defineProps({
   difficulty: {
@@ -307,6 +314,7 @@ const letters = ref([]);
 const myWords = ref([]);
 const currentWord = ref('');
 const isScrabster = ref(false);
+const scrabsterCount = ref(0);
 
 // Voice input
 const isVoiceSupported = ref(false);
@@ -343,6 +351,15 @@ const difficultyTime = computed(() => {
     hard: 60,
   };
   return times[props.difficulty] || 90;
+});
+
+const scrabsterRequirements = computed(() => {
+  const requirements = {
+    easy: 3,
+    medium: 4,
+    hard: 5,
+  };
+  return requirements[props.difficulty] || 4;
 });
 
 const timerClass = computed(() => {
@@ -389,20 +406,8 @@ const currentWordScore = computed(() => {
 // Training statistics (neue Regel)
 const totalScore = computed(() => {
   return myWords.value.reduce((sum, word) => {
-    // Calculate score for each word based on available letters at the time
-    const wordLetters = word.toUpperCase().split('');
-    const availableLetters = [...letters.value];
-    let usedLetters = 0;
-
-    for (const letter of wordLetters) {
-      const index = availableLetters.indexOf(letter);
-      if (index !== -1) {
-        usedLetters++;
-        availableLetters.splice(index, 1);
-      }
-    }
-
-    return sum + Math.max(1, usedLetters);
+    // Calculate score for each word including Scrabster bonus
+    return sum + calculateWordScore(word);
   }, 0);
 });
 
@@ -416,19 +421,7 @@ const bestWordScore = computed(() => {
 
   let best = 0;
   for (const word of myWords.value) {
-    const wordLetters = word.toUpperCase().split('');
-    const availableLetters = [...letters.value];
-    let usedLetters = 0;
-
-    for (const letter of wordLetters) {
-      const index = availableLetters.indexOf(letter);
-      if (index !== -1) {
-        usedLetters++;
-        availableLetters.splice(index, 1);
-      }
-    }
-
-    best = Math.max(best, Math.max(1, usedLetters));
+    best = Math.max(best, calculateWordScore(word));
   }
   return best;
 });
@@ -592,6 +585,7 @@ const restartTraining = () => {
   myWords.value = [];
   currentWord.value = '';
   isScrabster.value = false;
+  scrabsterCount.value = 0;
 };
 
 const backToLobby = () => {
@@ -622,6 +616,9 @@ const finishTraining = () => {
   gameState.value = 'finished';
   stopTimer();
 
+  // Play winner sound
+  soundService.playWinnerSound();
+
   // Check if all letters were used (Scrabster)
   if (remainingLetters.value.length === 0) {
     isScrabster.value = true;
@@ -636,13 +633,19 @@ const submitWord = () => {
   // Check if word can be formed with available letters (new rule: only need some letters)
   if (canFormWord(word)) {
     myWords.value.push(word);
-    currentWord.value = '';
-
-    // Check if all letters are used (Scrabster)
-    if (remainingLetters.value.length === 0) {
-      isScrabster.value = true;
-      finishTraining();
+    
+    // Play word submit sound
+    soundService.playWordSubmitSound();
+    
+    // Check for Scrabster (new rule: 3/4/5 letters based on difficulty)
+    if (isScrabsterWord(word)) {
+      scrabsterCount.value++;
+      // Play Scrabster sound
+      soundService.playScrabsterSound();
+      // Scrabster gives 10 bonus points (already included in calculateWordScore)
     }
+    
+    currentWord.value = '';
   } else {
     alert('Wort muss mindestens einen verfügbaren Buchstaben enthalten!');
   }
@@ -671,7 +674,32 @@ const calculateWordScore = word => {
     }
   }
 
-  return Math.max(1, usedLetters); // Minimum 1 point
+  let score = Math.max(1, usedLetters); // Minimum 1 point
+  
+  // Scrabster bonus: 10 extra points
+  if (isScrabsterWord(word)) {
+    score += 10;
+  }
+  
+  return score;
+};
+
+// Check if word is a Scrabster (uses required number of letters from available set)
+const isScrabsterWord = word => {
+  const wordLetters = word.split('');
+  const availableLetters = [...remainingLetters.value];
+  const requiredLetters = scrabsterRequirements.value;
+  
+  let usedLetters = 0;
+  for (const letter of wordLetters) {
+    const index = availableLetters.indexOf(letter);
+    if (index !== -1) {
+      usedLetters++;
+      availableLetters.splice(index, 1);
+    }
+  }
+  
+  return usedLetters >= requiredLetters;
 };
 
 const getMissingLetters = word => {
