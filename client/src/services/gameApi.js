@@ -2,8 +2,9 @@
 class GameApiService {
   constructor() {
     // In Produktion: Render-Backend mit Custom Domain, lokal: lokaler Server
+    // Temporär: Fallback auf onrender.com falls Custom Domain nicht funktioniert
     this.baseUrl = import.meta.env.PROD
-      ? 'https://api.scrabster-pro.de'
+      ? 'https://scrabster-pro.onrender.com' // Temporär zurück zu onrender.com
       : 'http://localhost:3000';
     this.pollingInterval = null;
     this.currentGameCode = null;
