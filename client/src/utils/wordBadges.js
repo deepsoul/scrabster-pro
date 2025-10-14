@@ -10,11 +10,11 @@
  */
 export function getUsedLettersCount(word, availableLetters) {
   if (!word || !availableLetters || availableLetters.length === 0) return 0;
-  
+
   const wordLetters = word.toUpperCase().split('');
   const availableLettersCopy = [...availableLetters];
   let usedCount = 0;
-  
+
   wordLetters.forEach(letter => {
     const index = availableLettersCopy.indexOf(letter);
     if (index !== -1) {
@@ -22,7 +22,7 @@ export function getUsedLettersCount(word, availableLetters) {
       usedCount++;
     }
   });
-  
+
   return usedCount;
 }
 
@@ -33,16 +33,20 @@ export function getUsedLettersCount(word, availableLetters) {
  * @param {number} scrabsterRequirement - Required letters for Scrabster (3, 4, or 5)
  * @returns {number} Total score for the word
  */
-export function calculateWordScore(word, availableLetters, scrabsterRequirement = 4) {
+export function calculateWordScore(
+  word,
+  availableLetters,
+  scrabsterRequirement = 4
+) {
   if (!word || !availableLetters || availableLetters.length === 0) return 0;
-  
+
   const usedLetters = getUsedLettersCount(word, availableLetters);
   const baseScore = usedLetters * 2; // 2 points per used letter
-  
+
   // Check for Scrabster bonus
   const isScrabster = usedLetters >= scrabsterRequirement;
   const scrabsterBonus = isScrabster ? 10 : 0;
-  
+
   return baseScore + scrabsterBonus;
 }
 
@@ -53,9 +57,13 @@ export function calculateWordScore(word, availableLetters, scrabsterRequirement 
  * @param {number} scrabsterRequirement - Required letters for Scrabster
  * @returns {boolean} True if word is a Scrabster
  */
-export function isScrabsterWord(word, availableLetters, scrabsterRequirement = 4) {
+export function isScrabsterWord(
+  word,
+  availableLetters,
+  scrabsterRequirement = 4
+) {
   if (!word || !availableLetters || availableLetters.length === 0) return false;
-  
+
   const usedLetters = getUsedLettersCount(word, availableLetters);
   return usedLetters >= scrabsterRequirement;
 }
