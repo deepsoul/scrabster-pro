@@ -15,7 +15,7 @@
       >
         <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        
+
         <!-- Dialog -->
         <Transition
           enter-active-class="transition duration-300 ease-out"
@@ -34,7 +34,7 @@
             <div class="px-6 py-4 border-b border-gray-200">
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                  <div 
+                  <div
                     class="w-10 h-10 rounded-full flex items-center justify-center"
                     :class="iconClasses"
                   >
@@ -49,18 +49,28 @@
                   @click="close"
                   class="text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
-            
+
             <!-- Content -->
             <div class="px-6 py-4">
               <p class="text-gray-600 leading-relaxed">{{ message }}</p>
             </div>
-            
+
             <!-- Actions -->
             <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
               <button
@@ -91,41 +101,41 @@ import { ref, computed, watch } from 'vue';
 const props = defineProps({
   isVisible: {
     type: Boolean,
-    default: false
+    default: false,
   },
   title: {
     type: String,
-    default: 'Information'
+    default: 'Information',
   },
   message: {
     type: String,
-    required: true
+    required: true,
   },
   type: {
     type: String,
     default: 'info', // info, success, warning, error
-    validator: (value) => ['info', 'success', 'warning', 'error'].includes(value)
+    validator: value => ['info', 'success', 'warning', 'error'].includes(value),
   },
   showCloseButton: {
     type: Boolean,
-    default: true
+    default: true,
   },
   showCancelButton: {
     type: Boolean,
-    default: false
+    default: false,
   },
   confirmText: {
     type: String,
-    default: 'OK'
+    default: 'OK',
   },
   cancelText: {
     type: String,
-    default: 'Abbrechen'
+    default: 'Abbrechen',
   },
   closeOnBackdrop: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
 const emit = defineEmits(['close', 'confirm', 'cancel']);
@@ -135,7 +145,7 @@ const icon = computed(() => {
     info: 'ℹ️',
     success: '✅',
     warning: '⚠️',
-    error: '❌'
+    error: '❌',
   };
   return icons[props.type];
 });
@@ -145,7 +155,7 @@ const iconClasses = computed(() => {
     info: 'bg-blue-100 text-blue-600',
     success: 'bg-green-100 text-green-600',
     warning: 'bg-yellow-100 text-yellow-600',
-    error: 'bg-red-100 text-red-600'
+    error: 'bg-red-100 text-red-600',
   };
   return classes[props.type];
 });
@@ -155,7 +165,7 @@ const confirmButtonClasses = computed(() => {
     info: 'bg-primary-600 hover:bg-primary-700 focus:ring-primary-500',
     success: 'bg-green-600 hover:bg-green-700 focus:ring-green-500',
     warning: 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500',
-    error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+    error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
   };
   return classes[props.type];
 });
@@ -181,19 +191,22 @@ const handleBackdropClick = () => {
 };
 
 // Close on Escape key
-const handleKeydown = (event) => {
+const handleKeydown = event => {
   if (event.key === 'Escape' && props.isVisible) {
     close();
   }
 };
 
-watch(() => props.isVisible, (isVisible) => {
-  if (isVisible) {
-    document.addEventListener('keydown', handleKeydown);
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.removeEventListener('keydown', handleKeydown);
-    document.body.style.overflow = '';
+watch(
+  () => props.isVisible,
+  isVisible => {
+    if (isVisible) {
+      document.addEventListener('keydown', handleKeydown);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.removeEventListener('keydown', handleKeydown);
+      document.body.style.overflow = '';
+    }
   }
-});
+);
 </script>

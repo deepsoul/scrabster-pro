@@ -254,7 +254,7 @@ const dialog = ref({
   confirmText: 'OK',
   cancelText: 'Abbrechen',
   onConfirm: null,
-  onCancel: null
+  onCancel: null,
 });
 
 // Toast management
@@ -477,7 +477,7 @@ const disconnect = () => {
 };
 
 // Dialog functions
-const showDialog = (options) => {
+const showDialog = options => {
   dialog.value = {
     isVisible: true,
     title: options.title || 'Information',
@@ -488,7 +488,7 @@ const showDialog = (options) => {
     confirmText: options.confirmText || 'OK',
     cancelText: options.cancelText || 'Abbrechen',
     onConfirm: options.onConfirm || null,
-    onCancel: options.onCancel || null
+    onCancel: options.onCancel || null,
   };
 };
 

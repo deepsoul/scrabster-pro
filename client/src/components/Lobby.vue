@@ -404,14 +404,14 @@ const copyGameCode = async () => {
     window.showDialog({
       title: 'Erfolg',
       message: 'Spiel-Code kopiert!',
-      type: 'success'
+      type: 'success',
     });
   } catch (error) {
     console.error('Failed to copy game code:', error);
     window.showDialog({
       title: 'Fehler',
       message: 'Fehler beim Kopieren',
-      type: 'error'
+      type: 'error',
     });
   }
 };

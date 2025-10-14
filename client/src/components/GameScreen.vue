@@ -193,14 +193,38 @@
             </div>
             <div
               v-else
-              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-3"
             >
               <div
                 v-for="(word, index) in myWords"
                 :key="index"
-                class="word-item text-center"
+                class="word-item bg-gray-50 rounded-lg p-3 border border-gray-200"
               >
-                {{ word }}
+                <div class="text-center mb-2">
+                  <span class="font-semibold text-gray-900 text-lg">{{ word }}</span>
+                </div>
+                <div class="flex justify-center space-x-2">
+                  <!-- Letters Badge -->
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border"
+                    :class="getLettersBadgeColor(getUsedLettersCount(word, letters), getScrabsterRequirement())"
+                  >
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    {{ getUsedLettersCount(word, letters) }} Buchst.
+                  </span>
+                  <!-- Points Badge -->
+                  <span
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border"
+                    :class="getPointsBadgeColor(wordScores[index] || 0)"
+                  >
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    {{ wordScores[index] || 0 }} Pkt
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -330,6 +354,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import ShareGame from './ShareGame.vue';
 import soundService from '../services/soundService.js';
 import wordValidationService from '../services/wordValidationService.js';
+import { getUsedLettersCount, getLettersBadgeColor, getPointsBadgeColor, calculateWordScore } from '../utils/wordBadges.js';
 
 const props = defineProps({
   gameData: Object,
@@ -344,6 +369,7 @@ const timeLeft = ref(0);
 const letters = ref([]);
 const players = ref([]);
 const myWords = ref([]);
+const wordScores = ref([]); // Speichere Punkte für jedes Wort
 const currentWord = ref('');
 const currentPlayerId = ref('');
 
@@ -363,6 +389,17 @@ const highlightedLetters = ref([]);
 // Word validation
 const wordValidation = ref(null);
 const isValidating = ref(false);
+
+// Helper function to get Scrabster requirement based on difficulty
+const getScrabsterRequirement = () => {
+  const difficulty = props.gameData?.difficulty || 'medium';
+  const requirements = {
+    easy: 3,
+    medium: 4,
+    hard: 5,
+  };
+  return requirements[difficulty] || 4;
+};
 
 // Computed properties
 const difficultyText = computed(() => {
@@ -435,23 +472,8 @@ const letterFrequency = computed(() => {
 // Punkte für aktuelles Wort berechnen (neue Regel)
 const currentWordScore = computed(() => {
   if (!currentWord.value.trim() || !letters.value.length) return 0;
-
-  const wordLetters = currentWord.value.toUpperCase().split('');
-  const availableLetters = [...letters.value];
-  let usedLetters = 0;
-
-  for (const letter of wordLetters) {
-    const index = availableLetters.indexOf(letter);
-    if (index !== -1) {
-      usedLetters++;
-      availableLetters.splice(index, 1);
-    }
-  }
-
-  // Wenn kein einziger Buchstabe aus der verfügbaren Liste verwendet wurde: 0 Punkte
-  if (usedLetters === 0) return 0;
-
-  return Math.max(1, usedLetters);
+  const scrabsterRequirement = getScrabsterRequirement();
+  return calculateWordScore(currentWord.value.toUpperCase(), letters.value, scrabsterRequirement);
 });
 
 const isHost = computed(() => {
@@ -656,6 +678,12 @@ const setupGameApiListeners = () => {
   props.gameApi.on('wordSubmitted', data => {
     if (data.playerId === currentPlayerId.value) {
       myWords.value.push(data.word);
+      
+      // Berechne Punkte für das Wort
+      const scrabsterRequirement = getScrabsterRequirement();
+      const wordScore = calculateWordScore(data.word, letters.value, scrabsterRequirement);
+      wordScores.value.push(wordScore);
+      
       // Sound-Effekt für erfolgreich eingereichtes Wort
       soundService.playWordSubmitSound();
     }
@@ -666,7 +694,7 @@ const setupGameApiListeners = () => {
     window.showDialog({
       title: 'Wort abgelehnt',
       message: data.message,
-      type: 'error'
+      type: 'error',
     });
   });
 
