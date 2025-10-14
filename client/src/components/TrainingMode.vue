@@ -708,6 +708,9 @@ const calculateWordScore = word => {
     }
   }
 
+  // Wenn kein einziger Buchstabe aus der verfügbaren Liste verwendet wurde: 0 Punkte
+  if (usedLetters === 0) return 0;
+
   let score = Math.max(1, usedLetters); // Minimum 1 point
 
   // Scrabster bonus: 10 extra points
@@ -843,7 +846,31 @@ const validateCurrentWord = async () => {
     const result = await wordValidationService.validateWord(
       currentWord.value.trim()
     );
-    wordValidation.value = result;
+    
+    // Zusätzliche Prüfung: Verwendet das Wort überhaupt Buchstaben aus der verfügbaren Liste?
+    const wordLetters = currentWord.value.toUpperCase().split('');
+    const availableLetters = [...remainingLetters.value];
+    let usedLetters = 0;
+
+    for (const letter of wordLetters) {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        usedLetters++;
+        availableLetters.splice(index, 1);
+      }
+    }
+
+    // Wenn kein Buchstabe aus der verfügbaren Liste verwendet wurde
+    if (usedLetters === 0) {
+      wordValidation.value = {
+        isValid: false,
+        reason: 'Wort verwendet keine verfügbaren Buchstaben (0 Punkte)',
+        word: currentWord.value.trim(),
+        source: 'letter_check'
+      };
+    } else {
+      wordValidation.value = result;
+    }
   } catch (error) {
     console.warn('Wort-Validierung fehlgeschlagen:', error);
     wordValidation.value = {

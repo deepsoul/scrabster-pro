@@ -41,16 +41,16 @@ class WordValidationService {
 
     // Offline-Validierung mit großer deutscher Wortliste
     const isValid = this.germanWords.has(cleanWord);
-    
+
     const result = {
       isValid,
-      reason: isValid 
-        ? 'Gültiges deutsches Wort' 
+      reason: isValid
+        ? 'Gültiges deutsches Wort'
         : 'Wort nicht im Wörterbuch gefunden (kann trotzdem gesendet werden)',
       word: cleanWord,
-      source: 'offline'
+      source: 'offline',
     };
-    
+
     this.cache.set(cleanWord, result);
     return result;
   }
