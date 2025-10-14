@@ -195,8 +195,14 @@
               >
                 <div class="flex items-center justify-between">
                   <div>
-                    <div class="font-medium text-gray-900">
+                    <div class="font-medium text-gray-900 flex items-center gap-2">
                       {{ player.username }}
+                      <span 
+                        v-if="player.scrabsters && player.scrabsters > 0"
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                      >
+                        ⚡ {{ player.scrabsters }} Scrabster
+                      </span>
                     </div>
                     <div class="text-sm text-gray-500">
                       {{ player.words.length }} Wörter
@@ -291,6 +297,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import ShareGame from './ShareGame.vue';
+import soundService from '../services/soundService.js';
 
 const props = defineProps({
   gameData: Object,
@@ -606,6 +613,8 @@ const setupGameApiListeners = () => {
   props.gameApi.on('wordSubmitted', data => {
     if (data.playerId === currentPlayerId.value) {
       myWords.value.push(data.word);
+      // Sound-Effekt für erfolgreich eingereichtes Wort
+      soundService.playWordSubmitSound();
     }
     players.value = data.players;
   });
@@ -614,8 +623,21 @@ const setupGameApiListeners = () => {
     alert(`Wort abgelehnt: ${data.message}`);
   });
 
+  props.gameApi.on('scrabster', data => {
+    if (data.playerId === currentPlayerId.value) {
+      // Scrabster-Sound abspielen
+      soundService.playScrabsterSound();
+      
+      // Scrabster-Notification anzeigen (optional)
+      console.log(`🎉 SCRABSTER! Du hast "${data.word}" gefunden! (${data.scrabsterCount} Scrabster gesamt)`);
+    }
+    players.value = data.players;
+  });
+
   props.gameApi.on('gameOver', data => {
     gameState.value = 'finished';
+    // Gewinner-Sound abspielen
+    soundService.playWinnerSound();
     emit('gameOver', data);
   });
 };

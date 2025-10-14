@@ -150,18 +150,13 @@ class GameApiService {
       const data = await response.json();
 
       if (data.scrabster) {
-        this.emit('gameOver', {
-          winners: [
-            {
-              username: 'Du',
-              score:
-                data.players.find(p => p.id === this.currentPlayerId)?.score ||
-                0,
-            },
-          ],
+        // Scrabster-Event (Spiel läuft weiter)
+        this.emit('scrabster', {
+          playerId: this.currentPlayerId,
+          playerName: 'Du',
+          word: data.scrabsterWord,
+          scrabsterCount: data.scrabsterCount,
           players: data.players,
-          reason: 'scrabster',
-          scrabsterWord: data.scrabsterWord,
         });
       } else {
         this.emit('wordSubmitted', {
@@ -254,7 +249,7 @@ class GameApiService {
 
     // Nur Spieler mit mindestens einem Wort berücksichtigen
     const playersWithWords = players.filter(p => p.words && p.words.length > 0);
-    
+
     if (playersWithWords.length === 0) return [];
 
     // Nach höchster Punktzahl sortieren
