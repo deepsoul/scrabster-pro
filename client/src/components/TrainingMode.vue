@@ -125,16 +125,21 @@
             <!-- Validierungs-Feedback -->
             <div v-if="isValidating" class="text-center">
               <div class="inline-flex items-center text-sm text-gray-500">
-                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
+                <div
+                  class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"
+                ></div>
                 Wort wird validiert...
               </div>
             </div>
-            
+
             <div v-else-if="wordValidation" class="text-center">
-              <div 
-                class="text-sm font-medium"
-                :class="wordValidation.isValid ? 'text-green-600' : 'text-red-600'"
+              <div
+                class="text-sm font-medium flex items-center justify-center gap-2"
+                :class="
+                  wordValidation.isValid ? 'text-green-600' : 'text-orange-600'
+                "
               >
+                <span v-if="!wordValidation.isValid" class="text-orange-500">⚠️</span>
                 {{ wordValidation.reason }}
               </div>
             </div>
@@ -653,21 +658,18 @@ const finishTraining = () => {
 const submitWord = () => {
   if (!currentWord.value.trim() || gameState.value !== 'playing') return;
 
-  // Check validation if available
-  if (wordValidation.value && !wordValidation.value.isValid) {
-    alert(`Wort nicht gültig: ${wordValidation.value.reason}`);
-    return;
-  }
+  // Validation is now only a warning, not a blocker
+  // Words can be submitted even if marked as invalid
 
   const word = currentWord.value.trim().toUpperCase();
 
   // Check if word can be formed with available letters (new rule: only need some letters)
   if (canFormWord(word)) {
     myWords.value.push(word);
-    
+
     // Play word submit sound
     soundService.playWordSubmitSound();
-    
+
     // Check for Scrabster (new rule: 3/4/5 letters based on difficulty)
     if (isScrabsterWord(word)) {
       scrabsterCount.value++;
@@ -675,7 +677,7 @@ const submitWord = () => {
       soundService.playScrabsterSound();
       // Scrabster gives 10 bonus points (already included in calculateWordScore)
     }
-    
+
     currentWord.value = '';
     wordValidation.value = null; // Clear validation after successful submit
   } else {
@@ -838,11 +840,16 @@ const validateCurrentWord = async () => {
   wordValidation.value = null;
 
   try {
-    const result = await wordValidationService.validateWord(currentWord.value.trim());
+    const result = await wordValidationService.validateWord(
+      currentWord.value.trim()
+    );
     wordValidation.value = result;
   } catch (error) {
     console.warn('Wort-Validierung fehlgeschlagen:', error);
-    wordValidation.value = { isValid: true, reason: 'Validierung fehlgeschlagen - Wort akzeptiert' };
+    wordValidation.value = {
+      isValid: true,
+      reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+    };
   } finally {
     isValidating.value = false;
   }

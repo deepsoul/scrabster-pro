@@ -119,19 +119,24 @@
               <!-- Validierungs-Feedback -->
               <div v-if="isValidating" class="text-center">
                 <div class="inline-flex items-center text-sm text-gray-500">
-                  <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
+                  <div
+                    class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"
+                  ></div>
                   Wort wird validiert...
                 </div>
               </div>
-              
-              <div v-else-if="wordValidation" class="text-center">
-                <div 
-                  class="text-sm font-medium"
-                  :class="wordValidation.isValid ? 'text-green-600' : 'text-red-600'"
-                >
-                  {{ wordValidation.reason }}
-                </div>
+
+            <div v-else-if="wordValidation" class="text-center">
+              <div
+                class="text-sm font-medium flex items-center justify-center gap-2"
+                :class="
+                  wordValidation.isValid ? 'text-green-600' : 'text-orange-600'
+                "
+              >
+                <span v-if="!wordValidation.isValid" class="text-orange-500">⚠️</span>
+                {{ wordValidation.reason }}
               </div>
+            </div>
 
               <!-- Punkte-Anzeige -->
               <div class="text-center">
@@ -466,11 +471,8 @@ const submitWord = async () => {
   )
     return;
 
-  // Check validation if available
-  if (wordValidation.value && !wordValidation.value.isValid) {
-    alert(`Wort nicht gültig: ${wordValidation.value.reason}`);
-    return;
-  }
+  // Validation is now only a warning, not a blocker
+  // Words can be submitted even if marked as invalid
 
   try {
     await props.gameApi.submitWord(currentWord.value.trim());
@@ -689,11 +691,16 @@ const validateCurrentWord = async () => {
   wordValidation.value = null;
 
   try {
-    const result = await wordValidationService.validateWord(currentWord.value.trim());
+    const result = await wordValidationService.validateWord(
+      currentWord.value.trim()
+    );
     wordValidation.value = result;
   } catch (error) {
     console.warn('Wort-Validierung fehlgeschlagen:', error);
-    wordValidation.value = { isValid: true, reason: 'Validierung fehlgeschlagen - Wort akzeptiert' };
+    wordValidation.value = {
+      isValid: true,
+      reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+    };
   } finally {
     isValidating.value = false;
   }
