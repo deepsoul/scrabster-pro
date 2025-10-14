@@ -1,0 +1,333 @@
+// Große deutsche Wortliste für Offline-Validierung
+// Optimiert für Performance mit Set-basierter Suche
+
+export const germanWords = new Set([
+  // Grundwörter
+  'haus', 'auto', 'hund', 'katze', 'baum', 'wasser', 'feuer', 'erde', 'luft', 'sonne', 'mond', 'stern',
+  'mensch', 'kind', 'frau', 'mann', 'mutter', 'vater', 'sohn', 'tochter', 'bruder', 'schwester',
+  'freund', 'liebe', 'zeit', 'tag', 'nacht', 'jahr', 'monat', 'woche', 'stunde', 'minute',
+  'schule', 'arbeit', 'spiel', 'buch', 'musik', 'film', 'computer', 'telefon', 'internet',
+  'essen', 'trinken', 'schlafen', 'gehen', 'laufen', 'fahren', 'fliegen', 'schwimmen',
+  
+  // Farben
+  'rot', 'blau', 'grün', 'gelb', 'schwarz', 'weiß', 'grau', 'braun', 'orange', 'lila', 'pink',
+  
+  // Adjektive
+  'groß', 'klein', 'neu', 'alt', 'jung', 'gut', 'schlecht', 'schön', 'hässlich', 'schnell', 'langsam',
+  'teuer', 'billig', 'leicht', 'schwer', 'warm', 'kalt', 'heiß', 'kühl', 'hell', 'dunkel',
+  'laut', 'leise', 'stark', 'schwach', 'hoch', 'niedrig', 'lang', 'kurz', 'breit', 'schmal',
+  'dick', 'dünn', 'rund', 'eckig', 'scharf', 'stumpf', 'sauber', 'schmutzig', 'trocken', 'nass',
+  
+  // Orte und Geografie
+  'stadt', 'land', 'berg', 'see', 'fluss', 'wald', 'wiese', 'strand', 'meer', 'ozean',
+  'straße', 'weg', 'brücke', 'tunnel', 'park', 'platz', 'garten', 'hof', 'feld', 'hügel',
+  'tal', 'küste', 'insel', 'kontinent', 'grenze', 'zentrum', 'rand', 'norden', 'süden', 'osten', 'westen',
+  
+  // Wetter und Jahreszeiten
+  'wetter', 'regen', 'schnee', 'wind', 'wolke', 'himmel', 'gewitter', 'sonnenschein',
+  'frühling', 'sommer', 'herbst', 'winter', 'morgen', 'abend', 'mitternacht', 'dämmerung',
+  
+  // Wochentage und Monate
+  'montag', 'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag',
+  'januar', 'februar', 'märz', 'april', 'mai', 'juni', 'juli', 'august',
+  'september', 'oktober', 'november', 'dezember',
+  
+  // Zahlen
+  'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn',
+  'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn', 'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig',
+  'dreißig', 'vierzig', 'fünfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig', 'hundert',
+  'tausend', 'million', 'milliarde', 'null', 'erste', 'zweite', 'dritte', 'letzte',
+  
+  // Pronomen und Artikel
+  'ich', 'du', 'er', 'sie', 'es', 'wir', 'ihr', 'sie', 'mein', 'dein', 'sein', 'ihr', 'unser', 'euer',
+  'der', 'die', 'das', 'ein', 'eine', 'kein', 'keine', 'dieser', 'diese', 'dieses', 'jener', 'jene', 'jenes',
+  'alle', 'jeder', 'jede', 'jedes', 'manche', 'viele', 'wenige', 'mehrere', 'einige', 'andere',
+  
+  // Verben
+  'haben', 'sein', 'werden', 'können', 'müssen', 'sollen', 'wollen', 'dürfen', 'mögen',
+  'machen', 'kommen', 'gehen', 'sehen', 'hören', 'sprechen', 'denken', 'wissen', 'verstehen',
+  'lernen', 'lehren', 'arbeiten', 'spielen', 'lachen', 'weinen', 'singen', 'tanzen',
+  'kaufen', 'verkaufen', 'geben', 'nehmen', 'finden', 'suchen', 'verlieren', 'gewinnen',
+  'helfen', 'brauchen', 'möchten', 'versuchen', 'beginnen', 'enden', 'stoppen', 'weiter',
+  
+  // Konjunktionen und Partikel
+  'und', 'oder', 'aber', 'weil', 'wenn', 'dann', 'auch', 'nur', 'nicht', 'kein', 'schon', 'noch',
+  'immer', 'nie', 'manchmal', 'oft', 'selten', 'meistens', 'vielleicht', 'sicher', 'wahrscheinlich',
+  
+  // Möbel und Haushalt
+  'tisch', 'stuhl', 'bett', 'fenster', 'tür', 'wand', 'decke', 'boden', 'dach', 'keller',
+  'küche', 'zimmer', 'bad', 'toilette', 'spüle', 'herd', 'kühlschrank', 'schrank', 'regal',
+  'lampe', 'licht', 'schalter', 'steckdose', 'kabel', 'buch', 'zeitung', 'zeitschrift',
+  
+  // Kleidung
+  'kleidung', 'hemd', 'hose', 'schuh', 'hut', 'handschuh', 'schal', 'mantel', 'jacke',
+  'rock', 'kleid', 'unterwäsche', 'socke', 'strumpf', 'gürtel', 'krawatte', 'schmuck',
+  'uhr', 'ring', 'kette', 'ohrring', 'brille', 'sonnenbrille',
+  
+  // Nahrung und Getränke
+  'nahrung', 'essen', 'brot', 'fleisch', 'fisch', 'gemüse', 'obst', 'milch', 'wasser',
+  'kuchen', 'eis', 'schokolade', 'bonbon', 'zucker', 'salz', 'pfeffer', 'öl', 'butter',
+  'käse', 'wurst', 'ei', 'nudel', 'reis', 'kartoffel', 'tomate', 'gurke', 'möhre',
+  'apfel', 'banane', 'orange', 'birne', 'traube', 'erdbeere', 'kirsche', 'pfirsich',
+  'kaffee', 'tee', 'bier', 'wein', 'saft', 'limonade', 'cola', 'wasser',
+  
+  // Gesundheit und Medizin
+  'krank', 'gesund', 'arzt', 'krankenhaus', 'medizin', 'tablette', 'spritze', 'verband',
+  'schmerz', 'fieber', 'husten', 'schnupfen', 'kopfschmerz', 'bauchschmerz', 'zahnschmerz',
+  'operation', 'behandlung', 'therapie', 'rehabilitation', 'apotheke', 'medikament',
+  
+  // Sport und Freizeit
+  'sport', 'fußball', 'tennis', 'schwimmen', 'radfahren', 'laufen', 'springen', 'werfen',
+  'fangen', 'schießen', 'boxen', 'ringen', 'turnen', 'tanzen', 'joggen', 'wandern',
+  'klettern', 'skifahren', 'eislaufen', 'hockey', 'basketball', 'volleyball', 'handball',
+  'golf', 'bowling', 'dart', 'schach', 'karten', 'puzzle', 'spielzeug',
+  
+  // Reisen und Verkehr
+  'reise', 'urlaub', 'hotel', 'restaurant', 'museum', 'theater', 'kino', 'konzert',
+  'flugzeug', 'zug', 'bus', 'taxi', 'fahrrad', 'motorrad', 'auto', 'lastwagen', 'schiff',
+  'bahn', 'station', 'flughafen', 'hafen', 'ticket', 'karte', 'pass', 'visum',
+  
+  // Geld und Wirtschaft
+  'geld', 'euro', 'dollar', 'cent', 'kaufen', 'verkaufen', 'preis', 'kosten', 'teuer',
+  'billig', 'günstig', 'rabatt', 'angebot', 'verkauf', 'einkauf', 'laden', 'geschäft',
+  'supermarkt', 'markt', 'bank', 'kredit', 'schuld', 'schulden', 'sparen', 'investieren',
+  
+  // Technologie und Elektronik
+  'computer', 'laptop', 'tablet', 'handy', 'telefon', 'internet', 'email', 'website',
+  'software', 'programm', 'app', 'kamera', 'fernseher', 'radio', 'cd', 'dvd', 'usb',
+  'wifi', 'bluetooth', 'batterie', 'ladekabel', 'lautsprecher', 'kopfhörer', 'mikrofon',
+  
+  // Berufe und Arbeit
+  'beruf', 'arbeit', 'job', 'firma', 'unternehmen', 'büro', 'fabrik', 'werkstatt',
+  'lehrer', 'arzt', 'polizist', 'feuerwehrmann', 'kellner', 'koch', 'fahrer', 'verkäufer',
+  'ingenieur', 'architekt', 'anwalt', 'journalist', 'künstler', 'musiker', 'schauspieler',
+  'mechaniker', 'elektriker', 'maler', 'gärtner', 'bäcker', 'fleischer', 'friseur',
+  
+  // Bildung und Wissenschaft
+  'schule', 'universität', 'studium', 'lehrer', 'professor', 'student', 'schüler',
+  'unterricht', 'stunde', 'klasse', 'kurs', 'prüfung', 'test', 'note', 'zeugnis',
+  'mathematik', 'deutsch', 'englisch', 'französisch', 'spanisch', 'geschichte', 'geografie',
+  'biologie', 'chemie', 'physik', 'kunst', 'musik', 'sport', 'religion', 'philosophie',
+  
+  // Tiere
+  'tier', 'hund', 'katze', 'pferd', 'kuh', 'schwein', 'huhn', 'ente', 'gans', 'hahn',
+  'fisch', 'hai', 'wal', 'delfin', 'frosch', 'schlange', 'eidechse', 'vogel', 'adler',
+  'falke', 'eule', 'spatz', 'aas', 'bär', 'wolf', 'fuchs', 'hase', 'kaninchen', 'maus',
+  'ratte', 'hamster', 'meerschweinchen', 'papagei', 'wellensittich', 'kanarienvogel',
+  'spinne', 'biene', 'wespe', 'fliege', 'mücke', 'schmetterling', 'käfer', 'ameise',
+  
+  // Pflanzen
+  'pflanze', 'baum', 'blume', 'rose', 'tulpe', 'sonnenblume', 'gras', 'blatt', 'ast',
+  'zweig', 'wurzel', 'samen', 'frucht', 'beere', 'nuss', 'pilz', 'moos', 'farn',
+  'kiefer', 'fichte', 'tanne', 'eiche', 'birke', 'ahorn', 'linde', 'kastanie', 'buche',
+  'weide', 'pappel', 'esche', 'ulme', 'kirsche', 'apfelbaum', 'birnbaum', 'pflaumenbaum',
+  
+  // Körperteile
+  'körper', 'kopf', 'gesicht', 'auge', 'ohr', 'nase', 'mund', 'zahn', 'zunge', 'lippe',
+  'kinn', 'wange', 'stirn', 'haar', 'bart', 'hals', 'nacken', 'schulter', 'arm', 'hand',
+  'finger', 'daumen', 'fingernagel', 'brust', 'rücken', 'bauch', 'hüfte', 'bein', 'knie',
+  'fuß', 'zehe', 'zeh', 'zeh', 'zeh', 'zeh', 'zeh', 'zeh', 'zeh', 'zeh',
+  
+  // Emotionen und Gefühle
+  'freude', 'trauer', 'wut', 'angst', 'liebe', 'hass', 'eifersucht', 'neid', 'stolz',
+  'scham', 'schuld', 'reue', 'hoffnung', 'verzweiflung', 'glück', 'unglück', 'zufriedenheit',
+  'unzufriedenheit', 'ruhe', 'stress', 'entspannung', 'müdigkeit', 'energie', 'kraft',
+  'schwäche', 'mut', 'feigheit', 'geduld', 'ungeduld', 'ruhe', 'nervosität',
+  
+  // Zeit und Raum
+  'zeit', 'raum', 'ort', 'platz', 'stelle', 'position', 'lage', 'situation', 'zustand',
+  'moment', 'augenblick', 'sekunde', 'minute', 'stunde', 'tag', 'woche', 'monat', 'jahr',
+  'jahrhundert', 'millennium', 'vergangenheit', 'gegenwart', 'zukunft', 'heute', 'gestern',
+  'morgen', 'übermorgen', 'vorgestern', 'früh', 'spät', 'pünktlich', 'verspätet',
+  
+  // Wetter und Naturphänomene
+  'wetter', 'klima', 'temperatur', 'grad', 'wärme', 'kälte', 'hitze', 'frost', 'eis',
+  'schnee', 'regen', 'schauer', 'gewitter', 'blitz', 'donner', 'sturm', 'wind', 'böe',
+  'nebel', 'dunst', 'wolke', 'himmel', 'sonne', 'mond', 'stern', 'planet', 'galaxie',
+  'universum', 'welt', 'erde', 'natur', 'umwelt', 'landschaft', 'panorama', 'blick',
+  
+  // Transport und Fahrzeuge
+  'fahrzeug', 'auto', 'lastwagen', 'bus', 'zug', 'bahn', 'straßenbahn', 'u-bahn',
+  'fahrrad', 'motorrad', 'moped', 'roller', 'skateboard', 'roller', 'scooter',
+  'flugzeug', 'helicopter', 'hubschrauber', 'raket', 'satellit', 'raumstation',
+  'schiff', 'boot', 'yacht', 'segelschiff', 'dampfer', 'frachter', 'tanker',
+  'u-boot', 'tauchboot', 'kajak', 'kanu', 'ruderboot', 'surfbrett', 'windsurfing',
+  
+  // Werkzeuge und Geräte
+  'werkzeug', 'hammer', 'nagel', 'schraube', 'schraubenzieher', 'zange', 'säge',
+  'bohrer', 'bohrmaschine', 'schleifmaschine', 'winkelschleifer', 'flex',
+  'messer', 'schere', 'cutter', 'messer', 'klinge', 'griff', 'stiel',
+  'leiter', 'gerüst', 'bühne', 'podest', 'tritt', 'stufe', 'treppe',
+  'seil', 'kabel', 'draht', 'kette', 'band', 'gurt', 'riemen',
+  
+  // Musik und Instrumente
+  'musik', 'lied', 'song', 'melodie', 'rhythmus', 'takt', 'beat', 'klang', 'ton',
+  'instrument', 'klavier', 'gitarre', 'geige', 'violine', 'cello', 'kontrabass',
+  'flöte', 'trompete', 'saxophon', 'klarinette', 'oboe', 'fagott', 'horn',
+  'trommel', 'schlagzeug', 'pauke', 'xylophon', 'glockenspiel', 'harpfe',
+  'orchester', 'band', 'gruppe', 'sänger', 'sängerin', 'musiker', 'dirigent',
+  
+  // Kunst und Kultur
+  'kunst', 'malerei', 'bild', 'gemälde', 'zeichnung', 'skizze', 'skulptur', 'statue',
+  'museum', 'galerie', 'ausstellung', 'vernissage', 'künstler', 'maler', 'bildhauer',
+  'theater', 'bühne', 'schauspieler', 'schauspielerin', 'regisseur', 'dramaturg',
+  'oper', 'ballett', 'tanz', 'tänzer', 'tänzerin', 'choreograf', 'choreografin',
+  'literatur', 'buch', 'roman', 'novelle', 'gedicht', 'lyrik', 'prosa', 'autor',
+  'schriftsteller', 'dichter', 'poet', 'verlag', 'verleger', 'redakteur', 'journalist',
+  
+  // Politik und Gesellschaft
+  'politik', 'regierung', 'staat', 'land', 'nation', 'volk', 'bevölkerung', 'gesellschaft',
+  'demokratie', 'diktatur', 'monarchie', 'republik', 'bundesrepublik', 'bundesland',
+  'gemeinde', 'stadt', 'dorf', 'bezirk', 'region', 'provinz', 'territorium',
+  'wahlen', 'wahl', 'wähler', 'kandidat', 'kandidatin', 'partei', 'politiker',
+  'minister', 'ministerin', 'kanzler', 'kanzlerin', 'präsident', 'präsidentin',
+  'bürgermeister', 'bürgermeisterin', 'abgeordneter', 'abgeordnete', 'parlament',
+  'bundestag', 'landtag', 'gemeinderat', 'verfassung', 'gesetz', 'recht', 'justiz',
+  'gericht', 'richter', 'richterin', 'anwalt', 'anwältin', 'staatsanwalt',
+  'polizei', 'polizist', 'polizistin', 'beamter', 'beamtin', 'verwaltung',
+  
+  // Wirtschaft und Finanzen
+  'wirtschaft', 'finanzen', 'geld', 'währung', 'euro', 'dollar', 'pfund', 'yen',
+  'bank', 'sparkasse', 'volksbank', 'kredit', 'darlehen', 'hypothek', 'zinsen',
+  'investition', 'anlage', 'aktie', 'obligation', 'fonds', 'rente', 'pension',
+  'versicherung', 'krankenversicherung', 'lebensversicherung', 'haftpflicht',
+  'steuer', 'einkommensteuer', 'umsatzsteuer', 'mehrwertsteuer', 'finanzamt',
+  'gehalt', 'lohn', 'einkommen', 'ausgaben', 'kosten', 'preis', 'wert', 'wert',
+  'unternehmen', 'firma', 'konzern', 'holding', 'tochtergesellschaft', 'filiale',
+  'geschäft', 'handel', 'verkauf', 'einkauf', 'kunde', 'kundin', 'kundschaft',
+  'markt', 'börse', 'handel', 'import', 'export', 'handelsbilanz', 'handelsdefizit',
+  'konjunktur', 'boom', 'rezession', 'krise', 'inflation', 'deflation', 'wachstum',
+  
+  // Wissenschaft und Technik
+  'wissenschaft', 'forschung', 'entwicklung', 'technologie', 'technik', 'innovation',
+  'mathematik', 'physik', 'chemie', 'biologie', 'medizin', 'psychologie', 'soziologie',
+  'geschichte', 'geografie', 'geologie', 'astronomie', 'archäologie', 'linguistik',
+  'experiment', 'versuch', 'test', 'studie', 'untersuchung', 'analyse', 'synthese',
+  'theorie', 'hypothese', 'beweis', 'beweisführung', 'argumentation', 'logik',
+  'computer', 'software', 'hardware', 'programmierung', 'algorithmus', 'daten',
+  'information', 'kommunikation', 'netzwerk', 'internet', 'digitalisierung',
+  'künstliche', 'intelligenz', 'maschinelles', 'lernen', 'robotik', 'automatisierung',
+  
+  // Religion und Philosophie
+  'religion', 'glaube', 'gott', 'göttin', 'götter', 'göttinnen', 'heilige', 'heiliger',
+  'kirche', 'tempel', 'moschee', 'synagoge', 'kloster', 'mönch', 'nonne', 'priester',
+  'pastor', 'pfarrer', 'imam', 'rabbi', 'bischof', 'kardinal', 'papst', 'päpstin',
+  'bibel', 'koran', 'tora', 'gebet', 'gebete', 'gottesdienst', 'messe', 'predigt',
+  'taufe', 'kommunion', 'konfirmation', 'firmung', 'hochzeit', 'trauung', 'beerdigung',
+  'philosophie', 'ethik', 'moral', 'werte', 'normen', 'prinzipien', 'grundsätze',
+  'freiheit', 'gleichheit', 'gerechtigkeit', 'wahrheit', 'wahrhaftigkeit', 'ehrlichkeit',
+  'tugend', 'laster', 'sünde', 'vergebung', 'verzeihung', 'gnade', 'barmherzigkeit',
+  
+  // Familie und Beziehungen
+  'familie', 'verwandtschaft', 'verwandte', 'verwandter', 'verwandte', 'verwandte',
+  'eltern', 'mutter', 'vater', 'großmutter', 'großvater', 'oma', 'opa', 'onkel',
+  'tante', 'cousin', 'cousine', 'neffe', 'nichte', 'schwager', 'schwägerin',
+  'schwiegermutter', 'schwiegervater', 'schwiegertochter', 'schwiegersohn',
+  'ehe', 'heirat', 'hochzeit', 'ehemann', 'ehefrau', 'mann', 'frau', 'gatte', 'gattin',
+  'verlobung', 'verlobter', 'verlobte', 'braut', 'bräutigam', 'trauzeuge', 'trauzeugin',
+  'scheidung', 'trennung', 'alleinerziehend', 'stiefmutter', 'stiefvater', 'stiefkind',
+  'adoption', 'adoptivkind', 'adoptiveltern', 'pflegekind', 'pflegeeltern',
+  'freundschaft', 'freund', 'freundin', 'beste', 'freundin', 'bester', 'freund',
+  'bekanntschaft', 'bekannte', 'bekannter', 'nachbar', 'nachbarin', 'kollege', 'kollegin',
+  
+  // Hobbys und Interessen
+  'hobby', 'interesse', 'leidenschaft', 'passion', 'liebhaberei', 'neigung',
+  'sammeln', 'sammler', 'sammlerin', 'sammlung', 'album', 'heft', 'ordner',
+  'lesen', 'bücher', 'zeitung', 'zeitschrift', 'magazin', 'comic', 'manga',
+  'fernsehen', 'serie', 'film', 'dokumentation', 'nachrichten', 'wetterbericht',
+  'radio', 'podcast', 'hörbuch', 'musik', 'konzert', 'festival', 'party',
+  'feier', 'geburtstag', 'hochzeit', 'jubiläum', 'feiertag', 'fest', 'kirmes',
+  'reisen', 'urlaub', 'ferien', 'ausflug', 'wanderung', 'spaziergang', 'picknick',
+  'camping', 'zelt', 'schlafsack', 'rucksack', 'koffer', 'tasche', 'handtasche',
+  
+  // Haushalt und Hausarbeit
+  'haushalt', 'hausarbeit', 'putzen', 'saubermachen', 'wischen', 'staubsaugen',
+  'waschen', 'wäsche', 'wäschekorb', 'waschmaschine', 'trockner', 'bügeln',
+  'kochen', 'backen', 'braten', 'kochen', 'dämpfen', 'kochen', 'braten',
+  'einkaufen', 'einkaufsliste', 'supermarkt', 'markt', 'bäcker', 'metzger',
+  'gärtnern', 'garten', 'blumen', 'pflanzen', 'gießen', 'düngen', 'ernten',
+  'reparieren', 'reparatur', 'werkzeug', 'schrauben', 'nägel', 'kleber',
+  'aufräumen', 'ordnen', 'sortieren', 'organisieren', 'planen', 'vorbereiten',
+  
+  // Kommunikation und Sprache
+  'kommunikation', 'sprache', 'deutsch', 'englisch', 'französisch', 'spanisch',
+  'italienisch', 'russisch', 'chinesisch', 'japanisch', 'arabisch', 'türkisch',
+  'sprechen', 'reden', 'sagen', 'erzählen', 'berichten', 'mitteilen', 'informieren',
+  'fragen', 'antworten', 'antwort', 'frage', 'antworte', 'frage', 'antworte',
+  'zuhören', 'hören', 'verstehen', 'verständnis', 'missverständnis', 'klarheit',
+  'schreiben', 'lesen', 'buchstabe', 'wort', 'satz', 'text', 'brief', 'email',
+  'telefonieren', 'anrufen', 'telefon', 'handy', 'smartphone', 'nachricht',
+  'chatten', 'skypen', 'videotelefonie', 'konferenz', 'meeting', 'besprechung',
+  
+  // Gefühle und Emotionen (erweitert)
+  'emotion', 'gefühl', 'stimmung', 'laune', 'atmosphäre', 'klima', 'vibe',
+  'glücklich', 'traurig', 'wütend', 'ärgerlich', 'verärgert', 'aufgeregt',
+  'nervös', 'ängstlich', 'sorgen', 'sorge', 'besorgt', 'verwirrt', 'verwirrung',
+  'überrascht', 'überraschung', 'erstaunt', 'erstaunen', 'verwundert', 'verwunderung',
+  'enttäuscht', 'enttäuschung', 'frustriert', 'frustration', 'verzweifelt', 'verzweiflung',
+  'hoffnungsvoll', 'hoffnung', 'optimistisch', 'optimismus', 'pessimistisch', 'pessimismus',
+  'zufrieden', 'zufriedenheit', 'unzufrieden', 'unzufriedenheit', 'zufriedenstellend',
+  'stolz', 'stolz', 'stolz', 'stolz', 'stolz', 'stolz', 'stolz', 'stolz', 'stolz',
+  'schüchtern', 'schüchternheit', 'selbstbewusst', 'selbstbewusstsein', 'selbstvertrauen',
+  'unsicher', 'unsicherheit', 'sicher', 'sicherheit', 'geborgenheit', 'geborgen',
+  'einsam', 'einsamkeit', 'allein', 'alleinsein', 'gesellig', 'geselligkeit',
+  'liebevoll', 'liebe', 'zärtlich', 'zärtlichkeit', 'romantisch', 'romantik',
+  'leidenschaftlich', 'leidenschaft', 'begeistert', 'begeisterung', 'fasziniert', 'faszination',
+  
+  // Weitere häufige Wörter
+  'problem', 'lösung', 'hilfe', 'unterstützung', 'rat', 'ratschlag', 'tipp',
+  'idee', 'einfall', 'gedanke', 'überlegung', 'entscheidung', 'wahl', 'option',
+  'möglichkeit', 'chance', 'gelegenheit', 'chance', 'risiko', 'gefahr', 'sicherheit',
+  'erfolg', 'misserfolg', 'fehler', 'irrtum', 'korrektur', 'verbesserung',
+  'fortschritt', 'entwicklung', 'wachstum', 'veränderung', 'wandel', 'transformation',
+  'tradition', 'brauch', 'sitte', 'kultur', 'zivilisation', 'gesellschaft', 'gemeinschaft',
+  'gruppe', 'team', 'mannschaft', 'crew', 'personal', 'mitarbeiter', 'angestellter',
+  'chef', 'boss', 'leiter', 'manager', 'direktor', 'geschäftsführer', 'vorstand',
+  'mitglied', 'teilnehmer', 'teilnehmerin', 'besucher', 'besucherin', 'gast', 'gäste',
+  'kunde', 'kundin', 'klient', 'klientin', 'patient', 'patientin', 'schüler', 'schülerin',
+  'student', 'studentin', 'lehrer', 'lehrerin', 'professor', 'professorin', 'dozent',
+  'trainer', 'trainerin', 'coach', 'berater', 'beraterin', 'experte', 'expertin',
+  'spezialist', 'spezialistin', 'fachmann', 'fachfrau', 'profi', 'amateur', 'anfänger',
+  'fortgeschrittene', 'fortgeschrittener', 'erfahrene', 'erfahrener', 'erfahren',
+  'unerfahren', 'unerfahren', 'unerfahren', 'unerfahren', 'unerfahren', 'unerfahren'
+]);
+
+// Performance-optimierte Suchfunktionen
+export const wordValidationUtils = {
+  // Schnelle Set-basierte Suche
+  isValidWord: (word) => {
+    return germanWords.has(word.toLowerCase().trim());
+  },
+  
+  // Batch-Validierung für mehrere Wörter
+  validateWords: (words) => {
+    return words.map(word => ({
+      word,
+      isValid: germanWords.has(word.toLowerCase().trim())
+    }));
+  },
+  
+  // Wortlänge-Statistiken
+  getWordStats: () => {
+    const lengths = {};
+    germanWords.forEach(word => {
+      const len = word.length;
+      lengths[len] = (lengths[len] || 0) + 1;
+    });
+    return {
+      totalWords: germanWords.size,
+      lengthDistribution: lengths,
+      averageLength: Array.from(germanWords).reduce((sum, word) => sum + word.length, 0) / germanWords.size
+    };
+  },
+  
+  // Zufällige Wörter für Tests
+  getRandomWords: (count = 10) => {
+    const words = Array.from(germanWords);
+    const randomWords = [];
+    for (let i = 0; i < count; i++) {
+      randomWords.push(words[Math.floor(Math.random() * words.length)]);
+    }
+    return randomWords;
+  }
+};

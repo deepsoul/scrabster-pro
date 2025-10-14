@@ -126,17 +126,21 @@
                 </div>
               </div>
 
-            <div v-else-if="wordValidation" class="text-center">
-              <div
-                class="text-sm font-medium flex items-center justify-center gap-2"
-                :class="
-                  wordValidation.isValid ? 'text-green-600' : 'text-orange-600'
-                "
-              >
-                <span v-if="!wordValidation.isValid" class="text-orange-500">⚠️</span>
-                {{ wordValidation.reason }}
+              <div v-else-if="wordValidation" class="text-center">
+                <div
+                  class="text-sm font-medium flex items-center justify-center gap-2"
+                  :class="
+                    wordValidation.isValid
+                      ? 'text-green-600'
+                      : 'text-orange-600'
+                  "
+                >
+                  <span v-if="!wordValidation.isValid" class="text-orange-500">
+                    ⚠️
+                  </span>
+                  {{ wordValidation.reason }}
+                </div>
               </div>
-            </div>
 
               <!-- Punkte-Anzeige -->
               <div class="text-center">
