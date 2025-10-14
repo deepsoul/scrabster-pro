@@ -12,7 +12,7 @@ app.use(
     origin: (origin, callback) => {
       // Debug: Log incoming origin
       console.log('CORS Origin:', origin);
-      
+
       // In Entwicklung: localhost erlauben
       if (process.env.NODE_ENV !== 'production') {
         return callback(null, true);
