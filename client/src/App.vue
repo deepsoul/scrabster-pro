@@ -174,6 +174,21 @@
       @openImprint="showImprint"
     />
 
+    <!-- Global Dialog -->
+    <AppDialog
+      :isVisible="dialog.isVisible"
+      :title="dialog.title"
+      :message="dialog.message"
+      :type="dialog.type"
+      :showCloseButton="dialog.showCloseButton"
+      :showCancelButton="dialog.showCancelButton"
+      :confirmText="dialog.confirmText"
+      :cancelText="dialog.cancelText"
+      @close="closeDialog"
+      @confirm="handleDialogConfirm"
+      @cancel="handleDialogCancel"
+    />
+
     <!-- Toast Notifications -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
       <div
@@ -215,6 +230,7 @@ import InstructionsPage from './components/InstructionsPage.vue';
 import ImprintPage from './components/ImprintPage.vue';
 import TrainingMode from './components/TrainingMode.vue';
 import CookieDisclaimer from './components/CookieDisclaimer.vue';
+import AppDialog from './components/AppDialog.vue';
 import analytics from './services/analytics.js';
 
 // Reactive state
@@ -226,6 +242,20 @@ const gameApi = ref(null);
 const toasts = ref([]);
 const isMobileMenuOpen = ref(false);
 const trainingDifficulty = ref('medium');
+
+// Dialog state
+const dialog = ref({
+  isVisible: false,
+  title: 'Information',
+  message: '',
+  type: 'info',
+  showCloseButton: true,
+  showCancelButton: false,
+  confirmText: 'OK',
+  cancelText: 'Abbrechen',
+  onConfirm: null,
+  onCancel: null
+});
 
 // Toast management
 let toastId = 0;
@@ -445,6 +475,43 @@ const disconnect = () => {
     });
   }
 };
+
+// Dialog functions
+const showDialog = (options) => {
+  dialog.value = {
+    isVisible: true,
+    title: options.title || 'Information',
+    message: options.message || '',
+    type: options.type || 'info',
+    showCloseButton: options.showCloseButton !== false,
+    showCancelButton: options.showCancelButton || false,
+    confirmText: options.confirmText || 'OK',
+    cancelText: options.cancelText || 'Abbrechen',
+    onConfirm: options.onConfirm || null,
+    onCancel: options.onCancel || null
+  };
+};
+
+const closeDialog = () => {
+  dialog.value.isVisible = false;
+  dialog.value.onConfirm = null;
+  dialog.value.onCancel = null;
+};
+
+const handleDialogConfirm = () => {
+  if (dialog.value.onConfirm) {
+    dialog.value.onConfirm();
+  }
+};
+
+const handleDialogCancel = () => {
+  if (dialog.value.onCancel) {
+    dialog.value.onCancel();
+  }
+};
+
+// Global dialog function for easy access
+window.showDialog = showDialog;
 
 // Lifecycle
 onMounted(() => {

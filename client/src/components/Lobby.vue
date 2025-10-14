@@ -401,10 +401,18 @@ const copyGameCode = async () => {
         event_category: 'sharing',
       });
     }
-    alert('Spiel-Code kopiert!');
+    window.showDialog({
+      title: 'Erfolg',
+      message: 'Spiel-Code kopiert!',
+      type: 'success'
+    });
   } catch (error) {
     console.error('Failed to copy game code:', error);
-    alert('Fehler beim Kopieren');
+    window.showDialog({
+      title: 'Fehler',
+      message: 'Fehler beim Kopieren',
+      type: 'error'
+    });
   }
 };
 

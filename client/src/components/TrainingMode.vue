@@ -664,7 +664,7 @@ const submitWord = () => {
   if (canFormWord(word)) {
     // Berechne Punkte für das Wort zum Zeitpunkt der Eingabe
     const wordScore = calculateWordScore(word);
-    
+
     myWords.value.push(word);
     wordScores.value.push(wordScore);
 
@@ -682,7 +682,11 @@ const submitWord = () => {
     currentWord.value = '';
     wordValidation.value = null; // Clear validation after successful submit
   } else {
-    alert('Wort muss mindestens einen verfügbaren Buchstaben enthalten!');
+    window.showDialog({
+      title: 'Wort ungültig',
+      message: 'Wort muss mindestens einen verfügbaren Buchstaben enthalten!',
+      type: 'warning'
+    });
   }
 };
 

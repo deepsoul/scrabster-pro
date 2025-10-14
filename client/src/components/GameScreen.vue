@@ -663,7 +663,11 @@ const setupGameApiListeners = () => {
   });
 
   props.gameApi.on('wordRejected', data => {
-    alert(`Wort abgelehnt: ${data.message}`);
+    window.showDialog({
+      title: 'Wort abgelehnt',
+      message: data.message,
+      type: 'error'
+    });
   });
 
   props.gameApi.on('scrabster', data => {
