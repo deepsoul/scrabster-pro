@@ -273,11 +273,6 @@ function isScrabster(word, availableLetters, difficulty) {
   const difficultyConfig = DIFFICULTY_LEVELS[difficulty];
   const requiredLetters = difficultyConfig.scrabsterLetters;
 
-  // Scrabster: Mindestens X Buchstaben aus der verfügbaren Liste verwenden
-  if (wordLetters.length < requiredLetters) {
-    return false;
-  }
-
   // Zählen, wie viele Buchstaben aus der verfügbaren Liste verwendet wurden
   const availableLettersCopy = [...availableLetters];
   let usedLetters = 0;
@@ -290,7 +285,7 @@ function isScrabster(word, availableLetters, difficulty) {
     }
   }
 
-  // Scrabster wenn mindestens X Buchstaben verwendet wurden
+  // Scrabster wenn mindestens X Buchstaben aus der verfügbaren Liste verwendet wurden
   return usedLetters >= requiredLetters;
 }
 

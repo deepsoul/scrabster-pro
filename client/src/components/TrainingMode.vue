@@ -139,7 +139,9 @@
                   wordValidation.isValid ? 'text-green-600' : 'text-orange-600'
                 "
               >
-                <span v-if="!wordValidation.isValid" class="text-orange-500">⚠️</span>
+                <span v-if="!wordValidation.isValid" class="text-orange-500">
+                  ⚠️
+                </span>
                 {{ wordValidation.reason }}
               </div>
             </div>
@@ -846,7 +848,7 @@ const validateCurrentWord = async () => {
     const result = await wordValidationService.validateWord(
       currentWord.value.trim()
     );
-    
+
     // Zusätzliche Prüfung: Verwendet das Wort überhaupt Buchstaben aus der verfügbaren Liste?
     const wordLetters = currentWord.value.toUpperCase().split('');
     const availableLetters = [...remainingLetters.value];
@@ -866,7 +868,7 @@ const validateCurrentWord = async () => {
         isValid: false,
         reason: 'Wort verwendet keine verfügbaren Buchstaben (0 Punkte)',
         word: currentWord.value.trim(),
-        source: 'letter_check'
+        source: 'letter_check',
       };
     } else {
       wordValidation.value = result;
