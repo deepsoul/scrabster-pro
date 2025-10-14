@@ -49,7 +49,9 @@
             </div>
             <div class="text-2xl font-bold mb-2">{{ winner.username }}</div>
             <div class="text-lg">{{ winner.words.length }} Wörter</div>
-            <div class="text-xl font-bold text-yellow-200">{{ winner.score }} Punkte</div>
+            <div class="text-xl font-bold text-yellow-200">
+              {{ winner.score }} Punkte
+            </div>
             <div
               v-if="gameResult.reason === 'scrabster'"
               class="text-sm mt-2 bg-yellow-600 rounded px-2 py-1"
@@ -71,7 +73,7 @@
             :key="player.id"
             class="flex items-center justify-between p-4 rounded-lg border-2"
             :class="
-              gameResult.winners.some((w) => w.id === player.id)
+              gameResult.winners.some(w => w.id === player.id)
                 ? 'border-yellow-400 bg-yellow-50'
                 : 'border-gray-200 bg-gray-50'
             "
@@ -97,7 +99,7 @@
                   <span
                     v-if="
                       gameResult.reason === 'scrabster' &&
-                      gameResult.winners.some((w) => w.id === player.id)
+                      gameResult.winners.some(w => w.id === player.id)
                     "
                     class="text-yellow-600 font-bold"
                   >
@@ -196,7 +198,7 @@
 </template>
 
 <script setup>
-import {computed} from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   gameResult: Object,
@@ -207,14 +209,14 @@ const emit = defineEmits(['playAgain', 'backToLobby']);
 // Computed properties
 const sortedPlayers = computed(() => {
   return [...props.gameResult.players].sort(
-    (a, b) => b.score - a.score, // Nach Punkten sortieren (höchste zuerst)
+    (a, b) => b.score - a.score // Nach Punkten sortieren (höchste zuerst)
   );
 });
 
 const totalWords = computed(() => {
   return props.gameResult.players.reduce(
     (total, player) => total + player.words.length,
-    0,
+    0
   );
 });
 
@@ -227,8 +229,8 @@ const averageWords = computed(() => {
 
 const longestWord = computed(() => {
   let longest = 0;
-  props.gameResult.players.forEach((player) => {
-    player.words.forEach((word) => {
+  props.gameResult.players.forEach(player => {
+    player.words.forEach(word => {
       if (word.length > longest) {
         longest = word.length;
       }

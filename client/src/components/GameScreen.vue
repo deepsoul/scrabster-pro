@@ -111,17 +111,46 @@
               </button>
             </div>
 
-            <!-- Punkte-Anzeige für aktuelles Wort -->
+            <!-- Wort-Validierung und Punkte-Anzeige -->
             <div
               v-if="currentWord.trim() && gameState === 'playing'"
-              class="mt-3 text-center"
+              class="mt-3 space-y-2"
             >
-              <span class="text-sm text-gray-600">
-                Dieses Wort bringt:
-                <span class="font-bold text-primary-600">
-                  {{ currentWordScore }} Punkte
+              <!-- Validierungs-Feedback -->
+              <div v-if="isValidating" class="text-center">
+                <div class="inline-flex items-center text-sm text-gray-500">
+                  <div
+                    class="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"
+                  ></div>
+                  Wort wird validiert...
+                </div>
+              </div>
+
+              <div v-else-if="wordValidation" class="text-center">
+                <div
+                  class="text-sm font-medium flex items-center justify-center gap-2"
+                  :class="
+                    wordValidation.isValid
+                      ? 'text-green-600'
+                      : 'text-orange-600'
+                  "
+                >
+                  <span v-if="!wordValidation.isValid" class="text-orange-500">
+                    ⚠️
+                  </span>
+                  {{ wordValidation.reason }}
+                </div>
+              </div>
+
+              <!-- Punkte-Anzeige -->
+              <div class="text-center">
+                <span class="text-sm text-gray-600">
+                  Dieses Wort bringt:
+                  <span class="font-bold text-primary-600">
+                    {{ currentWordScore }} Punkte
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
 
             <!-- Voice Input -->
@@ -195,8 +224,16 @@
               >
                 <div class="flex items-center justify-between">
                   <div>
-                    <div class="font-medium text-gray-900">
+                    <div
+                      class="font-medium text-gray-900 flex items-center gap-2"
+                    >
                       {{ player.username }}
+                      <span
+                        v-if="player.scrabsters && player.scrabsters > 0"
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"
+                      >
+                        ⚡ {{ player.scrabsters }} Scrabster
+                      </span>
                     </div>
                     <div class="text-sm text-gray-500">
                       {{ player.words.length }} Wörter
@@ -291,6 +328,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import ShareGame from './ShareGame.vue';
+import soundService from '../services/soundService.js';
+import wordValidationService from '../services/wordValidationService.js';
 
 const props = defineProps({
   gameData: Object,
@@ -320,6 +359,10 @@ const isVoiceSupported = ref(false);
 const isListening = ref(false);
 const recognition = ref(null);
 const highlightedLetters = ref([]);
+
+// Word validation
+const wordValidation = ref(null);
+const isValidating = ref(false);
 
 // Computed properties
 const difficultyText = computed(() => {
@@ -405,6 +448,9 @@ const currentWordScore = computed(() => {
     }
   }
 
+  // Wenn kein einziger Buchstabe aus der verfügbaren Liste verwendet wurde: 0 Punkte
+  if (usedLetters === 0) return 0;
+
   return Math.max(1, usedLetters);
 });
 
@@ -432,6 +478,9 @@ const submitWord = async () => {
   )
     return;
 
+  // Validation is now only a warning, not a blocker
+  // Words can be submitted even if marked as invalid
+
   try {
     await props.gameApi.submitWord(currentWord.value.trim());
 
@@ -443,6 +492,7 @@ const submitWord = async () => {
     }
 
     currentWord.value = '';
+    wordValidation.value = null; // Clear validation after successful submit
   } catch (error) {
     console.error('Error submitting word:', error);
   }
@@ -606,6 +656,8 @@ const setupGameApiListeners = () => {
   props.gameApi.on('wordSubmitted', data => {
     if (data.playerId === currentPlayerId.value) {
       myWords.value.push(data.word);
+      // Sound-Effekt für erfolgreich eingereichtes Wort
+      soundService.playWordSubmitSound();
     }
     players.value = data.players;
   });
@@ -614,11 +666,85 @@ const setupGameApiListeners = () => {
     alert(`Wort abgelehnt: ${data.message}`);
   });
 
+  props.gameApi.on('scrabster', data => {
+    if (data.playerId === currentPlayerId.value) {
+      // Scrabster-Sound abspielen
+      soundService.playScrabsterSound();
+
+      // Scrabster-Notification anzeigen (optional)
+      console.log(
+        `🎉 SCRABSTER! Du hast "${data.word}" gefunden! (${data.scrabsterCount} Scrabster gesamt)`
+      );
+    }
+    players.value = data.players;
+  });
+
   props.gameApi.on('gameOver', data => {
     gameState.value = 'finished';
+    // Gewinner-Sound abspielen
+    soundService.playWinnerSound();
     emit('gameOver', data);
   });
 };
+
+// Word validation
+const validateCurrentWord = async () => {
+  if (!currentWord.value.trim() || gameState.value !== 'playing') {
+    wordValidation.value = null;
+    return;
+  }
+
+  isValidating.value = true;
+  wordValidation.value = null;
+
+  try {
+    const result = await wordValidationService.validateWord(
+      currentWord.value.trim()
+    );
+
+    // Zusätzliche Prüfung: Verwendet das Wort überhaupt Buchstaben aus der verfügbaren Liste?
+    const wordLetters = currentWord.value.toUpperCase().split('');
+    const availableLetters = [...letters.value];
+    let usedLetters = 0;
+
+    for (const letter of wordLetters) {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        usedLetters++;
+        availableLetters.splice(index, 1);
+      }
+    }
+
+    // Wenn kein Buchstabe aus der verfügbaren Liste verwendet wurde
+    if (usedLetters === 0) {
+      wordValidation.value = {
+        isValid: false,
+        reason: 'Wort verwendet keine verfügbaren Buchstaben (0 Punkte)',
+        word: currentWord.value.trim(),
+        source: 'letter_check',
+      };
+    } else {
+      wordValidation.value = result;
+    }
+  } catch (error) {
+    console.warn('Wort-Validierung fehlgeschlagen:', error);
+    wordValidation.value = {
+      isValid: true,
+      reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+    };
+  } finally {
+    isValidating.value = false;
+  }
+};
+
+// Watch currentWord for validation
+watch(currentWord, () => {
+  // Debounce validation
+  clearTimeout(validationTimeout);
+  validationTimeout = setTimeout(validateCurrentWord, 500);
+});
+
+let validationTimeout = null;
 
 // Lifecycle
 onMounted(() => {

@@ -236,9 +236,9 @@ const weightedAlphabet = [
 ];
 
 const DIFFICULTY_LEVELS = {
-  easy: { letters: 12, time: 120 },
-  medium: { letters: 10, time: 90 },
-  hard: { letters: 8, time: 60 },
+  easy: { letters: 12, time: 120, scrabsterLetters: 3 },
+  medium: { letters: 10, time: 90, scrabsterLetters: 4 },
+  hard: { letters: 8, time: 60, scrabsterLetters: 5 },
 };
 
 // Hilfsfunktionen
@@ -268,25 +268,25 @@ function validateWord(word, availableLetters) {
   return false; // Kein Buchstabe des Wortes ist verfügbar
 }
 
-function isScrabster(word, availableLetters) {
+function isScrabster(word, availableLetters, difficulty) {
   const wordLetters = word.toUpperCase().split('');
+  const difficultyConfig = DIFFICULTY_LEVELS[difficulty];
+  const requiredLetters = difficultyConfig.scrabsterLetters;
 
-  // Scrabster: Alle verfügbaren Buchstaben müssen verwendet werden
-  if (wordLetters.length !== availableLetters.length) {
-    return false;
-  }
-
-  // Prüfen ob alle Buchstaben des Wortes in den verfügbaren Buchstaben enthalten sind
+  // Zählen, wie viele Buchstaben aus der verfügbaren Liste verwendet wurden
   const availableLettersCopy = [...availableLetters];
+  let usedLetters = 0;
+
   for (const letter of wordLetters) {
     const index = availableLettersCopy.indexOf(letter);
-    if (index === -1) {
-      return false; // Buchstabe nicht verfügbar
+    if (index !== -1) {
+      availableLettersCopy.splice(index, 1); // Buchstabe "verbrauchen"
+      usedLetters++;
     }
-    availableLettersCopy.splice(index, 1); // Buchstabe "verbrauchen"
   }
 
-  return true; // Alle Buchstaben wurden verwendet
+  // Scrabster wenn mindestens X Buchstaben aus der verfügbaren Liste verwendet wurden
+  return usedLetters >= requiredLetters;
 }
 
 // Middleware
@@ -466,21 +466,25 @@ app.post('/game/submit-word', (req, res) => {
   gameRoom.lastUpdate = Date.now();
 
   // Prüfen auf Scrabster
-  if (isScrabster(word, gameRoom.letters)) {
-    player.score += 2;
-    gameRoom.gameState = 'finished';
+  if (isScrabster(word, gameRoom.letters, gameRoom.difficulty)) {
+    // Scrabster: 10 Extrapunkte + Badge
+    player.score += 10;
 
-    // Bei Scrabster gewinnt der Spieler automatisch
-    gameRoom.winner = player;
-    gameRoom.isDraw = false;
+    // Scrabster-Badge hinzufügen (falls noch nicht vorhanden)
+    if (!player.scrabsters) {
+      player.scrabsters = 0;
+    }
+    player.scrabsters += 1;
+
+    gameRoom.lastUpdate = Date.now();
 
     return res.json({
       success: true,
       scrabster: true,
       scrabsterWord: word.toUpperCase(),
+      scrabsterCount: player.scrabsters,
       players: Array.from(gameRoom.players.values()),
-      winner: gameRoom.winner,
-      isDraw: gameRoom.isDraw,
+      // Spiel läuft weiter - kein gameState = 'finished'
     });
   }
 
