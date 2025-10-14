@@ -7,7 +7,7 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Create Game -->
       <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
         <div class="text-center mb-6">
@@ -84,6 +84,61 @@
               Erstelle Spiel...
             </span>
             <span v-else>Spiel erstellen</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Training Mode -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div class="text-center mb-6">
+          <div
+            class="mx-auto h-16 w-16 bg-green-500 rounded-full flex items-center justify-center mb-4"
+          >
+            <svg
+              class="h-8 w-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+              />
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-900">Trainingsmodus</h2>
+          <p class="text-gray-600 mt-2">Übe alleine ohne Spielpartner</p>
+        </div>
+
+        <form @submit.prevent="startTraining" class="space-y-6">
+          <div>
+            <label
+              for="trainingDifficulty"
+              class="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Schwierigkeitsstufe
+            </label>
+            <select
+              id="trainingDifficulty"
+              v-model="selectedTrainingDifficulty"
+              class="input-field"
+            >
+              <option value="easy">Leicht (9 Buchstaben, 120s)</option>
+              <option value="medium">Mittel (8 Buchstaben, 90s)</option>
+              <option value="hard">Schwer (7 Buchstaben, 60s)</option>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg transition-colors duration-200 text-lg"
+          >
+            <span class="flex items-center justify-center">
+              <span class="mr-2">🎯</span>
+              Training starten
+            </span>
           </button>
         </form>
       </div>
@@ -252,9 +307,10 @@ const props = defineProps({
   currentUser: String,
 });
 
-const emit = defineEmits(['createGame', 'joinGame']);
+const emit = defineEmits(['createGame', 'joinGame', 'startTraining']);
 
 const selectedDifficulty = ref('medium');
+const selectedTrainingDifficulty = ref('medium');
 const gameCode = ref('');
 const isCreating = ref(false);
 const isJoining = ref(false);
@@ -351,6 +407,13 @@ const copyGameCode = async () => {
     console.error('Failed to copy game code:', error);
     alert('Fehler beim Kopieren');
   }
+};
+
+const startTraining = () => {
+  const trainingData = {
+    difficulty: selectedTrainingDifficulty.value,
+  };
+  emit('startTraining', trainingData);
 };
 
 const generateGameCode = () => {
