@@ -49,6 +49,7 @@
             </div>
             <div class="text-2xl font-bold mb-2">{{ winner.username }}</div>
             <div class="text-lg">{{ winner.words.length }} Wörter</div>
+            <div class="text-xl font-bold text-yellow-200">{{ winner.score }} Punkte</div>
             <div
               v-if="gameResult.reason === 'scrabster'"
               class="text-sm mt-2 bg-yellow-600 rounded px-2 py-1"
@@ -103,11 +104,14 @@
                     (+2 Scrabster Bonus)
                   </span>
                 </div>
+                <div class="text-xs text-gray-500">
+                  {{ player.score }} Punkte
+                </div>
               </div>
             </div>
             <div class="text-right">
               <div class="text-2xl font-bold text-primary-600">
-                {{ player.words.length }}
+                {{ player.score }}
               </div>
               <div class="text-xs text-gray-500">Punkte</div>
             </div>
@@ -203,7 +207,7 @@ const emit = defineEmits(['playAgain', 'backToLobby']);
 // Computed properties
 const sortedPlayers = computed(() => {
   return [...props.gameResult.players].sort(
-    (a, b) => a.words.length - b.words.length,
+    (a, b) => b.score - a.score, // Nach Punkten sortieren (höchste zuerst)
   );
 });
 
