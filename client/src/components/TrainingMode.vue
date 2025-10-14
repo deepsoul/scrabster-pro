@@ -342,6 +342,7 @@ const gameState = ref('waiting'); // waiting, playing, paused, finished
 const timeLeft = ref(0);
 const letters = ref([]);
 const myWords = ref([]);
+const wordScores = ref([]); // Speichere Punkte für jedes Wort
 const currentWord = ref('');
 const isScrabster = ref(false);
 const scrabsterCount = ref(0);
@@ -437,10 +438,7 @@ const currentWordScore = computed(() => {
 
 // Training statistics (neue Regel)
 const totalScore = computed(() => {
-  return myWords.value.reduce((sum, word) => {
-    // Calculate score for each word including Scrabster bonus
-    return sum + calculateWordScore(word);
-  }, 0);
+  return wordScores.value.reduce((sum, score) => sum + score, 0);
 });
 
 const averageScore = computed(() => {
@@ -449,13 +447,8 @@ const averageScore = computed(() => {
 });
 
 const bestWordScore = computed(() => {
-  if (myWords.value.length === 0) return 0;
-
-  let best = 0;
-  for (const word of myWords.value) {
-    best = Math.max(best, calculateWordScore(word));
-  }
-  return best;
+  if (wordScores.value.length === 0) return 0;
+  return Math.max(...wordScores.value);
 });
 
 const remainingLetters = computed(() => {
@@ -593,6 +586,7 @@ const startTraining = () => {
   letters.value = generateLetters();
   timeLeft.value = difficultyTime.value;
   myWords.value = [];
+  wordScores.value = [];
   currentWord.value = '';
   isScrabster.value = false;
   gameState.value = 'playing';
@@ -615,6 +609,7 @@ const restartTraining = () => {
   letters.value = [];
   timeLeft.value = 0;
   myWords.value = [];
+  wordScores.value = [];
   currentWord.value = '';
   isScrabster.value = false;
   scrabsterCount.value = 0;
@@ -667,7 +662,11 @@ const submitWord = () => {
 
   // Check if word can be formed with available letters (new rule: only need some letters)
   if (canFormWord(word)) {
+    // Berechne Punkte für das Wort zum Zeitpunkt der Eingabe
+    const wordScore = calculateWordScore(word);
+    
     myWords.value.push(word);
+    wordScores.value.push(wordScore);
 
     // Play word submit sound
     soundService.playWordSubmitSound();
