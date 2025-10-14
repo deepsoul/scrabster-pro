@@ -6,10 +6,35 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-// CORS - Temporär alle Origins erlauben für Debugging
+// CORS - Vereinfacht da Frontend und Backend auf gleicher Domain
 app.use(
   cors({
-    origin: true, // Alle Origins erlauben
+    origin: (origin, callback) => {
+      // In Entwicklung: localhost erlauben
+      if (process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+
+      // In Produktion: Nur scrabster-pro.de Domains erlauben
+      const allowedOrigins = [
+        'https://scrabster-pro.de',
+        'https://www.scrabster-pro.de',
+        'https://scrabster-pro.vercel.app', // Fallback für Vercel
+      ];
+
+      if (origin && allowedOrigins.includes(origin)) {
+        console.log('CORS Allowed Origin:', origin);
+        return callback(null, origin);
+      }
+
+      // Fallback: Origin erlauben wenn nicht gesetzt (z.B. Postman)
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      console.log('CORS Blocked Origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
@@ -19,34 +44,9 @@ app.use(
       'Accept',
       'Origin',
     ],
-    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
     optionsSuccessStatus: 200,
   })
 );
-
-// Debug: CORS-Header für alle Requests loggen
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log('Request Origin:', origin);
-  console.log('Response Headers before:', res.getHeaders());
-
-  // Explizit CORS-Header setzen
-  if (origin) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header(
-      'Access-Control-Allow-Methods',
-      'GET, POST, PUT, DELETE, OPTIONS'
-    );
-    res.header(
-      'Access-Control-Allow-Headers',
-      'Content-Type, Authorization, X-Requested-With, Accept, Origin'
-    );
-    console.log('CORS Headers set for:', origin);
-  }
-
-  next();
-});
 
 // Entfernt - doppelte CORS-Middleware verursacht Konflikte
 app.use(express.json());

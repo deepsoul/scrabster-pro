@@ -1,9 +1,9 @@
 // Game API Service für REST-basierte Kommunikation
 class GameApiService {
   constructor() {
-    // In Produktion: Render-Backend, lokal: lokaler Server
+    // In Produktion: Render-Backend mit Custom Domain, lokal: lokaler Server
     this.baseUrl = import.meta.env.PROD
-      ? 'https://scrabster-pro.onrender.com'
+      ? 'https://api.scrabster-pro.de'
       : 'http://localhost:3000';
     this.pollingInterval = null;
     this.currentGameCode = null;
