@@ -252,8 +252,14 @@ class GameApiService {
   getWinners(players) {
     if (players.length === 0) return [];
 
-    const minWords = Math.min(...players.map(p => p.words.length));
-    return players.filter(p => p.words.length === minWords);
+    // Nur Spieler mit mindestens einem Wort berücksichtigen
+    const playersWithWords = players.filter(p => p.words && p.words.length > 0);
+    
+    if (playersWithWords.length === 0) return [];
+
+    // Nach höchster Punktzahl sortieren
+    const maxScore = Math.max(...playersWithWords.map(p => p.score));
+    return playersWithWords.filter(p => p.score === maxScore);
   }
 
   // Disconnect
