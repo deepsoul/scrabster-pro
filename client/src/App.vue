@@ -233,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import GameApiService from './services/gameApi';
 import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
@@ -257,6 +257,11 @@ const toasts = ref([]);
 const isMobileMenuOpen = ref(false);
 const trainingDifficulty = ref('medium');
 const showRenderSpinup = ref(false);
+
+// Debug: Watch showRenderSpinup changes
+watch(showRenderSpinup, (newValue, oldValue) => {
+  console.log('showRenderSpinup changed:', oldValue, '->', newValue);
+});
 
 // Dialog state
 const dialog = ref({
@@ -318,6 +323,7 @@ const connectGameApi = () => {
 
   // Hide spinup loader on successful connection
   gameApi.value.on('connect', () => {
+    console.log('Connect event - hiding spinup loader');
     showRenderSpinup.value = false;
   });
 
@@ -328,6 +334,7 @@ const connectGameApi = () => {
       ...data,
       gameState: 'waiting',
     };
+    console.log('GameCreated event - hiding spinup loader');
     showRenderSpinup.value = false; // Hide loader on successful create
   });
 
@@ -338,6 +345,7 @@ const connectGameApi = () => {
       ...data,
       gameState: 'waiting',
     };
+    console.log('GameJoined event - hiding spinup loader');
     showRenderSpinup.value = false; // Hide loader on successful join
   });
 
@@ -555,6 +563,10 @@ const handleRenderSpinupTimeout = () => {
 onMounted(() => {
   // Initialize analytics
   analytics.init();
+
+  // Ensure spinup loader is hidden on mount
+  showRenderSpinup.value = false;
+  console.log('App mounted - spinup loader set to false');
 
   // Check if user is already logged in (localStorage)
   const savedUser = localStorage.getItem('scrabster-username');
