@@ -258,11 +258,6 @@ const isMobileMenuOpen = ref(false);
 const trainingDifficulty = ref('medium');
 const showRenderSpinup = ref(false);
 
-// Debug: Watch showRenderSpinup changes
-watch(showRenderSpinup, (newValue, oldValue) => {
-  console.log('showRenderSpinup changed:', oldValue, '->', newValue);
-});
-
 // Dialog state
 const dialog = ref({
   isVisible: false,
@@ -566,7 +561,6 @@ onMounted(() => {
 
   // Ensure spinup loader is hidden on mount
   showRenderSpinup.value = false;
-  console.log('App mounted - spinup loader set to false');
 
   // Check if user is already logged in (localStorage)
   const savedUser = localStorage.getItem('scrabster-username');
