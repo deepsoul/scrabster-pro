@@ -4,10 +4,14 @@
   >
     <div class="max-w-md w-full space-y-8">
       <div class="text-center">
-        <div
-          class="mx-auto h-20 w-20 bg-primary-500 rounded-full flex items-center justify-center mb-6"
-        >
-          <span class="text-3xl font-bold text-white">S</span>
+        <div class="mx-auto mb-6">
+          <img
+            src="/logo.svg"
+            alt="Scrabster Pro Logo - Multiplayer Wortspiel mit Buchstaben-Tiles"
+            class="h-20 w-20 mx-auto"
+            width="80"
+            height="80"
+          />
         </div>
         <h2 class="text-3xl font-bold text-gray-900">
           Willkommen bei Scrabster Pro

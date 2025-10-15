@@ -74,10 +74,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Scrabster Pro" />
 
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Scrabster Pro" />
+    <meta
+      name="msapplication-tooltip"
+      content="Scrabster Pro - Multiplayer Wortspiel"
+    />
+    <meta name="msapplication-starturl" content="/" />
+    <meta name="msapplication-navbutton-color" content="#3B82F6" />
+    <meta name="msapplication-TileImage" content="/logo.svg" />
+
+    <!-- Performance and Security -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="referrer" content="origin-when-cross-origin" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+
     <!-- Canonical URL -->
     <link rel="canonical" href="https://scrabster-pro.de/" />
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts with performance optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -85,40 +103,115 @@
       rel="stylesheet"
     />
 
+    <!-- DNS Prefetch for external resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/logo.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/og-image.png" as="image" type="image/png" />
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Scrabster Pro",
-        "description": "Ein spannendes Echtzeit-Multiplayer-Wortspiel, bei dem Spieler aus zufälligen Buchstaben Wörter bilden müssen.",
+        "alternateName": "Scrabster",
+        "description": "Ein spannendes Echtzeit-Multiplayer-Wortspiel, bei dem Spieler aus zufälligen Buchstaben Wörter bilden müssen. Kostenlos online spielen!",
         "url": "https://scrabster-pro.de/",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Web Browser",
+        "softwareVersion": "1.0.0",
         "offers": {
           "@type": "Offer",
           "price": "0",
-          "priceCurrency": "EUR"
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock"
         },
         "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "4.8",
-          "ratingCount": "150"
+          "ratingCount": "150",
+          "bestRating": "5",
+          "worstRating": "1"
         },
         "author": {
           "@type": "Organization",
-          "name": "Scrabster Pro Team"
+          "name": "Scrabster Pro Team",
+          "url": "https://scrabster-pro.de/"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "Scrabster Pro Team"
+          "name": "Scrabster Pro Team",
+          "url": "https://scrabster-pro.de/"
         },
         "datePublished": "2024-01-01",
         "dateModified": "2024-12-20",
         "inLanguage": "de",
         "isAccessibleForFree": true,
         "browserRequirements": "Requires JavaScript. Requires HTML5.",
-        "screenshot": "https://scrabster-pro.de/og-image.png"
+        "screenshot": "https://scrabster-pro.de/og-image.png",
+        "featureList": [
+          "Echtzeit-Multiplayer",
+          "Wortspiel-Mechanik",
+          "Punkte-System",
+          "Schwierigkeitsgrade",
+          "Spracheingabe",
+          "Mobile Optimierung"
+        ],
+        "gameItem": {
+          "@type": "VideoGame",
+          "genre": "Puzzle",
+          "gamePlatform": "Web Browser",
+          "playMode": "MultiPlayer"
+        }
+      }
+    </script>
+
+    <!-- Additional Organization Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Scrabster Pro Team",
+        "url": "https://scrabster-pro.de/",
+        "logo": "https://scrabster-pro.de/logo.svg",
+        "sameAs": ["https://github.com/scrabster-pro"]
+      }
+    </script>
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Wie spielt man Scrabster Pro?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Scrabster Pro ist ein Multiplayer-Wortspiel. Spieler erhalten zufällige Buchstaben und müssen daraus Wörter bilden. Je länger und strategischer das Wort, desto mehr Punkte gibt es. Der Spieler mit den meisten Punkten gewinnt."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Ist Scrabster Pro kostenlos?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Ja, Scrabster Pro ist vollständig kostenlos und kann direkt im Browser gespielt werden, ohne Registrierung oder Download."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Kann man mit Freunden spielen?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Ja, Scrabster Pro unterstützt Echtzeit-Multiplayer. Spieler können Spielcodes teilen und gemeinsam in Echtzeit spielen."
+            }
+          }
+        ]
       }
     </script>
   </head>
