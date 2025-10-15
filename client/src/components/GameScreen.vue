@@ -511,7 +511,7 @@ const isHost = computed((): boolean => {
     return false;
   }
   // Der erste Spieler im Array ist der Host (Spielersteller)
-  return players.value[0] && players.value[0].id === currentPlayerId.value;
+  return players.value[0]?.id === currentPlayerId.value;
 });
 
 // Methods
@@ -641,10 +641,12 @@ const highlightMatchingLetters = (word: string): void => {
 
   for (let i = 0; i < wordLetters.length; i++) {
     const letter = wordLetters[i];
-    const index = availableLetters.indexOf(letter);
-    if (index !== -1) {
-      highlighted.push(index);
-      availableLetters.splice(index, 1); // Remove to avoid duplicates
+    if (letter) {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        highlighted.push(index);
+        availableLetters.splice(index, 1); // Remove to avoid duplicates
+      }
     }
   }
 
@@ -660,14 +662,14 @@ const highlightMatchingLetters = (word: string): void => {
 const setupGameApiListeners = (): void => {
   if (!props.gameApi) return;
 
-  props.gameApi.on('gameJoined', data => {
+  props.gameApi.on('gameJoined', (data: any) => {
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     players.value = data.players;
     currentPlayerId.value = data.playerId;
   });
 
-  props.gameApi.on('gameCreated', data => {
+  props.gameApi.on('gameCreated', (data: any) => {
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     currentPlayerId.value = data.playerId;
@@ -676,22 +678,22 @@ const setupGameApiListeners = (): void => {
     }
   });
 
-  props.gameApi.on('playerJoined', data => {
+  props.gameApi.on('playerJoined', (data: any) => {
     players.value = data.players;
   });
 
-  props.gameApi.on('playerLeft', data => {
+  props.gameApi.on('playerLeft', (data: any) => {
     players.value = data.players;
   });
 
-  props.gameApi.on('gameStarted', data => {
+  props.gameApi.on('gameStarted', (data: any) => {
     gameState.value = 'playing';
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     players.value = data.players;
   });
 
-  props.gameApi.on('gameStateUpdate', data => {
+  props.gameApi.on('gameStateUpdate', (data: any) => {
     timeLeft.value = data.timeLeft;
     players.value = data.players;
     if (data.gameState) {
@@ -706,7 +708,7 @@ const setupGameApiListeners = (): void => {
     }
   });
 
-  props.gameApi.on('wordSubmitted', data => {
+  props.gameApi.on('wordSubmitted', (data: any) => {
     if (data.playerId === currentPlayerId.value) {
       myWords.value.push(data.word);
 
@@ -725,15 +727,15 @@ const setupGameApiListeners = (): void => {
     players.value = data.players;
   });
 
-  props.gameApi.on('wordRejected', data => {
-    window.showDialog({
+  props.gameApi.on('wordRejected', (data: any) => {
+    (window as any).showDialog({
       title: 'Wort abgelehnt',
       message: data.message,
       type: 'error',
     });
   });
 
-  props.gameApi.on('scrabster', data => {
+  props.gameApi.on('scrabster', (data: any) => {
     if (data.playerId === currentPlayerId.value) {
       // Scrabster-Sound abspielen
       soundService.playScrabsterSound();
@@ -746,7 +748,7 @@ const setupGameApiListeners = (): void => {
     players.value = data.players;
   });
 
-  props.gameApi.on('gameOver', data => {
+  props.gameApi.on('gameOver', (data: any) => {
     gameState.value = 'finished';
     // Gewinner-Sound abspielen
     soundService.playWinnerSound();
