@@ -260,7 +260,7 @@
           <span
             class="text-3xl font-bold text-primary-600 font-mono tracking-wider"
           >
-            {{ createdGameCode }}
+            {{ createdGameCode || 'Wird generiert...' }}
           </span>
         </div>
         <p class="text-sm text-primary-500 mt-2 mb-4">
@@ -333,7 +333,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import ShareGame from './ShareGame.vue';
 import type { DifficultyLevel } from '@/types';
 import type GameApiService from '@/services/gameApi';
@@ -361,6 +361,21 @@ const createdGameCode = ref<string>('');
 // Share modal state
 const showShareModal = ref<boolean>(false);
 
+// URL parameter handling
+const handleUrlParameters = (): void => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const codeParam = urlParams.get('code');
+
+  if (codeParam) {
+    gameCode.value = codeParam.toUpperCase();
+  }
+};
+
+// Initialize URL parameters on component mount
+onMounted(() => {
+  handleUrlParameters();
+});
+
 const createGame = async (): Promise<void> => {
   isCreating.value = true;
 
@@ -376,8 +391,9 @@ const createGame = async (): Promise<void> => {
         gameData.username,
         gameData.difficulty
       );
-      createdGameCode.value = result.gameCode;
-      emit('createGame', result);
+      const gameCode = result.gameCode || generateGameCode();
+      createdGameCode.value = gameCode;
+      emit('createGame', { ...result, gameCode });
     } else {
       // Fallback for testing
       const fallbackData = {

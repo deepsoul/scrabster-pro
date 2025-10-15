@@ -42,7 +42,7 @@
             <div
               class="text-3xl font-bold text-primary-600 font-mono font-display mb-2"
             >
-              {{ props.gameCode }}
+              {{ props.gameCode || 'Wird generiert...' }}
             </div>
             <button
               @click="copyGameCode"
@@ -175,7 +175,11 @@ const toastMessage = ref('');
 
 // Computed
 const gameUrl = computed(() => {
-  return `${window.location.origin}${window.location.pathname}`;
+  const baseUrl = `${window.location.origin}${window.location.pathname}`;
+  if (props.gameCode) {
+    return `${baseUrl}?code=${props.gameCode}`;
+  }
+  return baseUrl;
 });
 
 const shareMessage = computed(() => {
@@ -186,9 +190,11 @@ const shareMessage = computed(() => {
       hard: 'Schwer',
     }[props.difficulty] || 'Mittel';
 
+  const gameCodeText = props.gameCode || 'Wird generiert...';
+
   return (
     `🎮 Komm mit mir Scrabster Pro spielen!\n\n` +
-    `Spiel-Code: ${props.gameCode}\n` +
+    `Spiel-Code: ${gameCodeText}\n` +
     `Schwierigkeit: ${difficultyText}\n\n` +
     `Klicke hier zum Mitspielen: ${gameUrl.value}`
   );
@@ -201,7 +207,8 @@ const closeModal = (): void => {
 
 const copyGameCode = async (): Promise<void> => {
   try {
-    await navigator.clipboard.writeText(props.gameCode);
+    const codeToCopy = props.gameCode || 'Wird generiert...';
+    await navigator.clipboard.writeText(codeToCopy);
     showToastMessage('Spiel-Code kopiert!');
   } catch (error) {
     console.error('Failed to copy game code:', error);

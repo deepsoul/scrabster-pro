@@ -26,7 +26,7 @@
               <div
                 class="text-xl font-bold text-primary-600 font-mono font-display"
               >
-                {{ gameData.code }}
+                {{ gameData.gameCode }}
               </div>
             </div>
             <div class="text-center">
@@ -369,7 +369,7 @@
 
     <!-- Share Game Modal -->
     <ShareGame
-      :gameCode="gameData?.code"
+      :gameCode="gameData?.gameCode"
       :difficulty="gameData?.difficulty"
       :showModal="showShareModal"
       @close="closeShareModal"
