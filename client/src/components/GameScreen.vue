@@ -26,7 +26,7 @@
               <div
                 class="text-xl font-bold text-primary-600 font-mono font-display"
               >
-                {{ gameData.code }}
+                {{ gameData.gameCode }}
               </div>
             </div>
             <div class="text-center">
@@ -347,6 +347,103 @@
             </div>
           </div>
 
+          <!-- Simple Chat -->
+          <div
+            class="bg-white rounded-xl shadow-lg border border-gray-200 h-64 flex flex-col"
+          >
+            <!-- Chat Header -->
+            <div class="p-3 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-gray-700">Chat</h3>
+                <button
+                  @click="toggleChat"
+                  class="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg
+                    class="w-4 h-4 transform transition-transform"
+                    :class="{ 'rotate-180': isChatExpanded }"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div
+              v-if="isChatExpanded"
+              ref="chatMessagesContainer"
+              class="flex-1 overflow-y-auto p-3 space-y-2"
+            >
+              <div
+                v-for="message in chatMessages"
+                :key="message.id"
+                class="flex"
+                :class="message.isOwn ? 'justify-end' : 'justify-start'"
+              >
+                <div
+                  class="max-w-xs px-3 py-2 rounded-lg text-sm"
+                  :class="
+                    message.isOwn
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-gray-100 text-gray-800'
+                  "
+                >
+                  <div v-if="!message.isOwn" class="text-xs text-gray-500 mb-1">
+                    {{ message.username }}
+                  </div>
+                  <div>{{ message.text }}</div>
+                  <div
+                    class="text-xs mt-1"
+                    :class="
+                      message.isOwn ? 'text-primary-100' : 'text-gray-500'
+                    "
+                  >
+                    {{ formatChatTime(message.timestamp) }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Empty State -->
+              <div
+                v-if="chatMessages.length === 0"
+                class="text-center text-gray-500 text-sm py-4"
+              >
+                Keine Nachrichten yet. Starte eine Unterhaltung! 💬
+              </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div v-if="isChatExpanded" class="p-3 border-t border-gray-200">
+              <form @submit.prevent="sendChatMessage" class="flex space-x-2">
+                <input
+                  v-model="newChatMessage"
+                  type="text"
+                  placeholder="Nachricht eingeben..."
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  maxlength="200"
+                  :disabled="isSendingChat"
+                />
+                <button
+                  type="submit"
+                  :disabled="!newChatMessage.trim() || isSendingChat"
+                  class="px-4 py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <span v-if="isSendingChat">⏳</span>
+                  <span v-else>📤</span>
+                </button>
+              </form>
+            </div>
+          </div>
+
           <!-- Start Game Button -->
           <div
             v-if="gameState === 'waiting' && isHost"
@@ -369,7 +466,7 @@
 
     <!-- Share Game Modal -->
     <ShareGame
-      :gameCode="gameData?.code"
+      :gameCode="gameData?.gameCode"
       :difficulty="gameData?.difficulty"
       :showModal="showShareModal"
       @close="closeShareModal"
@@ -378,7 +475,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import ShareGame from '@/components/ShareGame.vue';
 import soundService from '../services/soundService.js';
 import wordValidationService from '../services/wordValidationService.js';
@@ -415,6 +512,22 @@ const currentPlayerId = ref<string>('');
 
 // Share modal state
 const showShareModal = ref<boolean>(false);
+
+// Chat state
+const chatMessages = ref<
+  Array<{
+    id: string;
+    username: string;
+    text: string;
+    timestamp: Date;
+    isOwn: boolean;
+  }>
+>([]);
+const newChatMessage = ref('');
+const isSendingChat = ref(false);
+const isChatExpanded = ref(true);
+const chatMessagesContainer = ref<HTMLElement>();
+const processedChatMessageIds = ref<Set<string>>(new Set());
 
 // Winner state
 const winner = ref<Player | null>(null);
@@ -526,6 +639,13 @@ const isHost = computed((): boolean => {
   }
   // Der erste Spieler im Array ist der Host (Spielersteller)
   return players.value[0]?.id === currentPlayerId.value;
+});
+
+const currentUsername = computed((): string => {
+  const currentPlayer = players.value.find(
+    player => player.id === currentPlayerId.value
+  );
+  return currentPlayer?.username || 'Spieler';
 });
 
 // Methods
@@ -720,6 +840,29 @@ const setupGameApiListeners = (): void => {
     if (data.isDraw !== undefined) {
       isDraw.value = data.isDraw;
     }
+
+    // Chat-Nachrichten verarbeiten
+    if (data.chatMessages && data.chatMessages.length > 0) {
+      data.chatMessages.forEach((message: any) => {
+        // Nur neue Nachrichten hinzufügen
+        if (!processedChatMessageIds.value.has(message.id)) {
+          processedChatMessageIds.value.add(message.id);
+
+          // Nur Nachrichten von anderen Spielern hinzufügen
+          if (message.playerId !== currentPlayerId.value) {
+            const chatMessage = {
+              id: message.id,
+              username: message.username,
+              text: message.message,
+              timestamp: new Date(message.timestamp),
+              isOwn: false,
+            };
+            chatMessages.value.push(chatMessage);
+            scrollChatToBottom();
+          }
+        }
+      });
+    }
   });
 
   props.gameApi.on('wordSubmitted', (data: any) => {
@@ -834,6 +977,67 @@ watch(currentWord, () => {
 let validationTimeout: any = null;
 
 // Lifecycle
+// Chat methods
+const sendChatMessage = async (): Promise<void> => {
+  if (!newChatMessage.value.trim() || isSendingChat.value || !props.gameApi)
+    return;
+
+  const messageText = newChatMessage.value.trim();
+  newChatMessage.value = '';
+  isSendingChat.value = true;
+
+  try {
+    // Send message to server
+    await props.gameApi.sendChatMessage(messageText, currentUsername.value);
+
+    // Add message to local state immediately for better UX
+    const message = {
+      id: Date.now().toString(),
+      username: currentUsername.value,
+      text: messageText,
+      timestamp: new Date(),
+      isOwn: true,
+    };
+
+    chatMessages.value.push(message);
+    scrollChatToBottom();
+  } catch (error) {
+    console.error('Error sending chat message:', error);
+    // Show error to user
+    if (window.analytics) {
+      window.analytics.trackEvent('chat_error', {
+        error: error.message,
+        event_category: 'chat',
+      });
+    }
+  } finally {
+    isSendingChat.value = false;
+  }
+};
+
+const toggleChat = (): void => {
+  isChatExpanded.value = !isChatExpanded.value;
+  if (isChatExpanded.value) {
+    scrollChatToBottom();
+  }
+};
+
+const formatChatTime = (timestamp: Date): string => {
+  return timestamp.toLocaleTimeString('de-DE', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+const scrollChatToBottom = (): void => {
+  nextTick(() => {
+    if (chatMessagesContainer.value) {
+      chatMessagesContainer.value.scrollTop =
+        chatMessagesContainer.value.scrollHeight;
+    }
+  });
+};
+
 onMounted(() => {
   initVoiceInput();
   setupGameApiListeners();
@@ -853,6 +1057,18 @@ onMounted(() => {
       currentPlayerId.value = props.gameData.playerId;
     }
   }
+
+  // Add welcome message to chat
+  const welcomeMessage = {
+    id: 'welcome',
+    username: 'System',
+    text: `Willkommen im Spiel ${
+      props.gameData?.gameCode || 'Unbekannt'
+    }! Viel Spaß beim Spielen! 🎮`,
+    timestamp: new Date(),
+    isOwn: false,
+  };
+  chatMessages.value.push(welcomeMessage);
 });
 
 onUnmounted(() => {

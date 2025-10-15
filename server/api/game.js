@@ -545,6 +545,7 @@ app.get('/game/status/:gameCode', (req, res) => {
     lastUpdate: gameRoom.lastUpdate,
     winner: gameRoom.winner || null,
     isDraw: gameRoom.isDraw || false,
+    chatMessages: gameRoom.chatMessages || [],
   });
 });
 
@@ -564,6 +565,68 @@ app.post('/game/leave', (req, res) => {
   }
 
   res.json({ success: true });
+});
+
+// Chat-Nachricht senden
+app.post('/game/chat', (req, res) => {
+  try {
+    const { gameCode, playerId, message, username } = req.body;
+
+    if (!gameCode || !playerId || !message || !username) {
+      return res.status(400).json({
+        error: 'Fehlende Parameter: gameCode, playerId, message, username',
+      });
+    }
+
+    // Validate message length
+    if (message.length > 200) {
+      return res.status(400).json({
+        error: 'Nachricht zu lang (max. 200 Zeichen)',
+      });
+    }
+
+    const gameRoom = gameRooms.get(gameCode);
+    if (!gameRoom) {
+      return res.status(404).json({ error: 'Spiel nicht gefunden' });
+    }
+
+    // Check if player is in the game
+    const player = gameRoom.players.get(playerId);
+    if (!player) {
+      return res.status(403).json({ error: 'Spieler nicht im Spiel' });
+    }
+
+    // Create chat message
+    const chatMessage = {
+      id: Date.now().toString(),
+      playerId,
+      username,
+      message: message.trim(),
+      timestamp: new Date().toISOString(),
+    };
+
+    // Add message to game room
+    if (!gameRoom.chatMessages) {
+      gameRoom.chatMessages = [];
+    }
+
+    gameRoom.chatMessages.push(chatMessage);
+
+    // Keep only last 50 messages to prevent memory issues
+    if (gameRoom.chatMessages.length > 50) {
+      gameRoom.chatMessages = gameRoom.chatMessages.slice(-50);
+    }
+
+    gameRoom.lastUpdate = Date.now();
+
+    res.json({
+      success: true,
+      message: chatMessage,
+    });
+  } catch (error) {
+    console.error('Chat API error:', error);
+    res.status(500).json({ error: 'Interner Server-Fehler' });
+  }
 });
 
 module.exports = app;
