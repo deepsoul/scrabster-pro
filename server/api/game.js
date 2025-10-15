@@ -660,6 +660,7 @@ app.post('/game/new', (req, res) => {
     gameRoom.letters = newLetters;
     gameRoom.timeLeft = newTimeLeft;
     gameRoom.gameState = 'waiting';
+    gameRoom.gameStartTime = null; // Wichtig: gameStartTime zurücksetzen
     gameRoom.winner = null;
     gameRoom.isDraw = false;
     gameRoom.lastUpdate = Date.now();
