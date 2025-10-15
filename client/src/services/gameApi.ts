@@ -252,6 +252,40 @@ class GameApiService {
     }
   }
 
+  async newGame(): Promise<any> {
+    try {
+      if (!this.currentGameCode) {
+        throw new Error('Kein aktives Spiel gefunden');
+      }
+
+      const response = await fetch(`${this.baseUrl}/api/game/new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gameCode: this.currentGameCode,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(
+          error.error || 'Fehler beim Starten eines neuen Spiels'
+        );
+      }
+
+      const data = await response.json();
+
+      // Kein Event nötig - alle Spieler werden über Polling benachrichtigt
+
+      return data;
+    } catch (error: any) {
+      this.emit('gameError', { message: error.message });
+      throw error;
+    }
+  }
+
   // Chat Methods
   async sendChatMessage(message: string, username: string): Promise<any> {
     try {
