@@ -123,7 +123,7 @@ const icon = computed(() => {
     warning: '⚠️',
     error: '❌',
   };
-  return icons[props.type];
+  return icons[props.type || 'info'];
 });
 
 const iconClasses = computed(() => {
@@ -133,7 +133,7 @@ const iconClasses = computed(() => {
     warning: 'bg-yellow-100 text-yellow-600',
     error: 'bg-red-100 text-red-600',
   };
-  return classes[props.type];
+  return classes[props.type || 'info'];
 });
 
 const confirmButtonClasses = computed(() => {
@@ -143,7 +143,7 @@ const confirmButtonClasses = computed(() => {
     warning: 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500',
     error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
   };
-  return classes[props.type];
+  return classes[props.type || 'info'];
 });
 
 const close = (): void => {

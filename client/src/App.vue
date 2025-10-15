@@ -81,7 +81,7 @@
             </div>
             <button
               @click="
-                showInstructions;
+                showInstructions();
                 closeMobileMenu();
               "
               class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
@@ -90,7 +90,7 @@
             </button>
             <button
               @click="
-                showImprint;
+                showImprint();
                 closeMobileMenu();
               "
               class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
@@ -99,7 +99,7 @@
             </button>
             <button
               @click="
-                disconnect;
+                disconnect();
                 closeMobileMenu();
               "
               class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"

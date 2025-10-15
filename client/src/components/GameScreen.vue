@@ -52,12 +52,26 @@
         </div>
       </div>
 
+      <!-- Mobile Sticky Timer -->
+      <div class="md:hidden sticky top-16 z-40 mb-4">
+        <div
+          class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 mx-4"
+        >
+          <div class="text-center py-2">
+            <div class="text-xs text-gray-500">Zeit</div>
+            <div class="timer text-2xl font-bold" :class="timerClass">
+              {{ formatTime(timeLeft) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Game Area -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Timer -->
+          <!-- Timer (Desktop only) -->
           <div
-            class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-200"
+            class="hidden md:block bg-white rounded-xl shadow-lg p-6 text-center border border-gray-200"
           >
             <div class="text-sm text-gray-500 mb-2">Verbleibende Zeit</div>
             <div class="timer text-6xl font-bold" :class="timerClass">

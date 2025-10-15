@@ -278,11 +278,21 @@
         </div>
         <div class="flex items-start">
           <span class="text-primary-500 mr-2">⚡</span>
-          <span>Ein "Scrabster" (alle Buchstaben) gewinnt sofort</span>
+          <span>
+            Ein "Scrabster" (3-5 Buchstaben je nach Level) gibt 10 Extrapunkte
+          </span>
         </div>
         <div class="flex items-start">
           <span class="text-primary-500 mr-2">🧠</span>
           <span>Überlege dir Strategien für kurze, präzise Wörter</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-primary-500 mr-2">📝</span>
+          <span>Wörter ohne verfügbare Buchstaben geben 0 Punkte</span>
+        </div>
+        <div class="flex items-start">
+          <span class="text-primary-500 mr-2">🏆</span>
+          <span>Der Spieler mit den meisten Punkten gewinnt</span>
         </div>
       </div>
     </div>
