@@ -1,5 +1,9 @@
 // Google Analytics Service
 class AnalyticsService {
+  private gaId: string;
+  private isEnabled: boolean;
+  private isLoaded: boolean;
+
   constructor() {
     this.gaId = 'G-L4337T86WQ';
     this.isEnabled = false;
@@ -7,7 +11,7 @@ class AnalyticsService {
   }
 
   // Initialize Google Analytics
-  init() {
+  init(): void {
     // Check if analytics is enabled
     const consent = localStorage.getItem('scrabster-analytics-consent');
     this.isEnabled = consent === 'true';
@@ -18,7 +22,7 @@ class AnalyticsService {
   }
 
   // Load Google Analytics script
-  loadGoogleAnalytics() {
+  loadGoogleAnalytics(): void {
     if (this.isLoaded) return;
 
     // Load gtag script
@@ -28,11 +32,11 @@ class AnalyticsService {
     document.head.appendChild(script);
 
     // Initialize gtag
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    function gtag(...args: any[]) {
+      (window as any).dataLayer.push(args);
     }
-    window.gtag = gtag;
+    (window as any).gtag = gtag;
     gtag('js', new Date());
     gtag('config', this.gaId, {
       anonymize_ip: true,
@@ -44,56 +48,56 @@ class AnalyticsService {
   }
 
   // Enable analytics
-  enable() {
+  enable(): void {
     this.isEnabled = true;
     localStorage.setItem('scrabster-analytics-consent', 'true');
     this.loadGoogleAnalytics();
   }
 
   // Disable analytics
-  disable() {
+  disable(): void {
     this.isEnabled = false;
     localStorage.setItem('scrabster-analytics-consent', 'false');
 
     // Clear existing data
-    if (window.gtag) {
-      gtag('config', this.gaId, {
+    if ((window as any).gtag) {
+      (window as any).gtag('config', this.gaId, {
         send_page_view: false,
       });
     }
   }
 
   // Track page view
-  trackPageView(pagePath) {
-    if (!this.isEnabled || !window.gtag) return;
+  trackPageView(pagePath: string): void {
+    if (!this.isEnabled || !(window as any).gtag) return;
 
-    gtag('config', this.gaId, {
+    (window as any).gtag('config', this.gaId, {
       page_path: pagePath,
     });
   }
 
   // Track custom event
-  trackEvent(eventName, parameters = {}) {
-    if (!this.isEnabled || !window.gtag) return;
+  trackEvent(eventName: string, parameters: Record<string, any> = {}): void {
+    if (!this.isEnabled || !(window as any).gtag) return;
 
-    gtag('event', eventName, parameters);
+    (window as any).gtag('event', eventName, parameters);
   }
 
   // Track game events
-  trackGameCreated(difficulty) {
+  trackGameCreated(difficulty: string): void {
     this.trackEvent('game_created', {
       game_difficulty: difficulty,
       event_category: 'game',
     });
   }
 
-  trackGameJoined() {
+  trackGameJoined(): void {
     this.trackEvent('game_joined', {
       event_category: 'game',
     });
   }
 
-  trackGameStarted(difficulty, playerCount) {
+  trackGameStarted(difficulty: string, playerCount: number): void {
     this.trackEvent('game_started', {
       game_difficulty: difficulty,
       player_count: playerCount,
@@ -101,7 +105,7 @@ class AnalyticsService {
     });
   }
 
-  trackWordSubmitted(wordLength, score) {
+  trackWordSubmitted(wordLength: number, score: number): void {
     this.trackEvent('word_submitted', {
       word_length: wordLength,
       score: score,
@@ -109,7 +113,7 @@ class AnalyticsService {
     });
   }
 
-  trackGameFinished(finalScore, gameDuration) {
+  trackGameFinished(finalScore: number, gameDuration: number): void {
     this.trackEvent('game_finished', {
       final_score: finalScore,
       game_duration: gameDuration,
@@ -117,20 +121,20 @@ class AnalyticsService {
     });
   }
 
-  trackInstructionsViewed() {
+  trackInstructionsViewed(): void {
     this.trackEvent('instructions_viewed', {
       event_category: 'navigation',
     });
   }
 
-  trackImprintViewed() {
+  trackImprintViewed(): void {
     this.trackEvent('imprint_viewed', {
       event_category: 'navigation',
     });
   }
 
   // Check if analytics is enabled
-  isAnalyticsEnabled() {
+  isAnalyticsEnabled(): boolean {
     return this.isEnabled;
   }
 }

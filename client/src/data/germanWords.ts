@@ -1664,7 +1664,9 @@ export const wordValidationUtils = {
   },
 
   // Batch-Validierung für mehrere Wörter
-  validateWords: (words: string[]): Array<{ word: string; isValid: boolean }> => {
+  validateWords: (
+    words: string[]
+  ): Array<{ word: string; isValid: boolean }> => {
     return words.map(word => ({
       word,
       isValid: germanWords.has(word.toLowerCase().trim()),
