@@ -270,14 +270,16 @@ class GameApiService {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Fehler beim Starten eines neuen Spiels');
+        throw new Error(
+          error.error || 'Fehler beim Starten eines neuen Spiels'
+        );
       }
 
       const data = await response.json();
-      
+
       // Emit new game event
       this.emit('newGame', data);
-      
+
       return data;
     } catch (error: any) {
       this.emit('gameError', { message: error.message });

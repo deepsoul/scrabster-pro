@@ -896,6 +896,18 @@ const setupGameApiListeners = (): void => {
 
   props.gameApi.on('scrabster', (data: any) => {
     if (data.playerId === currentPlayerId.value) {
+      // Wort zu meinen Wörtern hinzufügen
+      myWords.value.push(data.word);
+
+      // Punkte für das Scrabster-Wort berechnen
+      const scrabsterRequirement = getScrabsterRequirement();
+      const wordScore = calculateWordScore(
+        data.word,
+        letters.value,
+        scrabsterRequirement
+      );
+      wordScores.value.push(wordScore);
+
       // Scrabster-Sound abspielen
       soundService.playScrabsterSound();
 
@@ -925,11 +937,11 @@ const setupGameApiListeners = (): void => {
     currentWord.value = '';
     winner.value = null;
     isDraw.value = false;
-    
+
     // Chat zurücksetzen
     chatMessages.value = [];
     processedChatMessageIds.value.clear();
-    
+
     // Willkommensnachricht für neues Spiel hinzufügen
     const welcomeMessage = {
       id: 'welcome-new',
@@ -939,7 +951,7 @@ const setupGameApiListeners = (): void => {
       isOwn: false,
     };
     chatMessages.value.push(welcomeMessage);
-    
+
     console.log('Neues Spiel gestartet:', data);
   });
 };
