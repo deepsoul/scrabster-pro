@@ -881,6 +881,22 @@ const setupGameApiListeners = (): void => {
     players.value = data.players;
   });
 
+  // Chat message listener
+  props.gameApi.on('chatMessage', (data: any) => {
+    // Only add message if it's not from current user (to avoid duplicates)
+    if (data.playerId !== currentPlayerId.value) {
+      const message = {
+        id: data.id || Date.now().toString(),
+        username: data.username,
+        text: data.message,
+        timestamp: new Date(data.timestamp || Date.now()),
+        isOwn: false,
+      };
+      chatMessages.value.push(message);
+      scrollChatToBottom();
+    }
+  });
+
   props.gameApi.on('gameOver', (data: any) => {
     gameState.value = 'finished';
     // Gewinner-Sound abspielen
@@ -955,14 +971,18 @@ let validationTimeout: any = null;
 // Lifecycle
 // Chat methods
 const sendChatMessage = async (): Promise<void> => {
-  if (!newChatMessage.value.trim() || isSendingChat.value) return;
+  if (!newChatMessage.value.trim() || isSendingChat.value || !props.gameApi)
+    return;
 
   const messageText = newChatMessage.value.trim();
   newChatMessage.value = '';
   isSendingChat.value = true;
 
   try {
-    // Add message to local state
+    // Send message to server
+    await props.gameApi.sendChatMessage(messageText, currentUsername.value);
+
+    // Add message to local state immediately for better UX
     const message = {
       id: Date.now().toString(),
       username: currentUsername.value,
@@ -973,11 +993,15 @@ const sendChatMessage = async (): Promise<void> => {
 
     chatMessages.value.push(message);
     scrollChatToBottom();
-
-    // In a real implementation, you would send this to the server
-    console.log('Sending chat message:', message);
   } catch (error) {
     console.error('Error sending chat message:', error);
+    // Show error to user
+    if (window.analytics) {
+      window.analytics.trackEvent('chat_error', {
+        error: error.message,
+        event_category: 'chat',
+      });
+    }
   } finally {
     isSendingChat.value = false;
   }

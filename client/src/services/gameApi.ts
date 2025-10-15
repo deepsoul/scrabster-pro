@@ -202,6 +202,35 @@ class GameApiService {
     }
   }
 
+  // Chat Methods
+  async sendChatMessage(message: string, username: string): Promise<any> {
+    try {
+      const response = await fetch(`${this.baseUrl}/api/game/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gameCode: this.currentGameCode,
+          playerId: this.currentPlayerId,
+          message,
+          username,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Fehler beim Senden der Nachricht');
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      this.emit('gameError', { message: error.message });
+      throw error;
+    }
+  }
+
   // Polling für Echtzeit-Updates
   startPolling(): void {
     if (this.pollingInterval) {
@@ -234,6 +263,13 @@ class GameApiService {
                 winner: data.winner,
                 isDraw: data.isDraw,
               });
+
+              // Chat-Nachrichten verarbeiten
+              if (data.chatMessages && data.chatMessages.length > 0) {
+                data.chatMessages.forEach((message: any) => {
+                  this.emit('chatMessage', message);
+                });
+              }
             }
           }
         } catch (error: any) {
