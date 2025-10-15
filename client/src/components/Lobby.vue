@@ -1,15 +1,20 @@
 <template>
-  <div class="max-w-4xl mx-auto">
-    <div class="text-center mb-8">
+  <div class="max-w-7xl mx-auto">
+    <header class="text-center mb-8">
       <h1 class="text-4xl font-bold text-gray-900 mb-4">Spiel-Lobby</h1>
       <p class="text-lg text-gray-600">
         Erstelle ein neues Spiel oder trete einem bestehenden bei
       </p>
-    </div>
+    </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <section
+      class="grid grid-cols-1 lg:grid-cols-3 gap-12"
+      aria-label="Spieloptionen"
+    >
       <!-- Create Game -->
-      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+      <article
+        class="bg-white rounded-xl shadow-lg p-8 border border-gray-200 min-w-80 flex flex-col justify-between"
+      >
         <div class="text-center mb-6">
           <div
             class="mx-auto h-16 w-16 bg-primary-500 rounded-full flex items-center justify-center mb-4"
@@ -36,60 +41,73 @@
           </p>
         </div>
 
-        <form @submit.prevent="createGame" class="space-y-6">
-          <div>
-            <label
-              for="difficulty"
-              class="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Schwierigkeitsstufe
-            </label>
-            <select
-              id="difficulty"
-              v-model="selectedDifficulty"
-              class="input-field"
-            >
-              <option value="easy">Leicht (9 Buchstaben, 120s)</option>
-              <option value="medium">Mittel (8 Buchstaben, 90s)</option>
-              <option value="hard">Schwer (7 Buchstaben, 60s)</option>
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            :disabled="isCreating"
-            class="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        <div class="flex-grow">
+          <form
+            @submit.prevent="createGame"
+            class="space-y-6"
+            role="form"
+            aria-label="Neues Spiel erstellen"
           >
-            <span v-if="isCreating" class="flex items-center justify-center">
-              <svg
-                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+            <div>
+              <label
+                for="difficulty"
+                class="block text-sm font-medium text-gray-700 mb-2"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Erstelle Spiel...
-            </span>
-            <span v-else>Spiel erstellen</span>
-          </button>
-        </form>
-      </div>
+                Schwierigkeitsstufe
+              </label>
+              <select
+                id="difficulty"
+                v-model="selectedDifficulty"
+                class="input-field"
+                aria-describedby="difficulty-help"
+              >
+                <option value="easy">Leicht (9 Buchstaben, 120s)</option>
+                <option value="medium">Mittel (8 Buchstaben, 90s)</option>
+                <option value="hard">Schwer (7 Buchstaben, 60s)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              :disabled="isCreating"
+              class="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              :aria-label="
+                isCreating ? 'Spiel wird erstellt...' : 'Neues Spiel erstellen'
+              "
+            >
+              <span v-if="isCreating" class="flex items-center justify-center">
+                <svg
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Erstelle Spiel...
+              </span>
+              <span v-else>Spiel erstellen</span>
+            </button>
+          </form>
+        </div>
+      </article>
 
       <!-- Training Mode -->
-      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+      <article
+        class="bg-white rounded-xl shadow-lg p-8 border border-gray-200 min-w-80 flex flex-col justify-between"
+      >
         <div class="text-center mb-6">
           <div
             class="mx-auto h-16 w-16 bg-green-500 rounded-full flex items-center justify-center mb-4"
@@ -112,38 +130,42 @@
           <p class="text-gray-600 mt-2">Übe alleine ohne Spielpartner</p>
         </div>
 
-        <form @submit.prevent="startTraining" class="space-y-6">
-          <div>
-            <label
-              for="trainingDifficulty"
-              class="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Schwierigkeitsstufe
-            </label>
-            <select
-              id="trainingDifficulty"
-              v-model="selectedTrainingDifficulty"
-              class="input-field"
-            >
-              <option value="easy">Leicht (9 Buchstaben, 120s)</option>
-              <option value="medium">Mittel (8 Buchstaben, 90s)</option>
-              <option value="hard">Schwer (7 Buchstaben, 60s)</option>
-            </select>
-          </div>
+        <div class="flex-grow">
+          <form @submit.prevent="startTraining" class="space-y-6">
+            <div>
+              <label
+                for="trainingDifficulty"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Schwierigkeitsstufe
+              </label>
+              <select
+                id="trainingDifficulty"
+                v-model="selectedTrainingDifficulty"
+                class="input-field"
+              >
+                <option value="easy">Leicht (9 Buchstaben, 120s)</option>
+                <option value="medium">Mittel (8 Buchstaben, 90s)</option>
+                <option value="hard">Schwer (7 Buchstaben, 60s)</option>
+              </select>
+            </div>
 
-          <button
-            type="submit"
-            class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg transition-colors duration-200 text-lg"
-          >
-            <span class="flex items-center justify-center">
-              Training starten
-            </span>
-          </button>
-        </form>
-      </div>
+            <button
+              type="submit"
+              class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg transition-colors duration-200 text-lg"
+            >
+              <span class="flex items-center justify-center">
+                Training starten
+              </span>
+            </button>
+          </form>
+        </div>
+      </article>
 
       <!-- Join Game -->
-      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+      <article
+        class="bg-white rounded-xl shadow-lg p-8 border border-gray-200 min-w-80 flex flex-col justify-between"
+      >
         <div class="text-center mb-6">
           <div
             class="mx-auto h-16 w-16 bg-secondary-500 rounded-full flex items-center justify-center mb-4"
@@ -166,63 +188,66 @@
           <p class="text-gray-600 mt-2">Gib den Spiel-Code ein</p>
         </div>
 
-        <form @submit.prevent="joinGame" class="space-y-6">
-          <div>
-            <label
-              for="gameCode"
-              class="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Spiel-Code
-            </label>
-            <input
-              id="gameCode"
-              v-model="gameCode"
-              type="text"
-              placeholder="z.B. ABC123"
-              class="input-field text-center text-lg font-mono tracking-wider"
-              maxlength="6"
-              @input="gameCode = gameCode.toUpperCase()"
-            />
-          </div>
-
-          <button
-            type="submit"
-            :disabled="!gameCode.trim() || isJoining"
-            class="w-full btn-secondary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <span v-if="isJoining" class="flex items-center justify-center">
-              <svg
-                class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+        <div class="flex-grow">
+          <form @submit.prevent="joinGame" class="space-y-6">
+            <div>
+              <label
+                for="gameCode"
+                class="block text-sm font-medium text-gray-700 mb-2"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Beitreten...
-            </span>
-            <span v-else>Spiel beitreten</span>
-          </button>
-        </form>
-      </div>
-    </div>
+                Spiel-Code
+              </label>
+              <input
+                id="gameCode"
+                v-model="gameCode"
+                type="text"
+                placeholder="z.B. ABC123"
+                class="input-field text-center text-lg font-mono tracking-wider"
+                maxlength="6"
+                @input="gameCode = gameCode.toUpperCase()"
+              />
+            </div>
+
+            <button
+              type="submit"
+              :disabled="!gameCode.trim() || isJoining"
+              class="w-full btn-secondary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="isJoining" class="flex items-center justify-center">
+                <svg
+                  class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Beitreten...
+              </span>
+              <span v-else>Spiel beitreten</span>
+            </button>
+          </form>
+        </div>
+      </article>
+    </section>
 
     <!-- Game Code Display (when game is created) -->
-    <div
+    <aside
       v-if="createdGameCode"
       class="mt-8 bg-primary-50 rounded-xl p-6 border border-primary-200"
+      aria-label="Spielcode-Information"
     >
       <div class="text-center">
         <h3 class="text-xl font-bold text-primary-800 mb-2">Spiel erstellt!</h3>
@@ -260,10 +285,10 @@
           </button>
         </div>
       </div>
-    </div>
+    </aside>
 
     <!-- Quick Tips -->
-    <div class="mt-8 bg-gray-50 rounded-xl p-6">
+    <section class="mt-8 bg-gray-50 rounded-xl p-6" aria-label="Spieltipps">
       <h3 class="text-lg font-semibold text-gray-900 mb-4">
         💡 Tipps für besseres Spielen
       </h3>
@@ -295,7 +320,7 @@
           <span>Der Spieler mit den meisten Punkten gewinnt</span>
         </div>
       </div>
-    </div>
+    </section>
 
     <!-- Share Game Modal -->
     <ShareGame

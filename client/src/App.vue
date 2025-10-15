@@ -4,11 +4,18 @@
     class="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50"
   >
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
+    <header class="bg-white shadow-sm border-b border-gray-200" role="banner">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <!-- Logo -->
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <img
+              src="/logo.svg"
+              alt="Scrabster Pro Logo - Multiplayer Wortspiel mit Buchstaben-Tiles"
+              class="h-10 w-10 flex-shrink-0"
+              width="40"
+              height="40"
+            />
             <h1 class="text-2xl font-bold text-primary-600 font-display">
               Scrabster Pro
             </h1>
@@ -112,7 +119,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" role="main">
       <!-- Login Screen -->
       <LoginScreen
         v-if="!currentUser"
