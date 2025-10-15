@@ -1659,12 +1659,12 @@ export const germanWords = new Set([
 // Performance-optimierte Suchfunktionen
 export const wordValidationUtils = {
   // Schnelle Set-basierte Suche
-  isValidWord: word => {
+  isValidWord: (word: string): boolean => {
     return germanWords.has(word.toLowerCase().trim());
   },
 
   // Batch-Validierung für mehrere Wörter
-  validateWords: words => {
+  validateWords: (words: string[]): Array<{ word: string; isValid: boolean }> => {
     return words.map(word => ({
       word,
       isValid: germanWords.has(word.toLowerCase().trim()),
@@ -1673,7 +1673,7 @@ export const wordValidationUtils = {
 
   // Wortlänge-Statistiken
   getWordStats: () => {
-    const lengths = {};
+    const lengths: Record<number, number> = {};
     germanWords.forEach(word => {
       const len = word.length;
       lengths[len] = (lengths[len] || 0) + 1;
@@ -1688,11 +1688,15 @@ export const wordValidationUtils = {
   },
 
   // Zufällige Wörter für Tests
-  getRandomWords: (count = 10) => {
+  getRandomWords: (count: number = 10): string[] => {
     const words = Array.from(germanWords);
-    const randomWords = [];
+    const randomWords: string[] = [];
     for (let i = 0; i < count; i++) {
-      randomWords.push(words[Math.floor(Math.random() * words.length)]);
+      const randomIndex = Math.floor(Math.random() * words.length);
+      const word = words[randomIndex];
+      if (word) {
+        randomWords.push(word);
+      }
     }
     return randomWords;
   },

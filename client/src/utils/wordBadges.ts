@@ -1,19 +1,14 @@
-import type { DifficultyLevel } from '@/types';
-
 /**
  * Helper functions for word badges (letters count and points)
  */
 
 /**
  * Calculate the number of letters used from available letters in a word
- * @param word - The word to analyze
- * @param availableLetters - Array of available letters
- * @returns Number of letters used from available letters
+ * @param {string} word - The word to analyze
+ * @param {Array} availableLetters - Array of available letters
+ * @returns {number} Number of letters used from available letters
  */
-export function getUsedLettersCount(
-  word: string,
-  availableLetters: string[]
-): number {
+export function getUsedLettersCount(word, availableLetters) {
   if (!word || !availableLetters || availableLetters.length === 0) return 0;
 
   const wordLetters = word.toUpperCase().split('');
@@ -33,16 +28,16 @@ export function getUsedLettersCount(
 
 /**
  * Calculate word score based on used letters and Scrabster bonus
- * @param word - The word to score
- * @param availableLetters - Array of available letters
- * @param scrabsterRequirement - Required letters for Scrabster (3, 4, or 5)
- * @returns Total score for the word
+ * @param {string} word - The word to score
+ * @param {Array} availableLetters - Array of available letters
+ * @param {number} scrabsterRequirement - Required letters for Scrabster (3, 4, or 5)
+ * @returns {number} Total score for the word
  */
 export function calculateWordScore(
-  word: string,
-  availableLetters: string[],
-  scrabsterRequirement: number = 4
-): number {
+  word,
+  availableLetters,
+  scrabsterRequirement = 4
+) {
   if (!word || !availableLetters || availableLetters.length === 0) return 0;
 
   const usedLetters = getUsedLettersCount(word, availableLetters);
@@ -57,16 +52,16 @@ export function calculateWordScore(
 
 /**
  * Check if a word is a Scrabster
- * @param word - The word to check
- * @param availableLetters - Array of available letters
- * @param scrabsterRequirement - Required letters for Scrabster
- * @returns True if word is a Scrabster
+ * @param {string} word - The word to check
+ * @param {Array} availableLetters - Array of available letters
+ * @param {number} scrabsterRequirement - Required letters for Scrabster
+ * @returns {boolean} True if word is a Scrabster
  */
 export function isScrabsterWord(
-  word: string,
-  availableLetters: string[],
-  scrabsterRequirement: number = 4
-): boolean {
+  word,
+  availableLetters,
+  scrabsterRequirement = 4
+) {
   if (!word || !availableLetters || availableLetters.length === 0) return false;
 
   const usedLetters = getUsedLettersCount(word, availableLetters);
@@ -75,14 +70,11 @@ export function isScrabsterWord(
 
 /**
  * Get badge color class based on used letters count
- * @param usedLetters - Number of used letters
- * @param scrabsterRequirement - Required letters for Scrabster
- * @returns Tailwind CSS class for badge color
+ * @param {number} usedLetters - Number of used letters
+ * @param {number} scrabsterRequirement - Required letters for Scrabster
+ * @returns {string} Tailwind CSS class for badge color
  */
-export function getLettersBadgeColor(
-  usedLetters: number,
-  scrabsterRequirement: number = 4
-): string {
+export function getLettersBadgeColor(usedLetters, scrabsterRequirement = 4) {
   if (usedLetters >= scrabsterRequirement) {
     return 'bg-yellow-100 text-yellow-800 border-yellow-200'; // Scrabster color
   } else if (usedLetters >= scrabsterRequirement - 1) {
@@ -96,10 +88,10 @@ export function getLettersBadgeColor(
 
 /**
  * Get badge color class based on points
- * @param points - Points for the word
- * @returns Tailwind CSS class for badge color
+ * @param {number} points - Points for the word
+ * @returns {string} Tailwind CSS class for badge color
  */
-export function getPointsBadgeColor(points: number): string {
+export function getPointsBadgeColor(points) {
   if (points >= 20) {
     return 'bg-green-100 text-green-800 border-green-200'; // High score
   } else if (points >= 10) {

@@ -31,7 +31,7 @@ export interface WordValidation {
   isValid: boolean;
   reason?: string;
   word: string;
-  source: 'api' | 'local' | 'letter_check';
+  source: 'api' | 'local' | 'letter_check' | 'offline';
 }
 
 // Dialog Types

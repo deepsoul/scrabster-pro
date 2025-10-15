@@ -1,23 +1,23 @@
-import type { SoundType } from '@/types';
-
 // Sound Service für Spiel-Effekte
 class SoundService {
-  private sounds: Map<string, HTMLAudioElement> = new Map();
-  private enabled: boolean = true;
-  private volume: number = 0.7;
+  constructor() {
+    this.sounds = new Map();
+    this.enabled = true;
+    this.volume = 0.7;
+  }
 
   // Sound aktivieren/deaktivieren
-  setEnabled(enabled: boolean): void {
+  setEnabled(enabled) {
     this.enabled = enabled;
   }
 
   // Lautstärke setzen
-  setVolume(volume: number): void {
+  setVolume(volume) {
     this.volume = Math.max(0, Math.min(1, volume));
   }
 
   // Sound laden
-  loadSound(name: string, url: string): void {
+  loadSound(name, url) {
     if (typeof Audio !== 'undefined') {
       const audio = new Audio(url);
       audio.volume = this.volume;
@@ -26,28 +26,27 @@ class SoundService {
   }
 
   // Sound abspielen
-  playSound(name: string): void {
+  playSound(name) {
     if (!this.enabled) return;
 
     const sound = this.sounds.get(name);
     if (sound) {
       // Sound zurückspulen und abspielen
       sound.currentTime = 0;
-      sound.play().catch((error: Error) => {
+      sound.play().catch(error => {
         console.log('Sound konnte nicht abgespielt werden:', error);
       });
     }
   }
 
   // Scrabster-Sound (temporär mit Web Audio API)
-  playScrabsterSound(): void {
+  playScrabsterSound() {
     if (!this.enabled) return;
 
     try {
       // Web Audio API für Scrabster-Sound
-      const AudioContext =
-        window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContext();
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
 
       // Erstelle einen kurzen, aufsteigenden Ton
       const oscillator = audioContext.createOscillator();
@@ -83,14 +82,13 @@ class SoundService {
   }
 
   // Gewinner-Sound (temporär mit Web Audio API)
-  playWinnerSound(): void {
+  playWinnerSound() {
     if (!this.enabled) return;
 
     try {
       // Web Audio API für Gewinner-Sound
-      const AudioContext =
-        window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContext();
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
 
       // Erstelle einen triumphalen Ton
       const oscillator = audioContext.createOscillator();
@@ -130,13 +128,12 @@ class SoundService {
   }
 
   // Wort-Submit-Sound (kurzer Klick)
-  playWordSubmitSound(): void {
+  playWordSubmitSound() {
     if (!this.enabled) return;
 
     try {
-      const AudioContext =
-        window.AudioContext || (window as any).webkitAudioContext;
-      const audioContext = new AudioContext();
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
 
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
