@@ -68,7 +68,7 @@ class GameApiService {
       error?.name === 'TimeoutError'
     ) {
       this.consecutiveTimeouts++;
-      
+
       // If we get 3+ consecutive timeouts in production, likely Render spinup
       if (this.consecutiveTimeouts >= 3) {
         this.renderSpinupDetected = true;

@@ -316,6 +316,11 @@ const connectGameApi = () => {
 
   gameApi.value.on('renderSpinup', handleRenderSpinup);
 
+  // Hide spinup loader on successful connection
+  gameApi.value.on('connect', () => {
+    showRenderSpinup.value = false;
+  });
+
   gameApi.value.on('gameCreated', data => {
     console.log('Game created:', data);
     gameData.value = {
@@ -323,6 +328,7 @@ const connectGameApi = () => {
       ...data,
       gameState: 'waiting',
     };
+    showRenderSpinup.value = false; // Hide loader on successful create
   });
 
   gameApi.value.on('gameJoined', data => {
@@ -332,6 +338,7 @@ const connectGameApi = () => {
       ...data,
       gameState: 'waiting',
     };
+    showRenderSpinup.value = false; // Hide loader on successful join
   });
 
   gameApi.value.on('playerJoined', data => {
@@ -532,6 +539,7 @@ window.showDialog = showDialog;
 
 // Render Spinup handlers
 const handleRenderSpinup = data => {
+  console.log('Render spinup detected:', data.detected);
   showRenderSpinup.value = data.detected;
 };
 
