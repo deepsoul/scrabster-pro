@@ -847,7 +847,7 @@ const setupGameApiListeners = (): void => {
         // Nur neue Nachrichten hinzufügen
         if (!processedChatMessageIds.value.has(message.id)) {
           processedChatMessageIds.value.add(message.id);
-          
+
           // Nur Nachrichten von anderen Spielern hinzufügen
           if (message.playerId !== currentPlayerId.value) {
             const chatMessage = {
@@ -904,7 +904,6 @@ const setupGameApiListeners = (): void => {
     }
     players.value = data.players;
   });
-
 
   props.gameApi.on('gameOver', (data: any) => {
     gameState.value = 'finished';
