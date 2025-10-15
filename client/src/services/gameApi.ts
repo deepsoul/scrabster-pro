@@ -1,5 +1,11 @@
 // Game API Service für REST-basierte Kommunikation
 class GameApiService {
+  private baseUrl: string;
+  private pollingInterval: any;
+  private currentGameCode: string | null;
+  private currentPlayerId: string | null;
+  private eventListeners: Map<string, Function[]>;
+
   constructor() {
     // In Produktion: Render-Backend mit Custom Domain, lokal: lokaler Server
     // Temporär: Fallback auf onrender.com falls Custom Domain nicht funktioniert
@@ -13,16 +19,16 @@ class GameApiService {
   }
 
   // Event System
-  on(event, callback) {
+  on(event: string, callback: Function): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
-    this.eventListeners.get(event).push(callback);
+    this.eventListeners.get(event)!.push(callback);
   }
 
-  off(event, callback) {
+  off(event: string, callback: Function): void {
     if (this.eventListeners.has(event)) {
-      const listeners = this.eventListeners.get(event);
+      const listeners = this.eventListeners.get(event)!;
       const index = listeners.indexOf(callback);
       if (index > -1) {
         listeners.splice(index, 1);
@@ -30,9 +36,9 @@ class GameApiService {
     }
   }
 
-  emit(event, data) {
+  emit(event: string, data: any): void {
     if (this.eventListeners.has(event)) {
-      this.eventListeners.get(event).forEach(callback => {
+      this.eventListeners.get(event)!.forEach(callback => {
         try {
           callback(data);
         } catch (error) {
@@ -43,7 +49,7 @@ class GameApiService {
   }
 
   // API Calls
-  async createGame(username, difficulty) {
+  async createGame(username: string, difficulty: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/create`, {
         method: 'POST',
@@ -71,7 +77,7 @@ class GameApiService {
     }
   }
 
-  async joinGame(gameCode, username) {
+  async joinGame(gameCode: string, username: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/join`, {
         method: 'POST',
@@ -99,7 +105,7 @@ class GameApiService {
     }
   }
 
-  async startGame() {
+  async startGame(): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/start`, {
         method: 'POST',
@@ -127,7 +133,7 @@ class GameApiService {
     }
   }
 
-  async submitWord(word) {
+  async submitWord(word: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/submit-word`, {
         method: 'POST',
@@ -173,7 +179,7 @@ class GameApiService {
     }
   }
 
-  async leaveGame() {
+  async leaveGame(): Promise<any> {
     try {
       if (this.currentGameCode && this.currentPlayerId) {
         await fetch(`${this.baseUrl}/api/game/leave`, {
@@ -197,7 +203,7 @@ class GameApiService {
   }
 
   // Polling für Echtzeit-Updates
-  startPolling() {
+  startPolling(): void {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
@@ -237,14 +243,14 @@ class GameApiService {
     }, 2000); // Polling alle 2 Sekunden
   }
 
-  stopPolling() {
+  stopPolling(): void {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
       this.pollingInterval = null;
     }
   }
 
-  getWinners(players) {
+  getWinners(players: any[]): any[] {
     if (players.length === 0) return [];
 
     // Nur Spieler mit mindestens einem Wort berücksichtigen
@@ -258,7 +264,7 @@ class GameApiService {
   }
 
   // Disconnect
-  disconnect() {
+  disconnect(): void {
     this.leaveGame();
     this.eventListeners.clear();
   }

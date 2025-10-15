@@ -11,6 +11,10 @@ declare global {
   interface Window {
     analytics: any;
     showDialog: (options: DialogOptions) => void;
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+    AudioContext: any;
+    webkitAudioContext: any;
   }
 }
 

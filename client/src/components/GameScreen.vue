@@ -26,7 +26,7 @@
               <div
                 class="text-xl font-bold text-primary-600 font-mono font-display"
               >
-                {{ gameData.gameCode }}
+                {{ gameData.code }}
               </div>
             </div>
             <div class="text-center">
@@ -355,7 +355,7 @@
 
     <!-- Share Game Modal -->
     <ShareGame
-      :gameCode="gameData?.gameCode"
+      :gameCode="gameData?.code"
       :difficulty="gameData?.difficulty"
       :showModal="showShareModal"
       @close="closeShareModal"
@@ -375,7 +375,7 @@ import {
   calculateWordScore,
 } from '../utils/wordBadges.js';
 import type { GameData, Player, WordValidation } from '@/types';
-import type GameApiService from '@/services/gameApi.js';
+import type GameApiService from '@/services/gameApi';
 
 // Define props with proper typing
 const props = defineProps<{
@@ -409,7 +409,7 @@ const isDraw = ref<boolean>(false);
 // Voice input
 const isVoiceSupported = ref<boolean>(false);
 const isListening = ref<boolean>(false);
-const recognition = ref<SpeechRecognition | null>(null);
+const recognition = ref<any>(null);
 const highlightedLetters = ref<number[]>([]);
 
 // Word validation
@@ -592,7 +592,8 @@ const closeShareModal = (): void => {
 const initVoiceInput = (): void => {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     recognition.value = new SpeechRecognition();
     recognition.value.continuous = false;
     recognition.value.interimResults = false;
@@ -602,7 +603,7 @@ const initVoiceInput = (): void => {
       isListening.value = true;
     };
 
-    recognition.value.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.value.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript.trim();
       currentWord.value = transcript;
 
@@ -614,7 +615,7 @@ const initVoiceInput = (): void => {
       isListening.value = false;
     };
 
-    recognition.value.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.value.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       isListening.value = false;
     };
@@ -797,6 +798,8 @@ const validateCurrentWord = async (): Promise<void> => {
     wordValidation.value = {
       isValid: true,
       reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+      word: currentWord.value.trim(),
+      source: 'offline',
     };
   } finally {
     isValidating.value = false;
@@ -806,11 +809,13 @@ const validateCurrentWord = async (): Promise<void> => {
 // Watch currentWord for validation
 watch(currentWord, () => {
   // Debounce validation
-  clearTimeout(validationTimeout);
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+  }
   validationTimeout = setTimeout(validateCurrentWord, 500);
 });
 
-let validationTimeout: NodeJS.Timeout | null = null;
+let validationTimeout: any = null;
 
 // Lifecycle
 onMounted(() => {

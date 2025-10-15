@@ -301,7 +301,7 @@
 import { ref } from 'vue';
 import ShareGame from './ShareGame.vue';
 import type { DifficultyLevel } from '@/types';
-import type GameApiService from '@/services/gameApi.js';
+import type GameApiService from '@/services/gameApi';
 
 // Define props with proper typing
 const props = defineProps<{

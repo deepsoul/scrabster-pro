@@ -10,6 +10,7 @@ export interface Player {
 export interface GameData {
   id: string;
   code: string;
+  gameCode: string; // Add gameCode property
   difficulty: 'easy' | 'medium' | 'hard';
   letters: string[];
   timeLeft: number;
@@ -84,6 +85,15 @@ export interface TrainingStats {
   averageScore: number;
   bestWordScore: number;
   scrabsterCount: number;
+}
+
+// Speech Recognition Types
+export interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+export interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
 }
 
 // Component Props Types
