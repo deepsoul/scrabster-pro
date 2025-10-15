@@ -365,7 +365,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import ShareGame from './ShareGame.vue';
+import ShareGame from '@/components/ShareGame.vue';
 import soundService from '../services/soundService.js';
 import wordValidationService from '../services/wordValidationService.js';
 import {

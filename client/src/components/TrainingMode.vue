@@ -399,7 +399,7 @@ const isValidating = ref<boolean>(false);
 // Voice input
 const isVoiceSupported = ref<boolean>(false);
 const isListening = ref<boolean>(false);
-const recognition = ref<SpeechRecognition | null>(null);
+const recognition = ref<any>(null);
 const highlightedLetters = ref<number[]>([]);
 
 // Timer
@@ -621,7 +621,10 @@ const generateLetters = (): string[] => {
   const generated: string[] = [];
   for (let i = 0; i < count; i++) {
     const randomIndex = Math.floor(Math.random() * availableLetters.length);
-    generated.push(availableLetters[randomIndex]);
+    const letter = availableLetters[randomIndex];
+    if (letter) {
+      generated.push(letter);
+    }
   }
 
   return generated;
@@ -746,41 +749,44 @@ const submitWord = (): void => {
 };
 
 // New rule: Word is valid if it contains at least one available letter
-const canFormWord = word => {
+const canFormWord = (word: string): boolean => {
   const wordLetters = word.split('');
   const availableLetters = [...letters.value]; // Use original letters
 
   // Check if at least one letter from the word is available
-  return wordLetters.some(letter => availableLetters.includes(letter));
+  return wordLetters.some((letter: string) =>
+    availableLetters.includes(letter)
+  );
 };
 
-const getMissingLetters = word => {
-  const wordLetters = word.split('');
-  const availableLetters = [...letters.value]; // Use original letters
-  const missing = [];
+// const getMissingLetters = (word: string): string[] => {
+//   const wordLetters = word.split('');
+//   const availableLetters = [...letters.value]; // Use original letters
+//   const missing: string[] = [];
 
-  for (const letter of wordLetters) {
-    const index = availableLetters.indexOf(letter);
-    if (index === -1) {
-      missing.push(letter);
-    } else {
-      availableLetters.splice(index, 1);
-    }
-  }
+//   for (const letter of wordLetters) {
+//     const index = availableLetters.indexOf(letter);
+//     if (index === -1) {
+//       missing.push(letter);
+//     } else {
+//       availableLetters.splice(index, 1);
+//     }
+//   }
 
-  return missing;
-};
+//   return missing;
+// };
 
-// Keep old function for backward compatibility, but now uses new rule
-const isValidWord = word => {
-  return canFormWord(word);
-};
+// // Keep old function for backward compatibility, but now uses new rule
+// const isValidWord = (word: string): boolean => {
+//   return canFormWord(word);
+// };
 
 // Voice input methods
-const initVoiceInput = () => {
+const initVoiceInput = (): void => {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     recognition.value = new SpeechRecognition();
     recognition.value.continuous = false;
     recognition.value.interimResults = false;
@@ -790,7 +796,7 @@ const initVoiceInput = () => {
       isListening.value = true;
     };
 
-    recognition.value.onresult = event => {
+    recognition.value.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript.trim();
       currentWord.value = transcript;
 
@@ -802,7 +808,7 @@ const initVoiceInput = () => {
       isListening.value = false;
     };
 
-    recognition.value.onerror = event => {
+    recognition.value.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       isListening.value = false;
     };
@@ -811,7 +817,7 @@ const initVoiceInput = () => {
   }
 };
 
-const toggleVoiceInput = () => {
+const toggleVoiceInput = (): void => {
   if (!recognition.value) return;
 
   if (isListening.value) {
@@ -821,10 +827,10 @@ const toggleVoiceInput = () => {
   }
 };
 
-const highlightMatchingLetters = word => {
+const highlightMatchingLetters = (word: string): void => {
   const wordLetters = word.toUpperCase().split('');
   const availableLetters = [...letters.value]; // Use original letters
-  const highlighted = [];
+  const highlighted: number[] = [];
 
   for (let i = 0; i < wordLetters.length; i++) {
     const letter = wordLetters[i];
@@ -848,7 +854,7 @@ const highlightMatchingLetters = word => {
 };
 
 // Word validation
-const validateCurrentWord = async () => {
+const validateCurrentWord = async (): Promise<void> => {
   if (!currentWord.value.trim() || gameState.value !== 'playing') {
     wordValidation.value = null;
     return;
@@ -886,11 +892,13 @@ const validateCurrentWord = async () => {
     } else {
       wordValidation.value = result;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Wort-Validierung fehlgeschlagen:', error);
     wordValidation.value = {
       isValid: true,
       reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+      word: currentWord.value.trim(),
+      source: 'offline',
     };
   } finally {
     isValidating.value = false;
@@ -900,11 +908,13 @@ const validateCurrentWord = async () => {
 // Watch currentWord for validation
 watch(currentWord, () => {
   // Debounce validation
-  clearTimeout(validationTimeout);
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+  }
   validationTimeout = setTimeout(validateCurrentWord, 500);
 });
 
-let validationTimeout = null;
+let validationTimeout: any = null;
 
 // Lifecycle
 onMounted(() => {

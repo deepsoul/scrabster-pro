@@ -95,8 +95,8 @@
   </Teleport>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue';
+<script lang="ts" setup>
+import { computed, watch } from 'vue';
 
 const props = defineProps({
   isVisible: {
