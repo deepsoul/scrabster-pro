@@ -41,7 +41,7 @@ class GameApiService {
       this.eventListeners.get(event)!.forEach(callback => {
         try {
           callback(data);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error in event listener:', error);
         }
       });
@@ -71,7 +71,7 @@ class GameApiService {
       this.emit('gameCreated', data);
       this.startPolling(); // Polling starten
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('gameError', { message: error.message });
       throw error;
     }
@@ -99,7 +99,7 @@ class GameApiService {
       this.emit('gameJoined', data);
       this.startPolling(); // Polling starten
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('gameError', { message: error.message });
       throw error;
     }
@@ -127,7 +127,7 @@ class GameApiService {
       this.emit('gameStarted', data);
       // Polling läuft bereits, muss nicht neu gestartet werden
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('gameError', { message: error.message });
       throw error;
     }
@@ -174,7 +174,7 @@ class GameApiService {
       }
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('wordRejected', { word, message: error.message });
     }
   }
@@ -193,7 +193,7 @@ class GameApiService {
           }),
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error leaving game:', error);
     } finally {
       this.stopPolling();
@@ -236,7 +236,7 @@ class GameApiService {
               });
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Polling error:', error);
         }
       }
