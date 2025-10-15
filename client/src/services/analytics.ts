@@ -44,7 +44,6 @@ class AnalyticsService {
     });
 
     this.isLoaded = true;
-    console.log('Google Analytics loaded');
   }
 
   // Enable analytics
