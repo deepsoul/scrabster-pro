@@ -297,28 +297,36 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import ShareGame from './ShareGame.vue';
+import type { DifficultyLevel } from '@/types';
+import type GameApiService from '@/services/gameApi.js';
 
-const props = defineProps({
-  gameApi: Object,
-  currentUser: String,
-});
+// Define props with proper typing
+const props = defineProps<{
+  gameApi: GameApiService | null;
+  currentUser: string | null;
+}>();
 
-const emit = defineEmits(['createGame', 'joinGame', 'startTraining']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  createGame: [gameData: any];
+  joinGame: [gameData: any];
+  startTraining: [trainingData: { difficulty: DifficultyLevel }];
+}>();
 
-const selectedDifficulty = ref('medium');
-const selectedTrainingDifficulty = ref('medium');
-const gameCode = ref('');
-const isCreating = ref(false);
-const isJoining = ref(false);
-const createdGameCode = ref('');
+const selectedDifficulty = ref<DifficultyLevel>('medium');
+const selectedTrainingDifficulty = ref<DifficultyLevel>('medium');
+const gameCode = ref<string>('');
+const isCreating = ref<boolean>(false);
+const isJoining = ref<boolean>(false);
+const createdGameCode = ref<string>('');
 
 // Share modal state
-const showShareModal = ref(false);
+const showShareModal = ref<boolean>(false);
 
-const createGame = async () => {
+const createGame = async (): Promise<void> => {
   isCreating.value = true;
 
   try {
@@ -351,7 +359,7 @@ const createGame = async () => {
   }
 };
 
-const joinGame = async () => {
+const joinGame = async (): Promise<void> => {
   if (!gameCode.value.trim()) return;
 
   isJoining.value = true;
@@ -381,16 +389,16 @@ const joinGame = async () => {
 };
 
 // Share modal methods
-const openShareModal = () => {
+const openShareModal = (): void => {
   showShareModal.value = true;
 };
 
-const closeShareModal = () => {
+const closeShareModal = (): void => {
   showShareModal.value = false;
 };
 
 // Copy game code
-const copyGameCode = async () => {
+const copyGameCode = async (): Promise<void> => {
   try {
     await navigator.clipboard.writeText(createdGameCode.value);
     // Track analytics
@@ -416,14 +424,14 @@ const copyGameCode = async () => {
   }
 };
 
-const startTraining = () => {
+const startTraining = (): void => {
   const trainingData = {
     difficulty: selectedTrainingDifficulty.value,
   };
   emit('startTraining', trainingData);
 };
 
-const generateGameCode = () => {
+const generateGameCode = (): string => {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 };
 </script>

@@ -132,14 +132,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
-const emit = defineEmits(['login', 'showImprint']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  login: [username: string];
+  showImprint: [];
+}>();
 
-const username = ref('');
+const username = ref<string>('');
 
-const handleLogin = () => {
+const handleLogin = (): void => {
   if (username.value.trim()) {
     // Save username to localStorage
     localStorage.setItem('scrabster-username', username.value.trim());
@@ -147,7 +151,7 @@ const handleLogin = () => {
   }
 };
 
-const handleShowImprint = () => {
+const handleShowImprint = (): void => {
   emit('showImprint');
 };
 </script>
