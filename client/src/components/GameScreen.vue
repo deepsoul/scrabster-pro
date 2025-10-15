@@ -913,6 +913,35 @@ const setupGameApiListeners = (): void => {
     soundService.playWinnerSound();
     emit('gameOver', data);
   });
+
+  props.gameApi.on('newGame', (data: any) => {
+    // Neues Spiel gestartet - alle Daten zurücksetzen
+    gameState.value = 'waiting';
+    letters.value = data.letters;
+    timeLeft.value = data.timeLeft;
+    players.value = data.players;
+    myWords.value = [];
+    wordScores.value = [];
+    currentWord.value = '';
+    winner.value = null;
+    isDraw.value = false;
+    
+    // Chat zurücksetzen
+    chatMessages.value = [];
+    processedChatMessageIds.value.clear();
+    
+    // Willkommensnachricht für neues Spiel hinzufügen
+    const welcomeMessage = {
+      id: 'welcome-new',
+      username: 'System',
+      text: `Neues Spiel gestartet! Viel Spaß! 🎮`,
+      timestamp: new Date(),
+      isOwn: false,
+    };
+    chatMessages.value.push(welcomeMessage);
+    
+    console.log('Neues Spiel gestartet:', data);
+  });
 };
 
 // Word validation
