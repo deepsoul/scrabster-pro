@@ -196,6 +196,12 @@
       @cancel="handleDialogCancel"
     />
 
+    <!-- Render Spinup Loader -->
+    <RenderSpinupLoader
+      :show="showRenderSpinup"
+      @timeout="handleRenderSpinupTimeout"
+    />
+
     <!-- Toast Notifications -->
     <div class="fixed top-4 right-4 z-50 space-y-2">
       <div
@@ -238,6 +244,7 @@ import ImprintPage from './components/ImprintPage.vue';
 import TrainingMode from './components/TrainingMode.vue';
 import CookieDisclaimer from './components/CookieDisclaimer.vue';
 import AppDialog from './components/AppDialog.vue';
+import RenderSpinupLoader from './components/RenderSpinupLoader.vue';
 import analytics from './services/analytics';
 
 // Reactive state
@@ -249,6 +256,7 @@ const gameApi = ref(null);
 const toasts = ref([]);
 const isMobileMenuOpen = ref(false);
 const trainingDifficulty = ref('medium');
+const showRenderSpinup = ref(false);
 
 // Dialog state
 const dialog = ref({
@@ -305,6 +313,8 @@ const connectGameApi = () => {
   gameApi.value.on('gameError', data => {
     addToast(data.message, 'error');
   });
+
+  gameApi.value.on('renderSpinup', handleRenderSpinup);
 
   gameApi.value.on('gameCreated', data => {
     console.log('Game created:', data);
@@ -519,6 +529,16 @@ const handleDialogCancel = () => {
 
 // Global dialog function for easy access
 window.showDialog = showDialog;
+
+// Render Spinup handlers
+const handleRenderSpinup = (data) => {
+  showRenderSpinup.value = data.detected;
+};
+
+const handleRenderSpinupTimeout = () => {
+  showRenderSpinup.value = false;
+  addToast('Server-Verbindung konnte nicht hergestellt werden. Bitte versuchen Sie es erneut.', 'error');
+};
 
 // Lifecycle
 onMounted(() => {

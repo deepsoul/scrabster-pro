@@ -334,7 +334,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import ShareGame from './ShareGame.vue';
+import ShareGame from '@/components/ShareGame.vue';
 import type { DifficultyLevel } from '@/types';
 import type GameApiService from '@/services/gameApi';
 

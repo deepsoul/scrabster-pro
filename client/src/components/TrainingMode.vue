@@ -99,7 +99,7 @@
             >
               {{ letter }}
               <div
-                v-if="letterFrequency[letter] > 1"
+                v-if="letterFrequency?[letter] > 1"
                 class="absolute -top-1 -right-1 bg-primary-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
               >
                 {{ letterFrequency[letter] }}
