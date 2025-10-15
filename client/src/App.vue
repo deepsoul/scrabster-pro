@@ -423,10 +423,28 @@ const handleGameOver = result => {
   currentView.value = 'gameOver';
 };
 
-const handlePlayAgain = () => {
-  currentView.value = 'lobby';
-  gameResult.value = null;
-  gameData.value = null;
+const handlePlayAgain = async () => {
+  try {
+    if (gameApi.value) {
+      // Neues Spiel mit gleichen Spielern starten
+      await gameApi.value.newGame();
+      // Bleibe im Spiel, da das neue Spiel bereits gestartet wurde
+      currentView.value = 'game';
+      gameResult.value = null;
+      // gameData wird durch das newGame Event aktualisiert
+    } else {
+      // Fallback: Zur Lobby zurückkehren
+      currentView.value = 'lobby';
+      gameResult.value = null;
+      gameData.value = null;
+    }
+  } catch (error) {
+    console.error('Error starting new game:', error);
+    // Bei Fehler zur Lobby zurückkehren
+    currentView.value = 'lobby';
+    gameResult.value = null;
+    gameData.value = null;
+  }
 };
 
 const handleBackToLobby = () => {
