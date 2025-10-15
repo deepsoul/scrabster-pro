@@ -471,9 +471,13 @@ const statusClass = computed((): string => {
 // Buchstaben-Häufigkeit berechnen
 const letterFrequency = computed((): Record<string, number> => {
   const frequency: Record<string, number> = {};
-  letters.value.forEach(letter => {
-    frequency[letter] = (frequency[letter] || 0) + 1;
-  });
+  if (letters.value && letters.value.length > 0) {
+    letters.value.forEach(letter => {
+      if (letter) {
+        frequency[letter] = (frequency[letter] || 0) + 1;
+      }
+    });
+  }
   return frequency;
 });
 
@@ -618,6 +622,10 @@ const generateLetters = (): string[] => {
   const availableLetters = letterSets[props.difficulty] || letterSets.medium;
   const count = letterCounts[props.difficulty] || 8;
 
+  if (!availableLetters || availableLetters.length === 0) {
+    return [];
+  }
+
   const generated: string[] = [];
   for (let i = 0; i < count; i++) {
     const randomIndex = Math.floor(Math.random() * availableLetters.length);
@@ -759,27 +767,27 @@ const canFormWord = (word: string): boolean => {
   );
 };
 
-// const getMissingLetters = (word: string): string[] => {
-//   const wordLetters = word.split('');
-//   const availableLetters = [...letters.value]; // Use original letters
-//   const missing: string[] = [];
+const getMissingLetters = (word: string): string[] => {
+  const wordLetters = word.split('');
+  const availableLetters = [...letters.value]; // Use original letters
+  const missing: string[] = [];
 
-//   for (const letter of wordLetters) {
-//     const index = availableLetters.indexOf(letter);
-//     if (index === -1) {
-//       missing.push(letter);
-//     } else {
-//       availableLetters.splice(index, 1);
-//     }
-//   }
+  for (const letter of wordLetters) {
+    const index = availableLetters.indexOf(letter);
+    if (index === -1) {
+      missing.push(letter);
+    } else {
+      availableLetters.splice(index, 1);
+    }
+  }
 
-//   return missing;
-// };
+  return missing;
+};
 
-// // Keep old function for backward compatibility, but now uses new rule
-// const isValidWord = (word: string): boolean => {
-//   return canFormWord(word);
-// };
+// Keep old function for backward compatibility, but now uses new rule
+const isValidWord = (word: string): boolean => {
+  return canFormWord(word);
+};
 
 // Voice input methods
 const initVoiceInput = (): void => {
@@ -834,14 +842,16 @@ const highlightMatchingLetters = (word: string): void => {
 
   for (let i = 0; i < wordLetters.length; i++) {
     const letter = wordLetters[i];
-    const index = availableLetters.indexOf(letter);
-    if (index !== -1) {
-      // Find the actual index in the original letters array
-      const originalIndex = letters.value.indexOf(letter, highlighted.length);
-      if (originalIndex !== -1) {
-        highlighted.push(originalIndex);
+    if (letter) {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        // Find the actual index in the original letters array
+        const originalIndex = letters.value.indexOf(letter, highlighted.length);
+        if (originalIndex !== -1) {
+          highlighted.push(originalIndex);
+        }
+        availableLetters.splice(index, 1); // Remove to avoid duplicates
       }
-      availableLetters.splice(index, 1); // Remove to avoid duplicates
     }
   }
 
