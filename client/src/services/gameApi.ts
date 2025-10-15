@@ -5,6 +5,8 @@ class GameApiService {
   private currentGameCode: string | null;
   private currentPlayerId: string | null;
   private eventListeners: Map<string, Function[]>;
+  private renderSpinupDetected: boolean;
+  private consecutiveTimeouts: number;
 
   constructor() {
     // In Produktion: Render-Backend mit Custom Domain, lokal: lokaler Server
@@ -16,6 +18,8 @@ class GameApiService {
     this.currentGameCode = null;
     this.currentPlayerId = null;
     this.eventListeners = new Map();
+    this.renderSpinupDetected = false;
+    this.consecutiveTimeouts = 0;
   }
 
   // Event System
@@ -48,6 +52,33 @@ class GameApiService {
     }
   }
 
+  // Render Spinup Detection
+  private detectRenderSpinup(error: any): boolean {
+    // Check for common Render spinup indicators
+    if (error?.message?.includes('timeout') || 
+        error?.message?.includes('ECONNRESET') ||
+        error?.message?.includes('ENOTFOUND') ||
+        error?.code === 'ECONNABORTED' ||
+        error?.name === 'TimeoutError') {
+      this.consecutiveTimeouts++;
+      
+      // If we get 2+ consecutive timeouts in production, likely Render spinup
+      if (this.consecutiveTimeouts >= 2 && import.meta.env.PROD) {
+        this.renderSpinupDetected = true;
+        this.emit('renderSpinup', { detected: true });
+        return true;
+      }
+    } else {
+      // Reset counter on successful request
+      this.consecutiveTimeouts = 0;
+      if (this.renderSpinupDetected) {
+        this.renderSpinupDetected = false;
+        this.emit('renderSpinup', { detected: false });
+      }
+    }
+    return false;
+  }
+
   // API Calls
   async createGame(username: string, difficulty: string): Promise<any> {
     try {
@@ -72,6 +103,10 @@ class GameApiService {
       this.startPolling(); // Polling starten
       return data;
     } catch (error: any) {
+      // Check for Render spinup before emitting error
+      if (this.detectRenderSpinup(error)) {
+        return; // Don't emit error, spinup loader will handle it
+      }
       this.emit('gameError', { message: error.message });
       throw error;
     }
@@ -100,6 +135,10 @@ class GameApiService {
       this.startPolling(); // Polling starten
       return data;
     } catch (error: any) {
+      // Check for Render spinup before emitting error
+      if (this.detectRenderSpinup(error)) {
+        return; // Don't emit error, spinup loader will handle it
+      }
       this.emit('gameError', { message: error.message });
       throw error;
     }
@@ -128,6 +167,10 @@ class GameApiService {
       // Polling läuft bereits, muss nicht neu gestartet werden
       return data;
     } catch (error: any) {
+      // Check for Render spinup before emitting error
+      if (this.detectRenderSpinup(error)) {
+        return; // Don't emit error, spinup loader will handle it
+      }
       this.emit('gameError', { message: error.message });
       throw error;
     }
@@ -226,6 +269,10 @@ class GameApiService {
       const data = await response.json();
       return data;
     } catch (error: any) {
+      // Check for Render spinup before emitting error
+      if (this.detectRenderSpinup(error)) {
+        return; // Don't emit error, spinup loader will handle it
+      }
       this.emit('gameError', { message: error.message });
       throw error;
     }
