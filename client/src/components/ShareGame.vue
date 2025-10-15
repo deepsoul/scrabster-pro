@@ -1,7 +1,7 @@
 <template>
   <!-- Share Modal -->
   <div
-    v-if="showModal"
+    v-if="props.showModal"
     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
     @click="closeModal"
   >
@@ -42,7 +42,7 @@
             <div
               class="text-3xl font-bold text-primary-600 font-mono font-display mb-2"
             >
-              {{ gameCode }}
+              {{ props.gameCode }}
             </div>
             <button
               @click="copyGameCode"
@@ -155,25 +155,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import type { DifficultyLevel } from '@/types';
 
-const props = defineProps({
-  gameCode: {
-    type: String,
-    required: true,
-  },
-  difficulty: {
-    type: String,
-    default: 'medium',
-  },
-  showModal: {
-    type: Boolean,
-    default: false,
-  },
-});
+const props = defineProps<{
+  gameCode: string;
+  difficulty: DifficultyLevel;
+  showModal: boolean;
+}>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits<{
+  close: [];
+}>();
 
 // State
 const showToast = ref(false);
@@ -201,11 +195,11 @@ const shareMessage = computed(() => {
 });
 
 // Methods
-const closeModal = () => {
+const closeModal = (): void => {
   emit('close');
 };
 
-const copyGameCode = async () => {
+const copyGameCode = async (): Promise<void> => {
   try {
     await navigator.clipboard.writeText(props.gameCode);
     showToastMessage('Spiel-Code kopiert!');
@@ -215,7 +209,7 @@ const copyGameCode = async () => {
   }
 };
 
-const copyLink = async () => {
+const copyLink = async (): Promise<void> => {
   try {
     await navigator.clipboard.writeText(gameUrl.value);
     showToastMessage('Link kopiert!');
@@ -225,15 +219,15 @@ const copyLink = async () => {
   }
 };
 
-const shareWhatsApp = () => {
+const shareWhatsApp = (): void => {
   const message = encodeURIComponent(shareMessage.value);
   const whatsappUrl = `https://wa.me/?text=${message}`;
 
   window.open(whatsappUrl, '_blank');
 
   // Track analytics
-  if (window.analytics) {
-    window.analytics.trackEvent('game_shared', {
+  if ((window as any).analytics) {
+    (window as any).analytics.trackEvent('game_shared', {
       method: 'whatsapp',
       game_code: props.gameCode,
       difficulty: props.difficulty,
@@ -244,7 +238,7 @@ const shareWhatsApp = () => {
   showToastMessage('WhatsApp geöffnet!');
 };
 
-const shareEmail = () => {
+const shareEmail = (): void => {
   const subject = encodeURIComponent('🎮 Komm mit mir Scrabster Pro spielen!');
   const body = encodeURIComponent(shareMessage.value);
   const emailUrl = `mailto:?subject=${subject}&body=${body}`;
@@ -252,8 +246,8 @@ const shareEmail = () => {
   window.location.href = emailUrl;
 
   // Track analytics
-  if (window.analytics) {
-    window.analytics.trackEvent('game_shared', {
+  if ((window as any).analytics) {
+    (window as any).analytics.trackEvent('game_shared', {
       method: 'email',
       game_code: props.gameCode,
       difficulty: props.difficulty,
@@ -264,7 +258,7 @@ const shareEmail = () => {
   showToastMessage('E-Mail-Client geöffnet!');
 };
 
-const showToastMessage = message => {
+const showToastMessage = (message: string): void => {
   toastMessage.value = message;
   showToast.value = true;
 
@@ -276,11 +270,11 @@ const showToastMessage = message => {
 // Watch for modal changes
 watch(
   () => props.showModal,
-  newValue => {
+  (newValue: boolean) => {
     if (newValue) {
       // Track analytics when modal opens
-      if (window.analytics) {
-        window.analytics.trackEvent('share_modal_opened', {
+      if ((window as any).analytics) {
+        (window as any).analytics.trackEvent('share_modal_opened', {
           game_code: props.gameCode,
           difficulty: props.difficulty,
           event_category: 'sharing',

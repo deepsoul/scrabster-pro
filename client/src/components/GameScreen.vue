@@ -26,7 +26,7 @@
               <div
                 class="text-xl font-bold text-primary-600 font-mono font-display"
               >
-                {{ gameData.gameCode }}
+                {{ gameData.code }}
               </div>
             </div>
             <div class="text-center">
@@ -52,12 +52,26 @@
         </div>
       </div>
 
+      <!-- Mobile Sticky Timer -->
+      <div class="md:hidden sticky top-16 z-40 mb-4">
+        <div
+          class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 mx-4"
+        >
+          <div class="text-center py-2">
+            <div class="text-xs text-gray-500">Zeit</div>
+            <div class="timer text-2xl font-bold" :class="timerClass">
+              {{ formatTime(timeLeft) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Main Game Area -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Timer -->
+          <!-- Timer (Desktop only) -->
           <div
-            class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-200"
+            class="hidden md:block bg-white rounded-xl shadow-lg p-6 text-center border border-gray-200"
           >
             <div class="text-sm text-gray-500 mb-2">Verbleibende Zeit</div>
             <div class="timer text-6xl font-bold" :class="timerClass">
@@ -355,7 +369,7 @@
 
     <!-- Share Game Modal -->
     <ShareGame
-      :gameCode="gameData?.gameCode"
+      :gameCode="gameData?.code"
       :difficulty="gameData?.difficulty"
       :showModal="showShareModal"
       @close="closeShareModal"
@@ -363,9 +377,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import ShareGame from './ShareGame.vue';
+import ShareGame from '@/components/ShareGame.vue';
 import soundService from '../services/soundService.js';
 import wordValidationService from '../services/wordValidationService.js';
 import {
@@ -374,45 +388,52 @@ import {
   getPointsBadgeColor,
   calculateWordScore,
 } from '../utils/wordBadges.js';
+import type { GameData, Player, WordValidation } from '@/types';
+import type GameApiService from '@/services/gameApi';
 
-const props = defineProps({
-  gameData: Object,
-  gameApi: Object,
-});
+// Define props with proper typing
+const props = defineProps<{
+  gameData: GameData | null;
+  gameApi: GameApiService | null;
+}>();
 
-const emit = defineEmits(['leaveGame', 'gameOver']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  leaveGame: [];
+  gameOver: [gameResult: any];
+}>();
 
 // Game state
-const gameState = ref('waiting'); // waiting, playing, finished
-const timeLeft = ref(0);
-const letters = ref([]);
-const players = ref([]);
-const myWords = ref([]);
-const wordScores = ref([]); // Speichere Punkte für jedes Wort
-const currentWord = ref('');
-const currentPlayerId = ref('');
+const gameState = ref<'waiting' | 'playing' | 'finished'>('waiting');
+const timeLeft = ref<number>(0);
+const letters = ref<string[]>([]);
+const players = ref<Player[]>([]);
+const myWords = ref<string[]>([]);
+const wordScores = ref<number[]>([]); // Speichere Punkte für jedes Wort
+const currentWord = ref<string>('');
+const currentPlayerId = ref<string>('');
 
 // Share modal state
-const showShareModal = ref(false);
+const showShareModal = ref<boolean>(false);
 
 // Winner state
-const winner = ref(null);
-const isDraw = ref(false);
+const winner = ref<Player | null>(null);
+const isDraw = ref<boolean>(false);
 
 // Voice input
-const isVoiceSupported = ref(false);
-const isListening = ref(false);
-const recognition = ref(null);
-const highlightedLetters = ref([]);
+const isVoiceSupported = ref<boolean>(false);
+const isListening = ref<boolean>(false);
+const recognition = ref<any>(null);
+const highlightedLetters = ref<number[]>([]);
 
 // Word validation
-const wordValidation = ref(null);
-const isValidating = ref(false);
+const wordValidation = ref<WordValidation | null>(null);
+const isValidating = ref<boolean>(false);
 
 // Helper function to get Scrabster requirement based on difficulty
-const getScrabsterRequirement = () => {
+const getScrabsterRequirement = (): number => {
   const difficulty = props.gameData?.difficulty || 'medium';
-  const requirements = {
+  const requirements: Record<string, number> = {
     easy: 3,
     medium: 4,
     hard: 5,
@@ -421,9 +442,9 @@ const getScrabsterRequirement = () => {
 };
 
 // Computed properties
-const difficultyText = computed(() => {
+const difficultyText = computed((): string => {
   if (!props.gameData) return 'Lädt...';
-  const difficulties = {
+  const difficulties: Record<string, string> = {
     easy: 'Leicht',
     medium: 'Mittel',
     hard: 'Schwer',
@@ -431,9 +452,9 @@ const difficultyText = computed(() => {
   return difficulties[props.gameData.difficulty] || 'Unbekannt';
 });
 
-const difficultyClass = computed(() => {
+const difficultyClass = computed((): string => {
   if (!props.gameData) return 'text-gray-600';
-  const classes = {
+  const classes: Record<string, string> = {
     easy: 'text-green-600',
     medium: 'text-yellow-600',
     hard: 'text-red-600',
@@ -441,9 +462,9 @@ const difficultyClass = computed(() => {
   return classes[props.gameData.difficulty] || 'text-gray-600';
 });
 
-const difficultyTime = computed(() => {
+const difficultyTime = computed((): number => {
   if (!props.gameData) return 60;
-  const times = {
+  const times: Record<string, number> = {
     easy: 120,
     medium: 90,
     hard: 60,
@@ -451,14 +472,14 @@ const difficultyTime = computed(() => {
   return times[props.gameData.difficulty] || 60;
 });
 
-const timerClass = computed(() => {
+const timerClass = computed((): string => {
   if (timeLeft.value <= 10) return 'danger';
   if (timeLeft.value <= 30) return 'warning';
   return '';
 });
 
-const statusText = computed(() => {
-  const statuses = {
+const statusText = computed((): string => {
+  const statuses: Record<string, string> = {
     waiting: 'Warten auf Start',
     playing: 'Spiel läuft',
     finished: 'Beendet',
@@ -466,8 +487,8 @@ const statusText = computed(() => {
   return statuses[gameState.value] || 'Unbekannt';
 });
 
-const statusClass = computed(() => {
-  const classes = {
+const statusClass = computed((): string => {
+  const classes: Record<string, string> = {
     waiting: 'text-yellow-600',
     playing: 'text-green-600',
     finished: 'text-gray-600',
@@ -475,13 +496,13 @@ const statusClass = computed(() => {
   return classes[gameState.value] || 'text-gray-600';
 });
 
-const sortedPlayers = computed(() => {
+const sortedPlayers = computed((): Player[] => {
   return [...players.value].sort((a, b) => b.score - a.score);
 });
 
 // Buchstaben-Häufigkeit berechnen
-const letterFrequency = computed(() => {
-  const frequency = {};
+const letterFrequency = computed((): Record<string, number> => {
+  const frequency: Record<string, number> = {};
   letters.value.forEach(letter => {
     frequency[letter] = (frequency[letter] || 0) + 1;
   });
@@ -489,7 +510,7 @@ const letterFrequency = computed(() => {
 });
 
 // Punkte für aktuelles Wort berechnen (neue Regel)
-const currentWordScore = computed(() => {
+const currentWordScore = computed((): number => {
   if (!currentWord.value.trim() || !letters.value.length) return 0;
   const scrabsterRequirement = getScrabsterRequirement();
   return calculateWordScore(
@@ -499,22 +520,22 @@ const currentWordScore = computed(() => {
   );
 });
 
-const isHost = computed(() => {
+const isHost = computed((): boolean => {
   if (!players.value || players.value.length === 0 || !currentPlayerId.value) {
     return false;
   }
   // Der erste Spieler im Array ist der Host (Spielersteller)
-  return players.value[0] && players.value[0].id === currentPlayerId.value;
+  return players.value[0]?.id === currentPlayerId.value;
 });
 
 // Methods
-const formatTime = seconds => {
+const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const submitWord = async () => {
+const submitWord = async (): Promise<void> => {
   if (
     !currentWord.value.trim() ||
     gameState.value !== 'playing' ||
@@ -543,7 +564,7 @@ const submitWord = async () => {
   }
 };
 
-const startGame = async () => {
+const startGame = async (): Promise<void> => {
   if (!props.gameData || !props.gameApi) return;
 
   try {
@@ -560,7 +581,7 @@ const startGame = async () => {
   }
 };
 
-const leaveGame = async () => {
+const leaveGame = async (): Promise<void> => {
   if (!props.gameData || !props.gameApi) return;
 
   try {
@@ -573,19 +594,20 @@ const leaveGame = async () => {
 };
 
 // Share modal methods
-const openShareModal = () => {
+const openShareModal = (): void => {
   showShareModal.value = true;
 };
 
-const closeShareModal = () => {
+const closeShareModal = (): void => {
   showShareModal.value = false;
 };
 
 // Voice input methods
-const initVoiceInput = () => {
+const initVoiceInput = (): void => {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     recognition.value = new SpeechRecognition();
     recognition.value.continuous = false;
     recognition.value.interimResults = false;
@@ -595,7 +617,7 @@ const initVoiceInput = () => {
       isListening.value = true;
     };
 
-    recognition.value.onresult = event => {
+    recognition.value.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript.trim();
       currentWord.value = transcript;
 
@@ -607,7 +629,7 @@ const initVoiceInput = () => {
       isListening.value = false;
     };
 
-    recognition.value.onerror = event => {
+    recognition.value.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       isListening.value = false;
     };
@@ -616,7 +638,7 @@ const initVoiceInput = () => {
   }
 };
 
-const toggleVoiceInput = () => {
+const toggleVoiceInput = (): void => {
   if (!recognition.value) return;
 
   if (isListening.value) {
@@ -626,17 +648,19 @@ const toggleVoiceInput = () => {
   }
 };
 
-const highlightMatchingLetters = word => {
+const highlightMatchingLetters = (word: string): void => {
   const wordLetters = word.toUpperCase().split('');
   const availableLetters = [...letters.value];
-  const highlighted = [];
+  const highlighted: number[] = [];
 
   for (let i = 0; i < wordLetters.length; i++) {
     const letter = wordLetters[i];
-    const index = availableLetters.indexOf(letter);
-    if (index !== -1) {
-      highlighted.push(index);
-      availableLetters.splice(index, 1); // Remove to avoid duplicates
+    if (letter) {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        highlighted.push(index);
+        availableLetters.splice(index, 1); // Remove to avoid duplicates
+      }
     }
   }
 
@@ -649,17 +673,17 @@ const highlightMatchingLetters = word => {
 };
 
 // Game API event handlers
-const setupGameApiListeners = () => {
+const setupGameApiListeners = (): void => {
   if (!props.gameApi) return;
 
-  props.gameApi.on('gameJoined', data => {
+  props.gameApi.on('gameJoined', (data: any) => {
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     players.value = data.players;
     currentPlayerId.value = data.playerId;
   });
 
-  props.gameApi.on('gameCreated', data => {
+  props.gameApi.on('gameCreated', (data: any) => {
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     currentPlayerId.value = data.playerId;
@@ -668,22 +692,22 @@ const setupGameApiListeners = () => {
     }
   });
 
-  props.gameApi.on('playerJoined', data => {
+  props.gameApi.on('playerJoined', (data: any) => {
     players.value = data.players;
   });
 
-  props.gameApi.on('playerLeft', data => {
+  props.gameApi.on('playerLeft', (data: any) => {
     players.value = data.players;
   });
 
-  props.gameApi.on('gameStarted', data => {
+  props.gameApi.on('gameStarted', (data: any) => {
     gameState.value = 'playing';
     letters.value = data.letters;
     timeLeft.value = data.timeLeft;
     players.value = data.players;
   });
 
-  props.gameApi.on('gameStateUpdate', data => {
+  props.gameApi.on('gameStateUpdate', (data: any) => {
     timeLeft.value = data.timeLeft;
     players.value = data.players;
     if (data.gameState) {
@@ -698,7 +722,7 @@ const setupGameApiListeners = () => {
     }
   });
 
-  props.gameApi.on('wordSubmitted', data => {
+  props.gameApi.on('wordSubmitted', (data: any) => {
     if (data.playerId === currentPlayerId.value) {
       myWords.value.push(data.word);
 
@@ -717,15 +741,15 @@ const setupGameApiListeners = () => {
     players.value = data.players;
   });
 
-  props.gameApi.on('wordRejected', data => {
-    window.showDialog({
+  props.gameApi.on('wordRejected', (data: any) => {
+    (window as any).showDialog({
       title: 'Wort abgelehnt',
       message: data.message,
       type: 'error',
     });
   });
 
-  props.gameApi.on('scrabster', data => {
+  props.gameApi.on('scrabster', (data: any) => {
     if (data.playerId === currentPlayerId.value) {
       // Scrabster-Sound abspielen
       soundService.playScrabsterSound();
@@ -738,7 +762,7 @@ const setupGameApiListeners = () => {
     players.value = data.players;
   });
 
-  props.gameApi.on('gameOver', data => {
+  props.gameApi.on('gameOver', (data: any) => {
     gameState.value = 'finished';
     // Gewinner-Sound abspielen
     soundService.playWinnerSound();
@@ -747,7 +771,7 @@ const setupGameApiListeners = () => {
 };
 
 // Word validation
-const validateCurrentWord = async () => {
+const validateCurrentWord = async (): Promise<void> => {
   if (!currentWord.value.trim() || gameState.value !== 'playing') {
     wordValidation.value = null;
     return;
@@ -790,6 +814,8 @@ const validateCurrentWord = async () => {
     wordValidation.value = {
       isValid: true,
       reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+      word: currentWord.value.trim(),
+      source: 'offline',
     };
   } finally {
     isValidating.value = false;
@@ -799,11 +825,13 @@ const validateCurrentWord = async () => {
 // Watch currentWord for validation
 watch(currentWord, () => {
   // Debounce validation
-  clearTimeout(validationTimeout);
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+  }
   validationTimeout = setTimeout(validateCurrentWord, 500);
 });
 
-let validationTimeout = null;
+let validationTimeout: any = null;
 
 // Lifecycle
 onMounted(() => {

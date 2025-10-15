@@ -58,12 +58,26 @@
       </div>
     </div>
 
+    <!-- Mobile Sticky Timer -->
+    <div class="md:hidden sticky top-16 z-40 mb-4">
+      <div
+        class="bg-white/90 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200"
+      >
+        <div class="text-center py-2">
+          <div class="text-xs text-gray-500">Zeit</div>
+          <div class="timer text-2xl font-bold" :class="timerClass">
+            {{ formatTime(timeLeft) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Game Area -->
       <div class="lg:col-span-2 space-y-6">
-        <!-- Timer -->
+        <!-- Timer (Desktop only) -->
         <div
-          class="bg-white rounded-xl shadow-lg p-6 text-center border border-gray-200"
+          class="hidden md:block bg-white rounded-xl shadow-lg p-6 text-center border border-gray-200"
         >
           <div class="text-sm text-gray-500 mb-2">Verbleibende Zeit</div>
           <div class="timer text-6xl font-bold" :class="timerClass">
@@ -361,7 +375,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import soundService from '../services/soundService.js';
 import wordValidationService from '../services/wordValidationService.js';
@@ -372,40 +386,42 @@ import {
   calculateWordScore as calculateWordScoreUtil,
   isScrabsterWord as isScrabsterWordUtil,
 } from '../utils/wordBadges.js';
+import type { DifficultyLevel, WordValidation } from '@/types';
 
-const props = defineProps({
-  difficulty: {
-    type: String,
-    default: 'medium',
-  },
-});
+// Define props with proper typing
+const props = defineProps<{
+  difficulty: DifficultyLevel;
+}>();
 
-const emit = defineEmits(['backToLobby']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  backToLobby: [];
+}>();
 
 // Game state
-const gameState = ref('waiting'); // waiting, playing, paused, finished
-const timeLeft = ref(0);
-const letters = ref([]);
-const myWords = ref([]);
-const wordScores = ref([]); // Speichere Punkte für jedes Wort
-const currentWord = ref('');
-const isScrabster = ref(false);
-const scrabsterCount = ref(0);
-const wordValidation = ref(null);
-const isValidating = ref(false);
+const gameState = ref<'waiting' | 'playing' | 'paused' | 'finished'>('waiting');
+const timeLeft = ref<number>(0);
+const letters = ref<string[]>([]);
+const myWords = ref<string[]>([]);
+const wordScores = ref<number[]>([]); // Speichere Punkte für jedes Wort
+const currentWord = ref<string>('');
+const isScrabster = ref<boolean>(false);
+const scrabsterCount = ref<number>(0);
+const wordValidation = ref<WordValidation | null>(null);
+const isValidating = ref<boolean>(false);
 
 // Voice input
-const isVoiceSupported = ref(false);
-const isListening = ref(false);
-const recognition = ref(null);
-const highlightedLetters = ref([]);
+const isVoiceSupported = ref<boolean>(false);
+const isListening = ref<boolean>(false);
+const recognition = ref<any>(null);
+const highlightedLetters = ref<number[]>([]);
 
 // Timer
-let timerInterval = null;
+let timerInterval: NodeJS.Timeout | null = null;
 
 // Computed properties
-const difficultyText = computed(() => {
-  const difficulties = {
+const difficultyText = computed((): string => {
+  const difficulties: Record<string, string> = {
     easy: 'Leicht',
     medium: 'Mittel',
     hard: 'Schwer',
@@ -413,8 +429,8 @@ const difficultyText = computed(() => {
   return difficulties[props.difficulty] || 'Mittel';
 });
 
-const difficultyClass = computed(() => {
-  const classes = {
+const difficultyClass = computed((): string => {
+  const classes: Record<string, string> = {
     easy: 'text-green-600',
     medium: 'text-yellow-600',
     hard: 'text-red-600',
@@ -422,8 +438,8 @@ const difficultyClass = computed(() => {
   return classes[props.difficulty] || 'text-yellow-600';
 });
 
-const difficultyTime = computed(() => {
-  const times = {
+const difficultyTime = computed((): number => {
+  const times: Record<string, number> = {
     easy: 120,
     medium: 90,
     hard: 60,
@@ -431,8 +447,8 @@ const difficultyTime = computed(() => {
   return times[props.difficulty] || 90;
 });
 
-const scrabsterRequirements = computed(() => {
-  const requirements = {
+const scrabsterRequirements = computed((): number => {
+  const requirements: Record<string, number> = {
     easy: 3,
     medium: 4,
     hard: 5,
@@ -440,14 +456,14 @@ const scrabsterRequirements = computed(() => {
   return requirements[props.difficulty] || 4;
 });
 
-const timerClass = computed(() => {
+const timerClass = computed((): string => {
   if (timeLeft.value <= 10) return 'danger';
   if (timeLeft.value <= 30) return 'warning';
   return '';
 });
 
-const statusText = computed(() => {
-  const statuses = {
+const statusText = computed((): string => {
+  const statuses: Record<string, string> = {
     waiting: 'Bereit zum Start',
     playing: 'Training läuft',
     paused: 'Pausiert',
@@ -456,8 +472,8 @@ const statusText = computed(() => {
   return statuses[gameState.value] || 'Unbekannt';
 });
 
-const statusClass = computed(() => {
-  const classes = {
+const statusClass = computed((): string => {
+  const classes: Record<string, string> = {
     waiting: 'text-blue-600',
     playing: 'text-green-600',
     paused: 'text-yellow-600',
@@ -467,36 +483,44 @@ const statusClass = computed(() => {
 });
 
 // Buchstaben-Häufigkeit berechnen
-const letterFrequency = computed(() => {
-  const frequency = {};
-  letters.value.forEach(letter => {
-    frequency[letter] = (frequency[letter] || 0) + 1;
-  });
+const letterFrequency = computed((): Record<string, number> => {
+  const frequency: Record<string, number> = {};
+  if (letters.value && letters.value.length > 0) {
+    letters.value.forEach(letter => {
+      if (letter) {
+        frequency[letter] = (frequency[letter] || 0) + 1;
+      }
+    });
+  }
   return frequency;
 });
 
 // Punkte für aktuelles Wort berechnen (neue Regel)
-const currentWordScore = computed(() => {
+const currentWordScore = computed((): number => {
   if (!currentWord.value.trim() || !letters.value.length) return 0;
-  return calculateWordScoreUtil(currentWord.value.toUpperCase(), letters.value, scrabsterRequirements.value);
+  return calculateWordScoreUtil(
+    currentWord.value.toUpperCase(),
+    letters.value,
+    scrabsterRequirements.value
+  );
 });
 
 // Training statistics (neue Regel)
-const totalScore = computed(() => {
+const totalScore = computed((): number => {
   return wordScores.value.reduce((sum, score) => sum + score, 0);
 });
 
-const averageScore = computed(() => {
+const averageScore = computed((): number => {
   if (myWords.value.length === 0) return 0;
   return totalScore.value / myWords.value.length;
 });
 
-const bestWordScore = computed(() => {
+const bestWordScore = computed((): number => {
   if (wordScores.value.length === 0) return 0;
   return Math.max(...wordScores.value);
 });
 
-const remainingLetters = computed(() => {
+const remainingLetters = computed((): string[] => {
   // Start with all original letters
   const availableLetters = [...letters.value];
 
@@ -515,8 +539,8 @@ const remainingLetters = computed(() => {
 });
 
 // Methods
-const generateLetters = () => {
-  const letterSets = {
+const generateLetters = (): string[] => {
+  const letterSets: Record<string, string[]> = {
     easy: [
       'A',
       'B',
@@ -603,7 +627,7 @@ const generateLetters = () => {
     ],
   };
 
-  const letterCounts = {
+  const letterCounts: Record<string, number> = {
     easy: 9,
     medium: 8,
     hard: 7,
@@ -612,22 +636,29 @@ const generateLetters = () => {
   const availableLetters = letterSets[props.difficulty] || letterSets.medium;
   const count = letterCounts[props.difficulty] || 8;
 
-  const generated = [];
+  if (!availableLetters || availableLetters.length === 0) {
+    return [];
+  }
+
+  const generated: string[] = [];
   for (let i = 0; i < count; i++) {
     const randomIndex = Math.floor(Math.random() * availableLetters.length);
-    generated.push(availableLetters[randomIndex]);
+    const letter = availableLetters[randomIndex];
+    if (letter) {
+      generated.push(letter);
+    }
   }
 
   return generated;
 };
 
-const formatTime = seconds => {
+const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const startTraining = () => {
+const startTraining = (): void => {
   letters.value = generateLetters();
   timeLeft.value = difficultyTime.value;
   myWords.value = [];
@@ -638,17 +669,17 @@ const startTraining = () => {
   startTimer();
 };
 
-const pauseTraining = () => {
+const pauseTraining = (): void => {
   gameState.value = 'paused';
   stopTimer();
 };
 
-const resumeTraining = () => {
+const resumeTraining = (): void => {
   gameState.value = 'playing';
   startTimer();
 };
 
-const restartTraining = () => {
+const restartTraining = (): void => {
   gameState.value = 'waiting';
   stopTimer();
   letters.value = [];
@@ -660,12 +691,12 @@ const restartTraining = () => {
   scrabsterCount.value = 0;
 };
 
-const backToLobby = () => {
+const backToLobby = (): void => {
   stopTimer();
   emit('backToLobby');
 };
 
-const startTimer = () => {
+const startTimer = (): void => {
   if (timerInterval) clearInterval(timerInterval);
 
   timerInterval = setInterval(() => {
@@ -677,14 +708,14 @@ const startTimer = () => {
   }, 1000);
 };
 
-const stopTimer = () => {
+const stopTimer = (): void => {
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
   }
 };
 
-const finishTraining = () => {
+const finishTraining = (): void => {
   gameState.value = 'finished';
   stopTimer();
 
@@ -697,7 +728,7 @@ const finishTraining = () => {
   }
 };
 
-const submitWord = () => {
+const submitWord = (): void => {
   if (!currentWord.value.trim() || gameState.value !== 'playing') return;
 
   // Validation is now only a warning, not a blocker
@@ -708,8 +739,12 @@ const submitWord = () => {
   // Check if word can be formed with available letters (new rule: only need some letters)
   if (canFormWord(word)) {
     // Berechne Punkte für das Wort zum Zeitpunkt der Eingabe
-    const wordScore = calculateWordScoreUtil(word, letters.value, scrabsterRequirements.value);
-    
+    const wordScore = calculateWordScoreUtil(
+      word,
+      letters.value,
+      scrabsterRequirements.value
+    );
+
     myWords.value.push(word);
     wordScores.value.push(wordScore);
 
@@ -736,19 +771,20 @@ const submitWord = () => {
 };
 
 // New rule: Word is valid if it contains at least one available letter
-const canFormWord = word => {
+const canFormWord = (word: string): boolean => {
   const wordLetters = word.split('');
   const availableLetters = [...letters.value]; // Use original letters
 
   // Check if at least one letter from the word is available
-  return wordLetters.some(letter => availableLetters.includes(letter));
+  return wordLetters.some((letter: string) =>
+    availableLetters.includes(letter)
+  );
 };
 
-
-const getMissingLetters = word => {
+const getMissingLetters = (word: string): string[] => {
   const wordLetters = word.split('');
   const availableLetters = [...letters.value]; // Use original letters
-  const missing = [];
+  const missing: string[] = [];
 
   for (const letter of wordLetters) {
     const index = availableLetters.indexOf(letter);
@@ -763,15 +799,16 @@ const getMissingLetters = word => {
 };
 
 // Keep old function for backward compatibility, but now uses new rule
-const isValidWord = word => {
+const isValidWord = (word: string): boolean => {
   return canFormWord(word);
 };
 
 // Voice input methods
-const initVoiceInput = () => {
+const initVoiceInput = (): void => {
   if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
     const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
     recognition.value = new SpeechRecognition();
     recognition.value.continuous = false;
     recognition.value.interimResults = false;
@@ -781,7 +818,7 @@ const initVoiceInput = () => {
       isListening.value = true;
     };
 
-    recognition.value.onresult = event => {
+    recognition.value.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript.trim();
       currentWord.value = transcript;
 
@@ -793,7 +830,7 @@ const initVoiceInput = () => {
       isListening.value = false;
     };
 
-    recognition.value.onerror = event => {
+    recognition.value.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       isListening.value = false;
     };
@@ -802,7 +839,7 @@ const initVoiceInput = () => {
   }
 };
 
-const toggleVoiceInput = () => {
+const toggleVoiceInput = (): void => {
   if (!recognition.value) return;
 
   if (isListening.value) {
@@ -812,21 +849,23 @@ const toggleVoiceInput = () => {
   }
 };
 
-const highlightMatchingLetters = word => {
+const highlightMatchingLetters = (word: string): void => {
   const wordLetters = word.toUpperCase().split('');
   const availableLetters = [...letters.value]; // Use original letters
-  const highlighted = [];
+  const highlighted: number[] = [];
 
   for (let i = 0; i < wordLetters.length; i++) {
     const letter = wordLetters[i];
-    const index = availableLetters.indexOf(letter);
-    if (index !== -1) {
-      // Find the actual index in the original letters array
-      const originalIndex = letters.value.indexOf(letter, highlighted.length);
-      if (originalIndex !== -1) {
-        highlighted.push(originalIndex);
+    if (letter) {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        // Find the actual index in the original letters array
+        const originalIndex = letters.value.indexOf(letter, highlighted.length);
+        if (originalIndex !== -1) {
+          highlighted.push(originalIndex);
+        }
+        availableLetters.splice(index, 1); // Remove to avoid duplicates
       }
-      availableLetters.splice(index, 1); // Remove to avoid duplicates
     }
   }
 
@@ -839,7 +878,7 @@ const highlightMatchingLetters = word => {
 };
 
 // Word validation
-const validateCurrentWord = async () => {
+const validateCurrentWord = async (): Promise<void> => {
   if (!currentWord.value.trim() || gameState.value !== 'playing') {
     wordValidation.value = null;
     return;
@@ -877,11 +916,13 @@ const validateCurrentWord = async () => {
     } else {
       wordValidation.value = result;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Wort-Validierung fehlgeschlagen:', error);
     wordValidation.value = {
       isValid: true,
       reason: 'Validierung fehlgeschlagen - Wort akzeptiert',
+      word: currentWord.value.trim(),
+      source: 'offline',
     };
   } finally {
     isValidating.value = false;
@@ -891,11 +932,13 @@ const validateCurrentWord = async () => {
 // Watch currentWord for validation
 watch(currentWord, () => {
   // Debounce validation
-  clearTimeout(validationTimeout);
+  if (validationTimeout) {
+    clearTimeout(validationTimeout);
+  }
   validationTimeout = setTimeout(validateCurrentWord, 500);
 });
 
-let validationTimeout = null;
+let validationTimeout: any = null;
 
 // Lifecycle
 onMounted(() => {

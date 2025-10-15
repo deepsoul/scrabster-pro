@@ -197,37 +197,43 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
+import type { GameResult, Player } from '@/types';
 
-const props = defineProps({
-  gameResult: Object,
-});
+// Define props with proper typing
+const props = defineProps<{
+  gameResult: GameResult;
+}>();
 
-const emit = defineEmits(['playAgain', 'backToLobby']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  playAgain: [];
+  backToLobby: [];
+}>();
 
 // Computed properties
-const sortedPlayers = computed(() => {
+const sortedPlayers = computed((): Player[] => {
   return [...props.gameResult.players].sort(
     (a, b) => b.score - a.score // Nach Punkten sortieren (höchste zuerst)
   );
 });
 
-const totalWords = computed(() => {
+const totalWords = computed((): number => {
   return props.gameResult.players.reduce(
     (total, player) => total + player.words.length,
     0
   );
 });
 
-const averageWords = computed(() => {
+const averageWords = computed((): number => {
   if (props.gameResult.players.length === 0) return 0;
   return (
     Math.round((totalWords.value / props.gameResult.players.length) * 10) / 10
   );
 });
 
-const longestWord = computed(() => {
+const longestWord = computed((): number => {
   let longest = 0;
   props.gameResult.players.forEach(player => {
     player.words.forEach(word => {
@@ -240,11 +246,11 @@ const longestWord = computed(() => {
 });
 
 // Methods
-const playAgain = () => {
+const playAgain = (): void => {
   emit('playAgain');
 };
 
-const backToLobby = () => {
+const backToLobby = (): void => {
   emit('backToLobby');
 };
 </script>

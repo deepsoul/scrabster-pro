@@ -1,10 +1,16 @@
 // Game API Service für REST-basierte Kommunikation
 class GameApiService {
+  private baseUrl: string;
+  private pollingInterval: any;
+  private currentGameCode: string | null;
+  private currentPlayerId: string | null;
+  private eventListeners: Map<string, Function[]>;
+
   constructor() {
     // In Produktion: Render-Backend mit Custom Domain, lokal: lokaler Server
     // Temporär: Fallback auf onrender.com falls Custom Domain nicht funktioniert
     this.baseUrl = import.meta.env.PROD
-      ? 'https://api.scrabster-pro.de' // Temporär zurück zu onrender.com
+      ? 'https://api.scrabster-pro.de'
       : 'http://localhost:3000';
     this.pollingInterval = null;
     this.currentGameCode = null;
@@ -13,16 +19,16 @@ class GameApiService {
   }
 
   // Event System
-  on(event, callback) {
+  on(event: string, callback: Function): void {
     if (!this.eventListeners.has(event)) {
       this.eventListeners.set(event, []);
     }
-    this.eventListeners.get(event).push(callback);
+    this.eventListeners.get(event)!.push(callback);
   }
 
-  off(event, callback) {
+  off(event: string, callback: Function): void {
     if (this.eventListeners.has(event)) {
-      const listeners = this.eventListeners.get(event);
+      const listeners = this.eventListeners.get(event)!;
       const index = listeners.indexOf(callback);
       if (index > -1) {
         listeners.splice(index, 1);
@@ -30,12 +36,12 @@ class GameApiService {
     }
   }
 
-  emit(event, data) {
+  emit(event: string, data: any): void {
     if (this.eventListeners.has(event)) {
-      this.eventListeners.get(event).forEach(callback => {
+      this.eventListeners.get(event)!.forEach(callback => {
         try {
           callback(data);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error in event listener:', error);
         }
       });
@@ -43,7 +49,7 @@ class GameApiService {
   }
 
   // API Calls
-  async createGame(username, difficulty) {
+  async createGame(username: string, difficulty: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/create`, {
         method: 'POST',
@@ -65,13 +71,13 @@ class GameApiService {
       this.emit('gameCreated', data);
       this.startPolling(); // Polling starten
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('gameError', { message: error.message });
       throw error;
     }
   }
 
-  async joinGame(gameCode, username) {
+  async joinGame(gameCode: string, username: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/join`, {
         method: 'POST',
@@ -93,13 +99,13 @@ class GameApiService {
       this.emit('gameJoined', data);
       this.startPolling(); // Polling starten
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('gameError', { message: error.message });
       throw error;
     }
   }
 
-  async startGame() {
+  async startGame(): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/start`, {
         method: 'POST',
@@ -121,13 +127,13 @@ class GameApiService {
       this.emit('gameStarted', data);
       // Polling läuft bereits, muss nicht neu gestartet werden
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('gameError', { message: error.message });
       throw error;
     }
   }
 
-  async submitWord(word) {
+  async submitWord(word: string): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/api/game/submit-word`, {
         method: 'POST',
@@ -168,12 +174,12 @@ class GameApiService {
       }
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
       this.emit('wordRejected', { word, message: error.message });
     }
   }
 
-  async leaveGame() {
+  async leaveGame(): Promise<any> {
     try {
       if (this.currentGameCode && this.currentPlayerId) {
         await fetch(`${this.baseUrl}/api/game/leave`, {
@@ -187,7 +193,7 @@ class GameApiService {
           }),
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error leaving game:', error);
     } finally {
       this.stopPolling();
@@ -197,7 +203,7 @@ class GameApiService {
   }
 
   // Polling für Echtzeit-Updates
-  startPolling() {
+  startPolling(): void {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
     }
@@ -230,21 +236,21 @@ class GameApiService {
               });
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           console.error('Polling error:', error);
         }
       }
     }, 2000); // Polling alle 2 Sekunden
   }
 
-  stopPolling() {
+  stopPolling(): void {
     if (this.pollingInterval) {
       clearInterval(this.pollingInterval);
       this.pollingInterval = null;
     }
   }
 
-  getWinners(players) {
+  getWinners(players: any[]): any[] {
     if (players.length === 0) return [];
 
     // Nur Spieler mit mindestens einem Wort berücksichtigen
@@ -258,7 +264,7 @@ class GameApiService {
   }
 
   // Disconnect
-  disconnect() {
+  disconnect(): void {
     this.leaveGame();
     this.eventListeners.clear();
   }

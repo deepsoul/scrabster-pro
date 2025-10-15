@@ -95,50 +95,26 @@
   </Teleport>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue';
+<script lang="ts" setup>
+import { computed, watch } from 'vue';
 
-const props = defineProps({
-  isVisible: {
-    type: Boolean,
-    default: false,
-  },
-  title: {
-    type: String,
-    default: 'Information',
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    default: 'info', // info, success, warning, error
-    validator: value => ['info', 'success', 'warning', 'error'].includes(value),
-  },
-  showCloseButton: {
-    type: Boolean,
-    default: true,
-  },
-  showCancelButton: {
-    type: Boolean,
-    default: false,
-  },
-  confirmText: {
-    type: String,
-    default: 'OK',
-  },
-  cancelText: {
-    type: String,
-    default: 'Abbrechen',
-  },
-  closeOnBackdrop: {
-    type: Boolean,
-    default: true,
-  },
-});
+const props = defineProps<{
+  isVisible: boolean;
+  title?: string;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
+  showCloseButton?: boolean;
+  showCancelButton?: boolean;
+  confirmText?: string;
+  cancelText?: string;
+  closeOnBackdrop?: boolean;
+}>();
 
-const emit = defineEmits(['close', 'confirm', 'cancel']);
+const emit = defineEmits<{
+  close: [];
+  confirm: [];
+  cancel: [];
+}>();
 
 const icon = computed(() => {
   const icons = {
@@ -147,7 +123,7 @@ const icon = computed(() => {
     warning: '⚠️',
     error: '❌',
   };
-  return icons[props.type];
+  return icons[props.type || 'info'];
 });
 
 const iconClasses = computed(() => {
@@ -157,7 +133,7 @@ const iconClasses = computed(() => {
     warning: 'bg-yellow-100 text-yellow-600',
     error: 'bg-red-100 text-red-600',
   };
-  return classes[props.type];
+  return classes[props.type || 'info'];
 });
 
 const confirmButtonClasses = computed(() => {
@@ -167,31 +143,31 @@ const confirmButtonClasses = computed(() => {
     warning: 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500',
     error: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
   };
-  return classes[props.type];
+  return classes[props.type || 'info'];
 });
 
-const close = () => {
+const close = (): void => {
   emit('close');
 };
 
-const handleConfirm = () => {
+const handleConfirm = (): void => {
   emit('confirm');
   close();
 };
 
-const handleCancel = () => {
+const handleCancel = (): void => {
   emit('cancel');
   close();
 };
 
-const handleBackdropClick = () => {
+const handleBackdropClick = (): void => {
   if (props.closeOnBackdrop) {
     close();
   }
 };
 
 // Close on Escape key
-const handleKeydown = event => {
+const handleKeydown = (event: KeyboardEvent): void => {
   if (event.key === 'Escape' && props.isVisible) {
     close();
   }
@@ -199,7 +175,7 @@ const handleKeydown = event => {
 
 watch(
   () => props.isVisible,
-  isVisible => {
+  (isVisible: boolean) => {
     if (isVisible) {
       document.addEventListener('keydown', handleKeydown);
       document.body.style.overflow = 'hidden';

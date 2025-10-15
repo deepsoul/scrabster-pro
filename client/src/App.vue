@@ -81,7 +81,7 @@
             </div>
             <button
               @click="
-                showInstructions;
+                showInstructions();
                 closeMobileMenu();
               "
               class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
@@ -90,7 +90,7 @@
             </button>
             <button
               @click="
-                showImprint;
+                showImprint();
                 closeMobileMenu();
               "
               class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
@@ -99,7 +99,7 @@
             </button>
             <button
               @click="
-                disconnect;
+                disconnect();
                 closeMobileMenu();
               "
               class="block w-full text-left px-3 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
@@ -221,7 +221,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import GameApiService from './services/gameApi.js';
+import GameApiService from './services/gameApi';
 import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
 import GameScreen from './components/GameScreen.vue';
@@ -231,7 +231,7 @@ import ImprintPage from './components/ImprintPage.vue';
 import TrainingMode from './components/TrainingMode.vue';
 import CookieDisclaimer from './components/CookieDisclaimer.vue';
 import AppDialog from './components/AppDialog.vue';
-import analytics from './services/analytics.js';
+import analytics from './services/analytics';
 
 // Reactive state
 const currentUser = ref(null);
