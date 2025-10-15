@@ -408,9 +408,11 @@ watch(
   100% {
     transform: translateY(0);
   }
+
   40% {
     transform: translateY(-8px);
   }
+
   60% {
     transform: translateY(-4px);
   }
@@ -428,6 +430,7 @@ watch(
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
