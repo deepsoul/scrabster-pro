@@ -531,13 +531,16 @@ const handleDialogCancel = () => {
 window.showDialog = showDialog;
 
 // Render Spinup handlers
-const handleRenderSpinup = (data) => {
+const handleRenderSpinup = data => {
   showRenderSpinup.value = data.detected;
 };
 
 const handleRenderSpinupTimeout = () => {
   showRenderSpinup.value = false;
-  addToast('Server-Verbindung konnte nicht hergestellt werden. Bitte versuchen Sie es erneut.', 'error');
+  addToast(
+    'Server-Verbindung konnte nicht hergestellt werden. Bitte versuchen Sie es erneut.',
+    'error'
+  );
 };
 
 // Lifecycle

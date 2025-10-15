@@ -54,6 +54,11 @@ class GameApiService {
 
   // Render Spinup Detection
   private detectRenderSpinup(error: any): boolean {
+    // Only check for Render spinup in production
+    if (!import.meta.env.PROD) {
+      return false;
+    }
+
     // Check for common Render spinup indicators
     if (
       error?.message?.includes('timeout') ||
@@ -63,9 +68,9 @@ class GameApiService {
       error?.name === 'TimeoutError'
     ) {
       this.consecutiveTimeouts++;
-
-      // If we get 2+ consecutive timeouts in production, likely Render spinup
-      if (this.consecutiveTimeouts >= 2 && import.meta.env.PROD) {
+      
+      // If we get 3+ consecutive timeouts in production, likely Render spinup
+      if (this.consecutiveTimeouts >= 3) {
         this.renderSpinupDetected = true;
         this.emit('renderSpinup', { detected: true });
         return true;

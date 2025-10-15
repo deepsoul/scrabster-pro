@@ -160,8 +160,8 @@ import { ref, computed, watch } from 'vue';
 import type { DifficultyLevel } from '@/types';
 
 const props = defineProps<{
-  gameCode: string;
-  difficulty: DifficultyLevel;
+  gameCode?: string;
+  difficulty?: DifficultyLevel;
   showModal: boolean;
 }>();
 
@@ -183,12 +183,11 @@ const gameUrl = computed(() => {
 });
 
 const shareMessage = computed(() => {
-  const difficultyText =
-    {
-      easy: 'Leicht',
-      medium: 'Mittel',
-      hard: 'Schwer',
-    }[props.difficulty] || 'Mittel';
+  const difficultyText = {
+    easy: 'Leicht',
+    medium: 'Mittel',
+    hard: 'Schwer',
+  }[props.difficulty ?? 'medium'];
 
   const gameCodeText = props.gameCode || 'Wird generiert...';
 
