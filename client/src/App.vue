@@ -233,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import GameApiService from './services/gameApi';
 import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
@@ -257,6 +257,11 @@ const toasts = ref([]);
 const isMobileMenuOpen = ref(false);
 const trainingDifficulty = ref('medium');
 const showRenderSpinup = ref(false);
+
+// Debug: Watch showRenderSpinup changes
+watch(showRenderSpinup, (newValue, oldValue) => {
+  console.log('showRenderSpinup changed:', oldValue, '->', newValue);
+});
 
 // Dialog state
 const dialog = ref({
@@ -316,6 +321,12 @@ const connectGameApi = () => {
 
   gameApi.value.on('renderSpinup', handleRenderSpinup);
 
+  // Hide spinup loader on successful connection
+  gameApi.value.on('connect', () => {
+    console.log('Connect event - hiding spinup loader');
+    showRenderSpinup.value = false;
+  });
+
   gameApi.value.on('gameCreated', data => {
     console.log('Game created:', data);
     gameData.value = {
@@ -323,6 +334,8 @@ const connectGameApi = () => {
       ...data,
       gameState: 'waiting',
     };
+    console.log('GameCreated event - hiding spinup loader');
+    showRenderSpinup.value = false; // Hide loader on successful create
   });
 
   gameApi.value.on('gameJoined', data => {
@@ -332,6 +345,8 @@ const connectGameApi = () => {
       ...data,
       gameState: 'waiting',
     };
+    console.log('GameJoined event - hiding spinup loader');
+    showRenderSpinup.value = false; // Hide loader on successful join
   });
 
   gameApi.value.on('playerJoined', data => {
@@ -531,19 +546,27 @@ const handleDialogCancel = () => {
 window.showDialog = showDialog;
 
 // Render Spinup handlers
-const handleRenderSpinup = (data) => {
+const handleRenderSpinup = data => {
+  console.log('Render spinup detected:', data.detected);
   showRenderSpinup.value = data.detected;
 };
 
 const handleRenderSpinupTimeout = () => {
   showRenderSpinup.value = false;
-  addToast('Server-Verbindung konnte nicht hergestellt werden. Bitte versuchen Sie es erneut.', 'error');
+  addToast(
+    'Server-Verbindung konnte nicht hergestellt werden. Bitte versuchen Sie es erneut.',
+    'error'
+  );
 };
 
 // Lifecycle
 onMounted(() => {
   // Initialize analytics
   analytics.init();
+
+  // Ensure spinup loader is hidden on mount
+  showRenderSpinup.value = false;
+  console.log('App mounted - spinup loader set to false');
 
   // Check if user is already logged in (localStorage)
   const savedUser = localStorage.getItem('scrabster-username');

@@ -1,5 +1,8 @@
 <template>
-  <div class="fixed inset-0 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center z-50">
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center z-50"
+  >
     <div class="text-center max-w-md mx-auto px-6">
       <!-- Animated Logo -->
       <div class="mb-8">
@@ -21,52 +24,235 @@
                 stroke-width="2"
                 class="animate-pulse"
               />
-              
+
               <!-- Gradient definition -->
               <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+                <linearGradient
+                  id="gradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: #3b82f6; stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: #1d4ed8; stop-opacity: 1"
+                  />
                 </linearGradient>
               </defs>
-              
+
               <!-- Animated letter tiles -->
               <g class="letter-tiles">
                 <!-- S -->
-                <rect x="25" y="30" width="12" height="12" rx="2" fill="#3b82f6" class="tile-animation" style="animation-delay: 0s" />
-                <text x="31" y="39" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">S</text>
-                
+                <rect
+                  x="25"
+                  y="30"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#3b82f6"
+                  class="tile-animation"
+                  style="animation-delay: 0s"
+                />
+                <text
+                  x="31"
+                  y="39"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  S
+                </text>
+
                 <!-- C -->
-                <rect x="40" y="30" width="12" height="12" rx="2" fill="#1d4ed8" class="tile-animation" style="animation-delay: 0.2s" />
-                <text x="46" y="39" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">C</text>
-                
+                <rect
+                  x="40"
+                  y="30"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#1d4ed8"
+                  class="tile-animation"
+                  style="animation-delay: 0.2s"
+                />
+                <text
+                  x="46"
+                  y="39"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  C
+                </text>
+
                 <!-- R -->
-                <rect x="55" y="30" width="12" height="12" rx="2" fill="#3b82f6" class="tile-animation" style="animation-delay: 0.4s" />
-                <text x="61" y="39" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">R</text>
-                
+                <rect
+                  x="55"
+                  y="30"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#3b82f6"
+                  class="tile-animation"
+                  style="animation-delay: 0.4s"
+                />
+                <text
+                  x="61"
+                  y="39"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  R
+                </text>
+
                 <!-- A -->
-                <rect x="25" y="45" width="12" height="12" rx="2" fill="#1d4ed8" class="tile-animation" style="animation-delay: 0.6s" />
-                <text x="31" y="54" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">A</text>
-                
+                <rect
+                  x="25"
+                  y="45"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#1d4ed8"
+                  class="tile-animation"
+                  style="animation-delay: 0.6s"
+                />
+                <text
+                  x="31"
+                  y="54"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  A
+                </text>
+
                 <!-- B -->
-                <rect x="40" y="45" width="12" height="12" rx="2" fill="#3b82f6" class="tile-animation" style="animation-delay: 0.8s" />
-                <text x="46" y="54" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">B</text>
-                
+                <rect
+                  x="40"
+                  y="45"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#3b82f6"
+                  class="tile-animation"
+                  style="animation-delay: 0.8s"
+                />
+                <text
+                  x="46"
+                  y="54"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  B
+                </text>
+
                 <!-- S -->
-                <rect x="55" y="45" width="12" height="12" rx="2" fill="#1d4ed8" class="tile-animation" style="animation-delay: 1s" />
-                <text x="61" y="54" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">S</text>
-                
+                <rect
+                  x="55"
+                  y="45"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#1d4ed8"
+                  class="tile-animation"
+                  style="animation-delay: 1s"
+                />
+                <text
+                  x="61"
+                  y="54"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  S
+                </text>
+
                 <!-- T -->
-                <rect x="25" y="60" width="12" height="12" rx="2" fill="#3b82f6" class="tile-animation" style="animation-delay: 1.2s" />
-                <text x="31" y="69" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">T</text>
-                
+                <rect
+                  x="25"
+                  y="60"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#3b82f6"
+                  class="tile-animation"
+                  style="animation-delay: 1.2s"
+                />
+                <text
+                  x="31"
+                  y="69"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  T
+                </text>
+
                 <!-- E -->
-                <rect x="40" y="60" width="12" height="12" rx="2" fill="#1d4ed8" class="tile-animation" style="animation-delay: 1.4s" />
-                <text x="46" y="69" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">E</text>
-                
+                <rect
+                  x="40"
+                  y="60"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#1d4ed8"
+                  class="tile-animation"
+                  style="animation-delay: 1.4s"
+                />
+                <text
+                  x="46"
+                  y="69"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  E
+                </text>
+
                 <!-- R -->
-                <rect x="55" y="60" width="12" height="12" rx="2" fill="#3b82f6" class="tile-animation" style="animation-delay: 1.6s" />
-                <text x="61" y="69" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">R</text>
+                <rect
+                  x="55"
+                  y="60"
+                  width="12"
+                  height="12"
+                  rx="2"
+                  fill="#3b82f6"
+                  class="tile-animation"
+                  style="animation-delay: 1.6s"
+                />
+                <text
+                  x="61"
+                  y="69"
+                  text-anchor="middle"
+                  fill="white"
+                  font-family="Arial, sans-serif"
+                  font-size="8"
+                  font-weight="bold"
+                >
+                  R
+                </text>
               </g>
             </svg>
           </div>
@@ -78,26 +264,35 @@
         <h2 class="text-2xl font-bold text-primary-800 mb-2">
           Server startet...
         </h2>
-        
+
         <p class="text-primary-600 text-lg">
           {{ loadingMessage }}
         </p>
-        
+
         <!-- Progress bar -->
         <div class="w-full bg-primary-200 rounded-full h-2 overflow-hidden">
-          <div 
+          <div
             class="h-full bg-gradient-to-r from-primary-500 to-primary-600 rounded-full transition-all duration-1000 ease-out"
             :style="{ width: progressWidth + '%' }"
           ></div>
         </div>
-        
+
         <!-- Animated dots -->
         <div class="flex justify-center space-x-2">
-          <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-          <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-          <div class="w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+          <div
+            class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"
+            style="animation-delay: 0s"
+          ></div>
+          <div
+            class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"
+            style="animation-delay: 0.2s"
+          ></div>
+          <div
+            class="w-2 h-2 bg-primary-500 rounded-full animate-bounce"
+            style="animation-delay: 0.4s"
+          ></div>
         </div>
-        
+
         <!-- Time estimate -->
         <p class="text-sm text-primary-500">
           Geschätzte Wartezeit: {{ estimatedTime }}s
@@ -130,7 +325,7 @@ const messages = [
   'Wörter werden vorbereitet...',
   'Spieler werden verbunden...',
   'Fast fertig...',
-  'Letzte Vorbereitungen...'
+  'Letzte Vorbereitungen...',
 ];
 
 let messageIndex = 0;
@@ -140,25 +335,25 @@ let timeoutTimer: NodeJS.Timeout | null = null;
 
 const startLoading = () => {
   if (!props.show) return;
-  
+
   // Reset progress
   progressWidth.value = 0;
   messageIndex = 0;
-  loadingMessage.value = messages[0];
-  
+  loadingMessage.value = messages[0] as string;
+
   // Start progress animation (50 seconds total)
   progressInterval = setInterval(() => {
     if (progressWidth.value < 100) {
       progressWidth.value += 2; // 2% every second
     }
   }, 1000);
-  
+
   // Cycle through messages every 8 seconds
   messageInterval = setInterval(() => {
     messageIndex = (messageIndex + 1) % messages.length;
-    loadingMessage.value = messages[messageIndex];
+    loadingMessage.value = messages[messageIndex] as string;
   }, 8000);
-  
+
   // Timeout after 60 seconds (safety margin)
   timeoutTimer = setTimeout(() => {
     emit('timeout');
@@ -192,18 +387,25 @@ onUnmounted(() => {
 
 // Watch for show prop changes
 import { watch } from 'vue';
-watch(() => props.show, (newShow) => {
-  if (newShow) {
-    startLoading();
-  } else {
-    stopLoading();
+watch(
+  () => props.show,
+  newShow => {
+    if (newShow) {
+      startLoading();
+    } else {
+      stopLoading();
+    }
   }
-});
+);
 </script>
 
 <style scoped>
 @keyframes tile-bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
