@@ -55,13 +55,15 @@ class GameApiService {
   // Render Spinup Detection
   private detectRenderSpinup(error: any): boolean {
     // Check for common Render spinup indicators
-    if (error?.message?.includes('timeout') || 
-        error?.message?.includes('ECONNRESET') ||
-        error?.message?.includes('ENOTFOUND') ||
-        error?.code === 'ECONNABORTED' ||
-        error?.name === 'TimeoutError') {
+    if (
+      error?.message?.includes('timeout') ||
+      error?.message?.includes('ECONNRESET') ||
+      error?.message?.includes('ENOTFOUND') ||
+      error?.code === 'ECONNABORTED' ||
+      error?.name === 'TimeoutError'
+    ) {
       this.consecutiveTimeouts++;
-      
+
       // If we get 2+ consecutive timeouts in production, likely Render spinup
       if (this.consecutiveTimeouts >= 2 && import.meta.env.PROD) {
         this.renderSpinupDetected = true;
