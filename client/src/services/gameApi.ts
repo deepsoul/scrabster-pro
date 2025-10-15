@@ -262,14 +262,11 @@ class GameApiService {
                 gameState: data.gameState,
                 winner: data.winner,
                 isDraw: data.isDraw,
+                chatMessages: data.chatMessages || [],
               });
 
-              // Chat-Nachrichten verarbeiten
-              if (data.chatMessages && data.chatMessages.length > 0) {
-                data.chatMessages.forEach((message: any) => {
-                  this.emit('chatMessage', message);
-                });
-              }
+              // Chat-Nachrichten werden direkt im GameScreen verarbeitet
+              // um Duplikate zu vermeiden
             }
           }
         } catch (error: any) {

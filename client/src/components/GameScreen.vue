@@ -527,6 +527,7 @@ const newChatMessage = ref('');
 const isSendingChat = ref(false);
 const isChatExpanded = ref(true);
 const chatMessagesContainer = ref<HTMLElement>();
+const processedChatMessageIds = ref<Set<string>>(new Set());
 
 // Winner state
 const winner = ref<Player | null>(null);
@@ -839,6 +840,29 @@ const setupGameApiListeners = (): void => {
     if (data.isDraw !== undefined) {
       isDraw.value = data.isDraw;
     }
+
+    // Chat-Nachrichten verarbeiten
+    if (data.chatMessages && data.chatMessages.length > 0) {
+      data.chatMessages.forEach((message: any) => {
+        // Nur neue Nachrichten hinzufügen
+        if (!processedChatMessageIds.value.has(message.id)) {
+          processedChatMessageIds.value.add(message.id);
+          
+          // Nur Nachrichten von anderen Spielern hinzufügen
+          if (message.playerId !== currentPlayerId.value) {
+            const chatMessage = {
+              id: message.id,
+              username: message.username,
+              text: message.message,
+              timestamp: new Date(message.timestamp),
+              isOwn: false,
+            };
+            chatMessages.value.push(chatMessage);
+            scrollChatToBottom();
+          }
+        }
+      });
+    }
   });
 
   props.gameApi.on('wordSubmitted', (data: any) => {
@@ -881,21 +905,6 @@ const setupGameApiListeners = (): void => {
     players.value = data.players;
   });
 
-  // Chat message listener
-  props.gameApi.on('chatMessage', (data: any) => {
-    // Only add message if it's not from current user (to avoid duplicates)
-    if (data.playerId !== currentPlayerId.value) {
-      const message = {
-        id: data.id || Date.now().toString(),
-        username: data.username,
-        text: data.message,
-        timestamp: new Date(data.timestamp || Date.now()),
-        isOwn: false,
-      };
-      chatMessages.value.push(message);
-      scrollChatToBottom();
-    }
-  });
 
   props.gameApi.on('gameOver', (data: any) => {
     gameState.value = 'finished';
