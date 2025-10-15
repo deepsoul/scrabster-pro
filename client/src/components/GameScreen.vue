@@ -834,7 +834,7 @@ const setupGameApiListeners = (): void => {
     const wasFinished = gameState.value === 'finished';
     const isNowWaiting = data.gameState === 'waiting';
     const timeWasReset = timeLeft.value <= 10 && data.timeLeft > 60; // Zeit wurde von niedrig auf hoch zurückgesetzt
-    
+
     if (wasFinished && isNowWaiting && timeWasReset) {
       // Neues Spiel wurde gestartet - alle Daten zurücksetzen
       myWords.value = [];
@@ -842,11 +842,11 @@ const setupGameApiListeners = (): void => {
       currentWord.value = '';
       winner.value = null;
       isDraw.value = false;
-      
+
       // Chat zurücksetzen
       chatMessages.value = [];
       processedChatMessageIds.value.clear();
-      
+
       // Willkommensnachricht für neues Spiel hinzufügen
       const welcomeMessage = {
         id: 'welcome-new',
@@ -856,10 +856,10 @@ const setupGameApiListeners = (): void => {
         isOwn: false,
       };
       chatMessages.value.push(welcomeMessage);
-      
+
       console.log('Neues Spiel erkannt über gameStateUpdate:', data);
     }
-    
+
     timeLeft.value = data.timeLeft;
     players.value = data.players;
     if (data.gameState) {

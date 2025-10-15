@@ -276,9 +276,9 @@ class GameApiService {
       }
 
       const data = await response.json();
-      
+
       // Kein Event nötig - alle Spieler werden über Polling benachrichtigt
-      
+
       return data;
     } catch (error: any) {
       this.emit('gameError', { message: error.message });
