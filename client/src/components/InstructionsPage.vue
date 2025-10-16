@@ -2,10 +2,10 @@
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- Header -->
     <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 mb-4 font-display">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-display">
         🎮 Scrabster Pro
       </h1>
-      <p class="text-xl text-gray-600 font-sans">
+      <p class="text-lg md:text-xl text-gray-600 font-sans">
         Das ultimative Multiplayer-Wortspiel
       </p>
     </div>
@@ -30,11 +30,11 @@
           >
             <span class="text-2xl">🎯</span>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 font-display">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
             Ziel des Spiels
           </h2>
         </div>
-        <p class="text-lg text-gray-700 leading-relaxed">
+        <p class="text-base md:text-lg text-gray-700 leading-relaxed">
           Bilde so viele Wörter wie möglich aus den verfügbaren Buchstaben und
           sammle dabei Punkte. Der Spieler mit den meisten Punkten gewinnt!
         </p>
@@ -48,7 +48,7 @@
           >
             <span class="text-2xl">🚀</span>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 font-display">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
             Spielablauf
           </h2>
         </div>
@@ -153,7 +153,7 @@
           >
             <span class="text-2xl">⚡</span>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 font-display">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
             Schwierigkeitsgrade
           </h2>
         </div>
@@ -161,15 +161,15 @@
         <div class="grid md:grid-cols-3 gap-6">
           <div class="text-center p-6 bg-green-50 rounded-lg">
             <div class="text-3xl mb-2">🟢</div>
-            <h3 class="text-xl font-bold text-green-700 mb-2">Leicht</h3>
-            <p class="text-green-600 font-semibold mb-2">12 Buchstaben</p>
+            <h3 class="text-lg md:text-xl font-bold text-green-700 mb-2">Leicht</h3>
+            <p class="text-green-600 font-semibold mb-2">10 Buchstaben</p>
             <p class="text-green-600 font-semibold mb-2">120 Sekunden</p>
             <p class="text-gray-600 text-sm">Perfekt für Anfänger</p>
           </div>
 
           <div class="text-center p-6 bg-yellow-50 rounded-lg">
             <div class="text-3xl mb-2">🟡</div>
-            <h3 class="text-xl font-bold text-yellow-700 mb-2">Mittel</h3>
+            <h3 class="text-lg md:text-xl font-bold text-yellow-700 mb-2">Mittel</h3>
             <p class="text-yellow-600 font-semibold mb-2">10 Buchstaben</p>
             <p class="text-yellow-600 font-semibold mb-2">90 Sekunden</p>
             <p class="text-gray-600 text-sm">Ausgewogene Herausforderung</p>
@@ -177,8 +177,8 @@
 
           <div class="text-center p-6 bg-red-50 rounded-lg">
             <div class="text-3xl mb-2">🔴</div>
-            <h3 class="text-xl font-bold text-red-700 mb-2">Schwer</h3>
-            <p class="text-red-600 font-semibold mb-2">8 Buchstaben</p>
+            <h3 class="text-lg md:text-xl font-bold text-red-700 mb-2">Schwer</h3>
+            <p class="text-red-600 font-semibold mb-2">10 Buchstaben</p>
             <p class="text-red-600 font-semibold mb-2">60 Sekunden</p>
             <p class="text-gray-600 text-sm">Für Wortspiel-Experten</p>
           </div>
@@ -193,7 +193,7 @@
           >
             <span class="text-2xl">⭐</span>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 font-display">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
             Punktevergabe
           </h2>
         </div>
@@ -274,7 +274,7 @@
           >
             <span class="text-2xl">💡</span>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 font-display">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
             Tipps & Tricks
           </h2>
         </div>
@@ -358,7 +358,7 @@
           >
             <span class="text-2xl">🎨</span>
           </div>
-          <h2 class="text-2xl font-bold text-gray-900 font-display">
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
             Features
           </h2>
         </div>
@@ -375,7 +375,15 @@
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
-              <span class="text-gray-700">Responsive Design</span>
+              <span class="text-gray-700">Live-Chat</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-green-500 mr-3">✓</span>
+              <span class="text-gray-700">Neues Spiel mit gleichen Spielern</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-green-500 mr-3">✓</span>
+              <span class="text-gray-700">Training Mode</span>
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
@@ -390,15 +398,127 @@
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
-              <span class="text-gray-700">Automatische Timer</span>
+              <span class="text-gray-700">Mobile Timer (Sticky)</span>
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
-              <span class="text-gray-700">Gewinner-Ermittlung</span>
+              <span class="text-gray-700">Scrabster-Erkennung</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-green-500 mr-3">✓</span>
+              <span class="text-gray-700">Spiel teilen</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-green-500 mr-3">✓</span>
+              <span class="text-gray-700">Responsive Design</span>
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
               <span class="text-gray-700">Mobile-optimiert</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Neue Features -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div class="flex items-center mb-6">
+          <div
+            class="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mr-4"
+          >
+            <span class="text-2xl">🆕</span>
+          </div>
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
+            Neue Features
+          </h2>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="space-y-4">
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+              >
+                💬
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Live-Chat</h3>
+                <p class="text-gray-600">
+                  Kommuniziere mit anderen Spielern während des Spiels
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+              >
+                🔄
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Neues Spiel</h3>
+                <p class="text-gray-600">
+                  Starte direkt ein neues Spiel mit den gleichen Spielern
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+              >
+                📱
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Mobile Timer</h3>
+                <p class="text-gray-600">
+                  Sticky Timer am oberen Bildschirmrand für mobile Geräte
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+              >
+                🎯
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Training Mode</h3>
+                <p class="text-gray-600">
+                  Übe alleine gegen die Zeit ohne andere Spieler
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+              >
+                📤
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Spiel teilen</h3>
+                <p class="text-gray-600">
+                  Teile dein Spiel einfach über Link oder Code
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div
+                class="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+              >
+                ⚡
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">Scrabster-Bonus</h3>
+                <p class="text-gray-600">
+                  +2 Bonus-Punkte für Wörter mit allen Buchstaben
+                </p>
+              </div>
             </div>
           </div>
         </div>
