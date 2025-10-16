@@ -233,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import GameApiService from './services/gameApi';
 import LoginScreen from './components/LoginScreen.vue';
 import Lobby from './components/Lobby.vue';
@@ -475,6 +475,23 @@ const handleStartTraining = data => {
     event_category: 'training',
   });
 };
+
+// Scroll to top when view changes
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
+  });
+};
+
+// Watch for view changes and scroll to top
+watch(currentView, () => {
+  // Use nextTick to ensure DOM is updated before scrolling
+  nextTick(() => {
+    scrollToTop();
+  });
+});
 
 // Analytics event handlers
 const handleAnalyticsChanged = enabled => {
