@@ -127,7 +127,7 @@
               class="input-field flex-1 text-lg"
               :class="{
                 'voice-recording': isListening,
-                'voice-pulse': isListening
+                'voice-pulse': isListening,
               }"
               :disabled="gameState !== 'playing'"
             />
