@@ -2,7 +2,9 @@
   <div class="max-w-4xl mx-auto px-4 py-8">
     <!-- Header -->
     <div class="text-center mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-display">
+      <h1
+        class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-display"
+      >
         🎮 Scrabster Pro
       </h1>
       <p class="text-lg md:text-xl text-gray-600 font-sans">
@@ -161,7 +163,9 @@
         <div class="grid md:grid-cols-3 gap-6">
           <div class="text-center p-6 bg-green-50 rounded-lg">
             <div class="text-3xl mb-2">🟢</div>
-            <h3 class="text-lg md:text-xl font-bold text-green-700 mb-2">Leicht</h3>
+            <h3 class="text-lg md:text-xl font-bold text-green-700 mb-2">
+              Leicht
+            </h3>
             <p class="text-green-600 font-semibold mb-2">10 Buchstaben</p>
             <p class="text-green-600 font-semibold mb-2">120 Sekunden</p>
             <p class="text-gray-600 text-sm">Perfekt für Anfänger</p>
@@ -169,7 +173,9 @@
 
           <div class="text-center p-6 bg-yellow-50 rounded-lg">
             <div class="text-3xl mb-2">🟡</div>
-            <h3 class="text-lg md:text-xl font-bold text-yellow-700 mb-2">Mittel</h3>
+            <h3 class="text-lg md:text-xl font-bold text-yellow-700 mb-2">
+              Mittel
+            </h3>
             <p class="text-yellow-600 font-semibold mb-2">10 Buchstaben</p>
             <p class="text-yellow-600 font-semibold mb-2">90 Sekunden</p>
             <p class="text-gray-600 text-sm">Ausgewogene Herausforderung</p>
@@ -177,7 +183,9 @@
 
           <div class="text-center p-6 bg-red-50 rounded-lg">
             <div class="text-3xl mb-2">🔴</div>
-            <h3 class="text-lg md:text-xl font-bold text-red-700 mb-2">Schwer</h3>
+            <h3 class="text-lg md:text-xl font-bold text-red-700 mb-2">
+              Schwer
+            </h3>
             <p class="text-red-600 font-semibold mb-2">10 Buchstaben</p>
             <p class="text-red-600 font-semibold mb-2">60 Sekunden</p>
             <p class="text-gray-600 text-sm">Für Wortspiel-Experten</p>
@@ -379,7 +387,9 @@
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
-              <span class="text-gray-700">Neues Spiel mit gleichen Spielern</span>
+              <span class="text-gray-700">
+                Neues Spiel mit gleichen Spielern
+              </span>
             </div>
             <div class="flex items-center">
               <span class="text-green-500 mr-3">✓</span>
