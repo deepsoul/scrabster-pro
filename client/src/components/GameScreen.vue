@@ -259,6 +259,41 @@
               </div>
             </div>
           </div>
+
+          <!-- Remaining Letters & Scrabster Status -->
+          <div
+            v-if="gameState === 'playing' && remainingLetters.length > 0"
+            class="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
+          >
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Noch verfügbare Buchstaben ({{ remainingLetters.length }})
+            </h3>
+            <div class="flex flex-wrap justify-center gap-2">
+              <div
+                v-for="(letter, index) in remainingLetters"
+                :key="index"
+                class="letter-tile bg-gray-100 text-gray-600"
+              >
+                {{ letter }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Scrabster Achievement -->
+          <div
+            v-if="isScrabster"
+            class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 text-center"
+          >
+            <div class="text-2xl font-bold text-green-600 mb-2">
+              🏆 GESAMT-SCRABSTER! 🎯
+            </div>
+            <div class="text-lg text-gray-600 mb-2">
+              Du hast alle Buchstaben verwendet!
+            </div>
+            <div class="text-xl font-bold text-green-600">
+              +{{ scrabsterBonus }} Bonus-Punkte! 🎉
+            </div>
+          </div>
         </div>
 
         <!-- Players Sidebar -->
@@ -295,7 +330,10 @@
                     </div>
                   </div>
                   <div class="text-2xl font-bold text-primary-600">
-                    {{ player.score }} Pkt
+                    {{ player.id === currentPlayerId ? totalScoreWithBonus : player.score }} Pkt
+                    <span v-if="player.id === currentPlayerId && isScrabster" class="text-green-600 text-sm">
+                      (+{{ scrabsterBonus }} Bonus)
+                    </span>
                   </div>
                 </div>
               </div>
@@ -536,6 +574,10 @@ const processedChatMessageIds = ref<Set<string>>(new Set());
 const winner = ref<Player | null>(null);
 const isDraw = ref<boolean>(false);
 
+// Scrabster bonus state
+const isScrabster = ref<boolean>(false);
+const scrabsterBonus = ref<number>(0);
+
 // Voice input
 const isVoiceSupported = ref<boolean>(false);
 const isListening = ref<boolean>(false);
@@ -616,7 +658,11 @@ const statusClass = computed((): string => {
 });
 
 const sortedPlayers = computed((): Player[] => {
-  return [...players.value].sort((a, b) => b.score - a.score);
+  return [...players.value].sort((a, b) => {
+    const scoreA = a.id === currentPlayerId.value ? totalScoreWithBonus.value : a.score;
+    const scoreB = b.id === currentPlayerId.value ? totalScoreWithBonus.value : b.score;
+    return scoreB - scoreA;
+  });
 });
 
 // Buchstaben-Häufigkeit berechnen
@@ -652,6 +698,58 @@ const currentUsername = computed((): string => {
     player => player.id === currentPlayerId.value
   );
   return currentPlayer?.username || 'Spieler';
+});
+
+// Berechne verbleibende Buchstaben für den aktuellen Spieler
+const remainingLetters = computed((): string[] => {
+  if (!letters.value || letters.value.length === 0) return [];
+  
+  // Start with all original letters
+  const availableLetters = [...letters.value];
+
+  // Remove letters used in each word
+  myWords.value.forEach(word => {
+    const wordLetters = word.toUpperCase().split('');
+    wordLetters.forEach(letter => {
+      const index = availableLetters.indexOf(letter);
+      if (index !== -1) {
+        availableLetters.splice(index, 1); // Remove the letter
+      }
+    });
+  });
+
+  return availableLetters;
+});
+
+// Berechne prozentualen Scrabster-Bonus basierend auf Effizienz
+const calculateScrabsterBonus = (): number => {
+  if (!isScrabster.value || myWords.value.length === 0) return 0;
+  
+  const totalLetters = letters.value.length;
+  const wordsUsed = myWords.value.length;
+  
+  // Basis-Bonus: 50% der Gesamtpunkte
+  const baseBonus = Math.floor(totalScore.value * 0.5);
+  
+  // Effizienz-Bonus: Je weniger Wörter, desto höher der Bonus
+  // Theoretisches Minimum: 1 Wort (alle Buchstaben in einem Wort)
+  // Praktisches Minimum: 2-3 Wörter je nach Schwierigkeit
+  const theoreticalMinWords = Math.ceil(totalLetters / 8); // Annahme: 8 Buchstaben pro Wort
+  const efficiencyRatio = Math.max(0, (theoreticalMinWords - wordsUsed) / theoreticalMinWords);
+  
+  // Effizienz-Bonus: 0-100% zusätzlich zum Basis-Bonus
+  const efficiencyBonus = Math.floor(baseBonus * efficiencyRatio);
+  
+  return baseBonus + efficiencyBonus;
+};
+
+// Gesamtpunktzahl inklusive Scrabster-Bonus
+const totalScore = computed((): number => {
+  return wordScores.value.reduce((sum, score) => sum + score, 0);
+});
+
+const totalScoreWithBonus = computed((): number => {
+  return totalScore.value + (isScrabster.value ? scrabsterBonus.value : 0);
 });
 
 // Methods
@@ -854,6 +952,10 @@ const setupGameApiListeners = (): void => {
       winner.value = null;
       isDraw.value = false;
 
+      // Reset Scrabster bonus
+      isScrabster.value = false;
+      scrabsterBonus.value = 0;
+
       // Chat zurücksetzen
       chatMessages.value = [];
       processedChatMessageIds.value.clear();
@@ -921,6 +1023,9 @@ const setupGameApiListeners = (): void => {
       );
       wordScores.value.push(wordScore);
 
+      // Prüfe, ob alle Buchstaben verwendet wurden (Gesamt-Scrabster)
+      checkForCompleteScrabster();
+
       // Sound-Effekt für erfolgreich eingereichtes Wort
       soundService.playWordSubmitSound();
     }
@@ -948,6 +1053,9 @@ const setupGameApiListeners = (): void => {
         scrabsterRequirement
       );
       wordScores.value.push(wordScore);
+
+      // Prüfe, ob alle Buchstaben verwendet wurden (Gesamt-Scrabster)
+      checkForCompleteScrabster();
 
       // Scrabster-Sound abspielen
       soundService.playScrabsterSound();
@@ -1093,6 +1201,22 @@ const scrollChatToBottom = (): void => {
         chatMessagesContainer.value.scrollHeight;
     }
   });
+};
+
+// Prüfe, ob alle Buchstaben verwendet wurden (Gesamt-Scrabster)
+const checkForCompleteScrabster = (): void => {
+  if (remainingLetters.value.length === 0 && !isScrabster.value) {
+    isScrabster.value = true;
+    scrabsterBonus.value = calculateScrabsterBonus();
+    
+    // Spezielle Scrabster-Notification
+    console.log(
+      `🏆 GESAMT-SCRABSTER! Du hast alle Buchstaben verwendet! +${scrabsterBonus.value} Bonus-Punkte!`
+    );
+    
+    // Optional: Spezieller Sound für Gesamt-Scrabster
+    soundService.playScrabsterSound();
+  }
 };
 
 onMounted(() => {

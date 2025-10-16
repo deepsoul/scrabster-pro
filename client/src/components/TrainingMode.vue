@@ -345,7 +345,8 @@
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">⚡</span>
               <span>
-                Ein "Scrabster" (alle Buchstaben verwenden) = 50% + Effizienz-Bonus!
+                Ein "Scrabster" (alle Buchstaben verwenden) = 50% +
+                Effizienz-Bonus!
               </span>
             </div>
             <div class="flex items-start">
@@ -390,9 +391,13 @@
             <span v-else class="text-blue-600">Training beendet! 📚</span>
           </div>
           <div class="text-lg text-gray-600 mb-4">
-            {{ totalScore + (isScrabster ? scrabsterBonus : 0) }} Punkte mit {{ myWords.length }} Wörtern
+            {{ totalScore + (isScrabster ? scrabsterBonus : 0) }} Punkte mit
+            {{ myWords.length }} Wörtern
           </div>
-          <div v-if="isScrabster" class="text-lg text-green-600 mb-2 font-semibold">
+          <div
+            v-if="isScrabster"
+            class="text-lg text-green-600 mb-2 font-semibold"
+          >
             +{{ scrabsterBonus }} Bonus-Punkte! 🎉
           </div>
           <div class="text-sm text-gray-500">
@@ -575,22 +580,25 @@ const remainingLetters = computed((): string[] => {
 // Berechne prozentualen Scrabster-Bonus basierend auf Effizienz
 const calculateScrabsterBonus = (): number => {
   if (!isScrabster.value || myWords.value.length === 0) return 0;
-  
+
   const totalLetters = letters.value.length;
   const wordsUsed = myWords.value.length;
-  
+
   // Basis-Bonus: 50% der Gesamtpunkte
   const baseBonus = Math.floor(totalScore.value * 0.5);
-  
+
   // Effizienz-Bonus: Je weniger Wörter, desto höher der Bonus
   // Theoretisches Minimum: 1 Wort (alle Buchstaben in einem Wort)
   // Praktisches Minimum: 2-3 Wörter je nach Schwierigkeit
   const theoreticalMinWords = Math.ceil(totalLetters / 8); // Annahme: 8 Buchstaben pro Wort
-  const efficiencyRatio = Math.max(0, (theoreticalMinWords - wordsUsed) / theoreticalMinWords);
-  
+  const efficiencyRatio = Math.max(
+    0,
+    (theoreticalMinWords - wordsUsed) / theoreticalMinWords
+  );
+
   // Effizienz-Bonus: 0-100% zusätzlich zum Basis-Bonus
   const efficiencyBonus = Math.floor(baseBonus * efficiencyRatio);
-  
+
   return baseBonus + efficiencyBonus;
 };
 
