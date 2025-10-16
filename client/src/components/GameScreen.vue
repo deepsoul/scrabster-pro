@@ -685,7 +685,7 @@ const submitWord = async (): Promise<void> => {
 
     currentWord.value = '';
     wordValidation.value = null; // Clear validation after successful submit
-    
+
     // Focus input field for next word
     nextTick(() => {
       if (wordInputRef.value && gameState.value === 'playing') {

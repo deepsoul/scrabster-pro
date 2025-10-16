@@ -349,8 +349,7 @@
               <div>
                 <h3 class="font-semibold text-gray-900">Scrabster anstreben</h3>
                 <p class="text-gray-600">
-                  Versuche, alle Buchstaben in einem Wort zu verwenden für den
-                  Bonus
+                  Verwende alle Buchstaben für 50% + Effizienz-Bonus! Je weniger Wörter, desto höher der Bonus.
                 </p>
               </div>
             </div>
@@ -426,6 +425,121 @@
               <span class="text-green-500 mr-3">✓</span>
               <span class="text-gray-700">Mobile-optimiert</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Mode -->
+      <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+        <div class="flex items-center mb-6">
+          <div
+            class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4"
+          >
+            <span class="text-2xl">🎯</span>
+          </div>
+          <h2 class="text-xl md:text-2xl font-bold text-gray-900 font-display">
+            Training Mode
+          </h2>
+        </div>
+
+        <div class="space-y-6">
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div
+                  class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+                >
+                  🎯
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Solo-Übung</h3>
+                  <p class="text-gray-600">
+                    Übe alleine gegen die Zeit ohne andere Spieler
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+                >
+                  📊
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Live-Statistiken</h3>
+                  <p class="text-gray-600">
+                    Verfolge deine Punkte, Durchschnitt und beste Leistung
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+                >
+                  🔤
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Verfügbare Buchstaben</h3>
+                  <p class="text-gray-600">
+                    Sieh in Echtzeit, welche Buchstaben noch übrig sind
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div
+                  class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+                >
+                  ⚡
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Scrabster-Bonus</h3>
+                  <p class="text-gray-600">
+                    50% Basis-Bonus + Effizienz-Bonus je nach Wortanzahl
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+                >
+                  🎮
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Pause & Fortsetzen</h3>
+                  <p class="text-gray-600">
+                    Pausiere das Training jederzeit und setze es fort
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-1"
+                >
+                  🏆
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Effizienz-Belohnung</h3>
+                  <p class="text-gray-600">
+                    Je weniger Wörter du brauchst, desto höher der Bonus!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 p-4 bg-purple-50 rounded-lg">
+            <h4 class="font-semibold text-purple-900 mb-2">Scrabster-Bonus Berechnung:</h4>
+            <p class="text-purple-800 text-sm">
+              <strong>Basis-Bonus:</strong> 50% deiner Gesamtpunkte<br>
+              <strong>Effizienz-Bonus:</strong> Zusätzlich 0-100% je nach Wortanzahl<br>
+              <strong>Beispiel:</strong> 100 Punkte mit 2 Wörtern = 50 + 25 = 75 Bonus-Punkte
+            </p>
           </div>
         </div>
       </div>

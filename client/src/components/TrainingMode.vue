@@ -278,7 +278,10 @@
             <div class="flex justify-between">
               <span class="text-gray-600">Punkte:</span>
               <span class="font-bold text-primary-600">
-                {{ totalScore }} Pkt
+                {{ totalScore + (isScrabster ? scrabsterBonus : 0) }} Pkt
+                <span v-if="isScrabster" class="text-green-600 text-sm">
+                  (+{{ scrabsterBonus }} Bonus)
+                </span>
               </span>
             </div>
             <div class="flex justify-between">
@@ -342,7 +345,7 @@
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">⚡</span>
               <span>
-                Ein "Scrabster" (3/4/5 Buchstaben je Level) = 10 Extrapunkte!
+                Ein "Scrabster" (alle Buchstaben verwenden) = 50% + Effizienz-Bonus!
               </span>
             </div>
             <div class="flex items-start">
@@ -352,6 +355,25 @@
             <div class="flex items-start">
               <span class="text-primary-500 mr-2">📈</span>
               <span>Verfolge deine Fortschritte</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Missing Letters Display -->
+        <div
+          v-if="gameState === 'playing' && remainingLetters.length > 0"
+          class="bg-white rounded-xl shadow-lg p-6 border border-gray-200"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            Noch verfügbare Buchstaben ({{ remainingLetters.length }})
+          </h3>
+          <div class="flex flex-wrap justify-center gap-2">
+            <div
+              v-for="(letter, index) in remainingLetters"
+              :key="index"
+              class="letter-tile bg-gray-100 text-gray-600"
+            >
+              {{ letter }}
             </div>
           </div>
         </div>
@@ -368,7 +390,10 @@
             <span v-else class="text-blue-600">Training beendet! 📚</span>
           </div>
           <div class="text-lg text-gray-600 mb-4">
-            {{ totalScore }} Punkte mit {{ myWords.length }} Wörtern
+            {{ totalScore + (isScrabster ? scrabsterBonus : 0) }} Punkte mit {{ myWords.length }} Wörtern
+          </div>
+          <div v-if="isScrabster" class="text-lg text-green-600 mb-2 font-semibold">
+            +{{ scrabsterBonus }} Bonus-Punkte! 🎉
           </div>
           <div class="text-sm text-gray-500">
             <span v-if="isScrabster">Du hast alle Buchstaben verwendet!</span>
@@ -412,6 +437,7 @@ const wordScores = ref<number[]>([]); // Speichere Punkte für jedes Wort
 const currentWord = ref<string>('');
 const isScrabster = ref<boolean>(false);
 const scrabsterCount = ref<number>(0);
+const scrabsterBonus = ref<number>(0);
 const wordValidation = ref<WordValidation | null>(null);
 const isValidating = ref<boolean>(false);
 
@@ -546,6 +572,28 @@ const remainingLetters = computed((): string[] => {
   return availableLetters;
 });
 
+// Berechne prozentualen Scrabster-Bonus basierend auf Effizienz
+const calculateScrabsterBonus = (): number => {
+  if (!isScrabster.value || myWords.value.length === 0) return 0;
+  
+  const totalLetters = letters.value.length;
+  const wordsUsed = myWords.value.length;
+  
+  // Basis-Bonus: 50% der Gesamtpunkte
+  const baseBonus = Math.floor(totalScore.value * 0.5);
+  
+  // Effizienz-Bonus: Je weniger Wörter, desto höher der Bonus
+  // Theoretisches Minimum: 1 Wort (alle Buchstaben in einem Wort)
+  // Praktisches Minimum: 2-3 Wörter je nach Schwierigkeit
+  const theoreticalMinWords = Math.ceil(totalLetters / 8); // Annahme: 8 Buchstaben pro Wort
+  const efficiencyRatio = Math.max(0, (theoreticalMinWords - wordsUsed) / theoreticalMinWords);
+  
+  // Effizienz-Bonus: 0-100% zusätzlich zum Basis-Bonus
+  const efficiencyBonus = Math.floor(baseBonus * efficiencyRatio);
+  
+  return baseBonus + efficiencyBonus;
+};
+
 // Methods
 const generateLetters = (): string[] => {
   const letterSets: Record<string, string[]> = {
@@ -673,6 +721,8 @@ const startTraining = (): void => {
   wordScores.value = [];
   currentWord.value = '';
   isScrabster.value = false;
+  scrabsterCount.value = 0;
+  scrabsterBonus.value = 0;
   gameState.value = 'playing';
   startTimer();
 };
@@ -697,6 +747,7 @@ const restartTraining = (): void => {
   currentWord.value = '';
   isScrabster.value = false;
   scrabsterCount.value = 0;
+  scrabsterBonus.value = 0;
 };
 
 const backToLobby = (): void => {
@@ -727,13 +778,15 @@ const finishTraining = (): void => {
   gameState.value = 'finished';
   stopTimer();
 
-  // Play winner sound
-  soundService.playWinnerSound();
-
   // Check if all letters were used (Scrabster)
   if (remainingLetters.value.length === 0) {
     isScrabster.value = true;
+    // Berechne prozentualen Bonus
+    scrabsterBonus.value = calculateScrabsterBonus();
   }
+
+  // Play winner sound
+  soundService.playWinnerSound();
 };
 
 const submitWord = (): void => {
@@ -769,7 +822,7 @@ const submitWord = (): void => {
 
     currentWord.value = '';
     wordValidation.value = null; // Clear validation after successful submit
-    
+
     // Focus input field for next word
     nextTick(() => {
       if (wordInputRef.value && gameState.value === 'playing') {
