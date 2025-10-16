@@ -125,6 +125,10 @@
               type="text"
               placeholder="Gib dein Wort ein..."
               class="input-field flex-1 text-lg"
+              :class="{
+                'voice-recording': isListening,
+                'voice-pulse': isListening
+              }"
               :disabled="gameState !== 'playing'"
             />
             <button
@@ -184,7 +188,7 @@
               class="flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200"
               :class="
                 isListening
-                  ? 'bg-red-500 text-white'
+                  ? 'bg-red-500 text-white voice-button-pulse'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               "
             >
@@ -1028,3 +1032,47 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+/* Voice recording visual feedback */
+.voice-recording {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3) !important;
+  background-color: #fef2f2 !important;
+}
+
+.voice-pulse {
+  animation: voice-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes voice-pulse {
+  0% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+  }
+}
+
+.voice-button-pulse {
+  animation: voice-button-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes voice-button-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+</style>
