@@ -119,6 +119,7 @@
           </h3>
           <div class="flex space-x-3">
             <input
+              ref="wordInputRef"
               v-model="currentWord"
               @keyup.enter="submitWord"
               type="text"
@@ -380,7 +381,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import soundService from '../services/soundService.js';
 import wordValidationService from '../services/wordValidationService.js';
 import {
@@ -419,6 +420,9 @@ const isVoiceSupported = ref<boolean>(false);
 const isListening = ref<boolean>(false);
 const recognition = ref<any>(null);
 const highlightedLetters = ref<number[]>([]);
+
+// Input field ref for focus management
+const wordInputRef = ref<HTMLInputElement>();
 
 // Timer
 let timerInterval: NodeJS.Timeout | null = null;
@@ -765,6 +769,13 @@ const submitWord = (): void => {
 
     currentWord.value = '';
     wordValidation.value = null; // Clear validation after successful submit
+    
+    // Focus input field for next word
+    nextTick(() => {
+      if (wordInputRef.value && gameState.value === 'playing') {
+        wordInputRef.value.focus();
+      }
+    });
   } else {
     window.showDialog({
       title: 'Wort ungültig',

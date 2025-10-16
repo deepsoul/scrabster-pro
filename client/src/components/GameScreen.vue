@@ -111,6 +111,7 @@
             </h3>
             <div class="flex space-x-3">
               <input
+                ref="wordInputRef"
                 v-model="currentWord"
                 @keyup.enter="submitWord"
                 type="text"
@@ -541,6 +542,9 @@ const isListening = ref<boolean>(false);
 const recognition = ref<any>(null);
 const highlightedLetters = ref<number[]>([]);
 
+// Input field ref for focus management
+const wordInputRef = ref<HTMLInputElement>();
+
 // Word validation
 const wordValidation = ref<WordValidation | null>(null);
 const isValidating = ref<boolean>(false);
@@ -681,6 +685,13 @@ const submitWord = async (): Promise<void> => {
 
     currentWord.value = '';
     wordValidation.value = null; // Clear validation after successful submit
+    
+    // Focus input field for next word
+    nextTick(() => {
+      if (wordInputRef.value && gameState.value === 'playing') {
+        wordInputRef.value.focus();
+      }
+    });
   } catch (error) {
     console.error('Error submitting word:', error);
   }
