@@ -330,8 +330,16 @@
                     </div>
                   </div>
                   <div class="text-2xl font-bold text-primary-600">
-                    {{ player.id === currentPlayerId ? totalScoreWithBonus : player.score }} Pkt
-                    <span v-if="player.id === currentPlayerId && isScrabster" class="text-green-600 text-sm">
+                    {{
+                      player.id === currentPlayerId
+                        ? totalScoreWithBonus
+                        : player.score
+                    }}
+                    Pkt
+                    <span
+                      v-if="player.id === currentPlayerId && isScrabster"
+                      class="text-green-600 text-sm"
+                    >
                       (+{{ scrabsterBonus }} Bonus)
                     </span>
                   </div>
@@ -659,8 +667,10 @@ const statusClass = computed((): string => {
 
 const sortedPlayers = computed((): Player[] => {
   return [...players.value].sort((a, b) => {
-    const scoreA = a.id === currentPlayerId.value ? totalScoreWithBonus.value : a.score;
-    const scoreB = b.id === currentPlayerId.value ? totalScoreWithBonus.value : b.score;
+    const scoreA =
+      a.id === currentPlayerId.value ? totalScoreWithBonus.value : a.score;
+    const scoreB =
+      b.id === currentPlayerId.value ? totalScoreWithBonus.value : b.score;
     return scoreB - scoreA;
   });
 });
@@ -703,7 +713,7 @@ const currentUsername = computed((): string => {
 // Berechne verbleibende Buchstaben für den aktuellen Spieler
 const remainingLetters = computed((): string[] => {
   if (!letters.value || letters.value.length === 0) return [];
-  
+
   // Start with all original letters
   const availableLetters = [...letters.value];
 
@@ -724,22 +734,25 @@ const remainingLetters = computed((): string[] => {
 // Berechne prozentualen Scrabster-Bonus basierend auf Effizienz
 const calculateScrabsterBonus = (): number => {
   if (!isScrabster.value || myWords.value.length === 0) return 0;
-  
+
   const totalLetters = letters.value.length;
   const wordsUsed = myWords.value.length;
-  
+
   // Basis-Bonus: 50% der Gesamtpunkte
   const baseBonus = Math.floor(totalScore.value * 0.5);
-  
+
   // Effizienz-Bonus: Je weniger Wörter, desto höher der Bonus
   // Theoretisches Minimum: 1 Wort (alle Buchstaben in einem Wort)
   // Praktisches Minimum: 2-3 Wörter je nach Schwierigkeit
   const theoreticalMinWords = Math.ceil(totalLetters / 8); // Annahme: 8 Buchstaben pro Wort
-  const efficiencyRatio = Math.max(0, (theoreticalMinWords - wordsUsed) / theoreticalMinWords);
-  
+  const efficiencyRatio = Math.max(
+    0,
+    (theoreticalMinWords - wordsUsed) / theoreticalMinWords
+  );
+
   // Effizienz-Bonus: 0-100% zusätzlich zum Basis-Bonus
   const efficiencyBonus = Math.floor(baseBonus * efficiencyRatio);
-  
+
   return baseBonus + efficiencyBonus;
 };
 
@@ -1208,12 +1221,12 @@ const checkForCompleteScrabster = (): void => {
   if (remainingLetters.value.length === 0 && !isScrabster.value) {
     isScrabster.value = true;
     scrabsterBonus.value = calculateScrabsterBonus();
-    
+
     // Spezielle Scrabster-Notification
     console.log(
       `🏆 GESAMT-SCRABSTER! Du hast alle Buchstaben verwendet! +${scrabsterBonus.value} Bonus-Punkte!`
     );
-    
+
     // Optional: Spezieller Sound für Gesamt-Scrabster
     soundService.playScrabsterSound();
   }

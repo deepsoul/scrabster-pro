@@ -249,7 +249,8 @@
             <div>
               <h3 class="font-semibold text-gray-900">Scrabster-Bonus</h3>
               <p class="text-gray-600">
-                Verwendest du alle verfügbaren Buchstaben, bekommst du 50% + Effizienz-Bonus!
+                Verwendest du alle verfügbaren Buchstaben, bekommst du 50% +
+                Effizienz-Bonus!
               </p>
             </div>
           </div>
@@ -270,7 +271,8 @@
             <span class="font-bold text-primary-600">2 Punkte</span>
             (T nicht verfügbar)
             <br />
-            <strong>Gesamt-Scrabster:</strong> Alle Buchstaben verwenden =
+            <strong>Gesamt-Scrabster:</strong>
+            Alle Buchstaben verwenden =
             <span class="font-bold text-green-600">50% + Effizienz-Bonus!</span>
           </p>
         </div>
@@ -611,7 +613,9 @@
                   ⚡
                 </div>
                 <div>
-                  <h3 class="font-semibold text-gray-900">Effizienz-Belohnung</h3>
+                  <h3 class="font-semibold text-gray-900">
+                    Effizienz-Belohnung
+                  </h3>
                   <p class="text-gray-600">
                     Je weniger Wörter du brauchst, desto höher der Bonus!
                   </p>
@@ -641,7 +645,9 @@
                   🎮
                 </div>
                 <div>
-                  <h3 class="font-semibold text-gray-900">Strategische Tiefe</h3>
+                  <h3 class="font-semibold text-gray-900">
+                    Strategische Tiefe
+                  </h3>
                   <p class="text-gray-600">
                     Plane deine Wörter strategisch für maximale Effizienz
                   </p>
@@ -655,7 +661,9 @@
                   🎉
                 </div>
                 <div>
-                  <h3 class="font-semibold text-gray-900">Sofortige Belohnung</h3>
+                  <h3 class="font-semibold text-gray-900">
+                    Sofortige Belohnung
+                  </h3>
                   <p class="text-gray-600">
                     Erhalte sofort Feedback und Bonus-Punkte bei Erreichen
                   </p>
@@ -669,10 +677,17 @@
               Multiplayer Scrabster-Bonus:
             </h4>
             <p class="text-orange-800 text-sm">
-              <strong>Basis-Bonus:</strong> 50% deiner Gesamtpunkte<br>
-              <strong>Effizienz-Bonus:</strong> Zusätzlich 0-100% je nach Wortanzahl<br>
-              <strong>Live-Update:</strong> Bonus wird sofort in der Rangliste angezeigt<br>
-              <strong>Beispiel:</strong> 100 Punkte mit 2 Wörtern = 50 + 25 = 75 Bonus-Punkte
+              <strong>Basis-Bonus:</strong>
+              50% deiner Gesamtpunkte
+              <br />
+              <strong>Effizienz-Bonus:</strong>
+              Zusätzlich 0-100% je nach Wortanzahl
+              <br />
+              <strong>Live-Update:</strong>
+              Bonus wird sofort in der Rangliste angezeigt
+              <br />
+              <strong>Beispiel:</strong>
+              100 Punkte mit 2 Wörtern = 50 + 25 = 75 Bonus-Punkte
             </p>
           </div>
         </div>
