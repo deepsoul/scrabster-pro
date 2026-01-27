@@ -1,10 +1,10 @@
-const { validateWord, isScrabster, setCorsHeaders } = require('../shared/gameData');
-const {
+import { validateWord, isScrabster, setCorsHeaders } from '../shared/gameData.js';
+import {
   getGameRoom,
   setGameRoom,
-} = require('../shared/redisClient');
+} from '../shared/redisClient.js';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return setCorsHeaders(res).status(200).end();
@@ -18,7 +18,16 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { gameCode, playerId, word } = req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON in request body' });
+      }
+    }
+    
+    const { gameCode, playerId, word } = body || {};
 
     const gameRoom = await getGameRoom(gameCode);
     if (!gameRoom || gameRoom.gameState !== 'playing') {

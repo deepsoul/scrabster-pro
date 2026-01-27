@@ -6,7 +6,7 @@ let useRedis = false;
 const fallbackMap = new Map();
 
 // Initialisiere Redis (nur wenn Environment Variables vorhanden sind)
-function initRedis() {
+async function initRedis() {
   if (redis) return redis; // Bereits initialisiert
 
   // Unterstütze beide Varianten: UPSTASH_* und KV_* (für Upstash Redis)
@@ -15,9 +15,8 @@ function initRedis() {
 
   if (redisUrl && redisToken) {
     try {
-      // @upstash/redis ist ESM-only, daher verwenden wir require mit try-catch
-      // In Produktion wird das Package verfügbar sein
-      const { Redis } = require('@upstash/redis');
+      // Dynamischer Import für @upstash/redis (ES Modules)
+      const { Redis } = await import('@upstash/redis');
       redis = new Redis({
         url: redisUrl,
         token: redisToken,
@@ -26,8 +25,7 @@ function initRedis() {
       console.log('Redis: Using Upstash Redis');
       return redis;
     } catch (error) {
-      console.log('Redis: Package not found, using in-memory fallback');
-      console.log('Install @upstash/redis for production: npm install @upstash/redis');
+      console.log('Redis: Failed to initialize, using in-memory fallback');
       console.error('Redis init error:', error.message);
     }
   } else {
@@ -39,7 +37,7 @@ function initRedis() {
 
 // Redis Helper Functions
 async function get(key) {
-  const redisInstance = initRedis();
+  const redisInstance = await initRedis();
   if (useRedis && redisInstance) {
     try {
       const value = await redisInstance.get(key);
@@ -53,7 +51,7 @@ async function get(key) {
 }
 
 async function set(key, value, options = {}) {
-  const redisInstance = initRedis();
+  const redisInstance = await initRedis();
   if (useRedis && redisInstance) {
     try {
       const serialized = JSON.stringify(value);
@@ -75,7 +73,7 @@ async function set(key, value, options = {}) {
 }
 
 async function del(key) {
-  const redisInstance = initRedis();
+  const redisInstance = await initRedis();
   if (useRedis && redisInstance) {
     try {
       await redisInstance.del(key);
@@ -88,7 +86,7 @@ async function del(key) {
 }
 
 async function exists(key) {
-  const redisInstance = initRedis();
+  const redisInstance = await initRedis();
   if (useRedis && redisInstance) {
     try {
       const result = await redisInstance.exists(key);
@@ -121,7 +119,7 @@ function playersMapToArray(players) {
 }
 
 // Game-specific helpers
-async function getGameRoom(gameCode) {
+export async function getGameRoom(gameCode) {
   const gameRoom = await get(`game:${gameCode}`);
   if (gameRoom && gameRoom.players) {
     // Konvertiere players Array zu Map für interne Verarbeitung
@@ -130,7 +128,7 @@ async function getGameRoom(gameCode) {
   return gameRoom;
 }
 
-async function setGameRoom(gameCode, gameRoom) {
+export async function setGameRoom(gameCode, gameRoom) {
   // Erstelle Kopie für Serialisierung
   const serializable = { ...gameRoom };
   // Konvertiere players Map zu Array für JSON
@@ -141,33 +139,21 @@ async function setGameRoom(gameCode, gameRoom) {
   await set(`game:${gameCode}`, serializable, { ex: 3600 });
 }
 
-async function deleteGameRoom(gameCode) {
+export async function deleteGameRoom(gameCode) {
   await del(`game:${gameCode}`);
 }
 
-async function getPlayerConnection(playerId) {
+export async function getPlayerConnection(playerId) {
   return await get(`player:${playerId}`);
 }
 
-async function setPlayerConnection(playerId, gameCode) {
+export async function setPlayerConnection(playerId, gameCode) {
   // TTL: 1 Stunde
   await set(`player:${playerId}`, gameCode, { ex: 3600 });
 }
 
-async function deletePlayerConnection(playerId) {
+export async function deletePlayerConnection(playerId) {
   await del(`player:${playerId}`);
 }
 
-module.exports = {
-  get,
-  set,
-  del,
-  exists,
-  getGameRoom,
-  setGameRoom,
-  deleteGameRoom,
-  getPlayerConnection,
-  setPlayerConnection,
-  deletePlayerConnection,
-  useRedis,
-};
+export { useRedis };

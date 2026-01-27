@@ -1,11 +1,11 @@
-const { setCorsHeaders } = require('../shared/gameData');
-const {
+import { setCorsHeaders } from '../shared/gameData.js';
+import {
   getGameRoom,
   setGameRoom,
   setPlayerConnection,
-} = require('../shared/redisClient');
+} from '../shared/redisClient.js';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return setCorsHeaders(res).status(200).end();
@@ -19,7 +19,16 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { gameCode, username } = req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON in request body' });
+      }
+    }
+    
+    const { gameCode, username } = body || {};
 
     if (!gameCode || !username) {
       return res

@@ -1,10 +1,10 @@
-const { DIFFICULTY_LEVELS, setCorsHeaders } = require('../../shared/gameData');
-const {
+import { DIFFICULTY_LEVELS, setCorsHeaders } from '../../shared/gameData.js';
+import {
   getGameRoom,
   setGameRoom,
-} = require('../../shared/redisClient');
+} from '../../shared/redisClient.js';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return setCorsHeaders(res).status(200).end();

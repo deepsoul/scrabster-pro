@@ -1,15 +1,15 @@
-const {
+import {
   generateGameCode,
   generateLetters,
   DIFFICULTY_LEVELS,
   setCorsHeaders,
-} = require('../shared/gameData');
-const {
+} from '../shared/gameData.js';
+import {
   setGameRoom,
   setPlayerConnection,
-} = require('../shared/redisClient');
+} from '../shared/redisClient.js';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return setCorsHeaders(res).status(200).end();
@@ -23,7 +23,17 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { username, difficulty } = req.body;
+    // Parse request body (Vercel Functions parsen JSON manchmal nicht automatisch)
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON in request body' });
+      }
+    }
+    
+    const { username, difficulty } = body || {};
 
     if (!username || !difficulty) {
       return res
@@ -69,6 +79,12 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error('Create game error:', error);
-    return res.status(500).json({ error: 'Interner Server-Fehler' });
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
+    return res.status(500).json({ 
+      error: 'Interner Server-Fehler',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };

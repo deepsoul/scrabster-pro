@@ -32,18 +32,18 @@ const weightedAlphabet = [
   'Q', // Q (1x)
 ];
 
-const DIFFICULTY_LEVELS = {
+export const DIFFICULTY_LEVELS = {
   easy: { letters: 12, time: 120, scrabsterLetters: 3 },
   medium: { letters: 10, time: 90, scrabsterLetters: 4 },
   hard: { letters: 8, time: 60, scrabsterLetters: 5 },
 };
 
 // Hilfsfunktionen
-function generateGameCode() {
+export function generateGameCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-function generateLetters(count) {
+export function generateLetters(count) {
   const letters = [];
   for (let i = 0; i < count; i++) {
     const randomIndex = Math.floor(Math.random() * weightedAlphabet.length);
@@ -52,7 +52,7 @@ function generateLetters(count) {
   return letters;
 }
 
-function validateWord(word, availableLetters) {
+export function validateWord(word, availableLetters) {
   const wordLetters = word.toUpperCase().split('');
 
   // Prüfen ob mindestens ein Buchstabe des Wortes in den verfügbaren Buchstaben enthalten ist
@@ -65,7 +65,7 @@ function validateWord(word, availableLetters) {
   return false; // Kein Buchstabe des Wortes ist verfügbar
 }
 
-function isScrabster(word, availableLetters, difficulty) {
+export function isScrabster(word, availableLetters, difficulty) {
   const wordLetters = word.toUpperCase().split('');
   const difficultyConfig = DIFFICULTY_LEVELS[difficulty];
   const requiredLetters = difficultyConfig.scrabsterLetters;
@@ -87,7 +87,7 @@ function isScrabster(word, availableLetters, difficulty) {
 }
 
 // CORS Helper
-function setCorsHeaders(response) {
+export function setCorsHeaders(response) {
   response.setHeader('Access-Control-Allow-Origin', '*');
   response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.setHeader(
@@ -97,14 +97,3 @@ function setCorsHeaders(response) {
   response.setHeader('Access-Control-Allow-Credentials', 'true');
   return response;
 }
-
-module.exports = {
-  gameRooms,
-  playerConnections,
-  DIFFICULTY_LEVELS,
-  generateGameCode,
-  generateLetters,
-  validateWord,
-  isScrabster,
-  setCorsHeaders,
-};
