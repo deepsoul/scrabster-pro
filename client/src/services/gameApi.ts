@@ -9,10 +9,9 @@ class GameApiService {
   private consecutiveTimeouts: number;
 
   constructor() {
-    // In Produktion: Render-Backend mit Custom Domain, lokal: lokaler Server
-    // Temporär: Fallback auf onrender.com falls Custom Domain nicht funktioniert
+    // In Produktion: Vercel Functions (relative Pfade), lokal: lokaler Server
     this.baseUrl = import.meta.env.PROD
-      ? 'https://api.scrabster-pro.de'
+      ? '' // Relative Pfade für Vercel Functions
       : 'http://localhost:3000';
     this.pollingInterval = null;
     this.currentGameCode = null;
@@ -52,37 +51,10 @@ class GameApiService {
     }
   }
 
-  // Render Spinup Detection
+  // Render Spinup Detection (nur für Render-Backend, nicht für Vercel Functions)
   private detectRenderSpinup(error: any): boolean {
-    // Only check for Render spinup in production
-    if (!import.meta.env.PROD) {
-      return false;
-    }
-
-    // Check for common Render spinup indicators
-    if (
-      error?.message?.includes('timeout') ||
-      error?.message?.includes('ECONNRESET') ||
-      error?.message?.includes('ENOTFOUND') ||
-      error?.code === 'ECONNABORTED' ||
-      error?.name === 'TimeoutError'
-    ) {
-      this.consecutiveTimeouts++;
-
-      // If we get 3+ consecutive timeouts in production, likely Render spinup
-      if (this.consecutiveTimeouts >= 3) {
-        this.renderSpinupDetected = true;
-        this.emit('renderSpinup', { detected: true });
-        return true;
-      }
-    } else {
-      // Reset counter on successful request
-      this.consecutiveTimeouts = 0;
-      if (this.renderSpinupDetected) {
-        this.renderSpinupDetected = false;
-        this.emit('renderSpinup', { detected: false });
-      }
-    }
+    // Vercel Functions haben keine Cold Starts wie Render, daher deaktiviert
+    // Kann wieder aktiviert werden, falls zurück zu Render gewechselt wird
     return false;
   }
 

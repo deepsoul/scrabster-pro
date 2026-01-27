@@ -1,85 +1,74 @@
-const express = require('express');
 const {
-  gameRooms,
-  playerConnections,
   generateGameCode,
   generateLetters,
+  DIFFICULTY_LEVELS,
+  setCorsHeaders,
 } = require('../shared/gameData');
+const {
+  setGameRoom,
+  setPlayerConnection,
+} = require('../shared/redisClient');
 
-const app = express();
-
-const DIFFICULTY_LEVELS = {
-  easy: { letters: 9, time: 120 },
-  medium: { letters: 8, time: 90 },
-  hard: { letters: 7, time: 60 },
-};
-
-// Middleware
-app.use(express.json());
-
-// CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.header('Access-Control-Allow-Credentials', 'true');
-
+module.exports = async (req, res) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
-// Spiel erstellen
-app.post('/', (req, res) => {
-  const { username, difficulty } = req.body;
-
-  if (!username || !difficulty) {
-    return res
-      .status(400)
-      .json({ error: 'Username und Schwierigkeit erforderlich' });
+    return setCorsHeaders(res).status(200).end();
   }
 
-  const gameCode = generateGameCode();
-  const difficultyConfig = DIFFICULTY_LEVELS[difficulty];
+  // Set CORS headers
+  setCorsHeaders(res);
 
-  const gameRoom = {
-    code: gameCode,
-    difficulty: difficulty,
-    letters: generateLetters(difficultyConfig.letters),
-    timeLeft: difficultyConfig.time,
-    players: new Map(),
-    gameState: 'waiting',
-    gameStartTime: null,
-    lastUpdate: Date.now(),
-  };
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-  const playerId = `player_${Date.now()}_${Math.random()
-    .toString(36)
-    .substr(2, 9)}`;
-  const player = {
-    id: playerId,
-    username: username,
-    words: [],
-    score: 0,
-  };
+  try {
+    const { username, difficulty } = req.body;
 
-  gameRoom.players.set(playerId, player);
-  gameRooms.set(gameCode, gameRoom);
-  playerConnections.set(playerId, gameCode);
+    if (!username || !difficulty) {
+      return res
+        .status(400)
+        .json({ error: 'Username und Schwierigkeit erforderlich' });
+    }
 
-  res.json({
-    gameCode: gameCode,
-    difficulty: difficulty,
-    letters: gameRoom.letters,
-    timeLeft: gameRoom.timeLeft,
-    playerId: playerId,
-    players: [player],
-  });
-});
+    const gameCode = generateGameCode();
+    const difficultyConfig = DIFFICULTY_LEVELS[difficulty];
 
-module.exports = app;
+    const playerId = `player_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+    const player = {
+      id: playerId,
+      username: username,
+      words: [],
+      score: 0,
+    };
+
+    const gameRoom = {
+      code: gameCode,
+      difficulty: difficulty,
+      letters: generateLetters(difficultyConfig.letters),
+      timeLeft: difficultyConfig.time,
+      players: [player], // Array statt Map für JSON-Serialisierung
+      gameState: 'waiting',
+      gameStartTime: null,
+      lastUpdate: Date.now(),
+    };
+
+    // In Redis speichern
+    await setGameRoom(gameCode, gameRoom);
+    await setPlayerConnection(playerId, gameCode);
+
+    return res.json({
+      gameCode: gameCode,
+      difficulty: difficulty,
+      letters: gameRoom.letters,
+      timeLeft: gameRoom.timeLeft,
+      playerId: playerId,
+      players: gameRoom.players,
+    });
+  } catch (error) {
+    console.error('Create game error:', error);
+    return res.status(500).json({ error: 'Interner Server-Fehler' });
+  }
+};

@@ -13,6 +13,7 @@
     "client:build": "cd client && npm run build",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "vercel-build": "cd client && npm install && npm run build",
+    "vercel:dev": "npx vercel dev",
     "lint:css": "cd client && npm run lint:css",
     "lint:css:check": "cd client && npm run lint:css:check"
   },
@@ -21,5 +22,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.36.1"
   }
 }

@@ -11,6 +11,38 @@
   ],
   "routes": [
     {
+      "src": "/api/game/create",
+      "dest": "/api/game/create.js"
+    },
+    {
+      "src": "/api/game/join",
+      "dest": "/api/game/join.js"
+    },
+    {
+      "src": "/api/game/start",
+      "dest": "/api/game/start.js"
+    },
+    {
+      "src": "/api/game/submit-word",
+      "dest": "/api/game/submit-word.js"
+    },
+    {
+      "src": "/api/game/status/([^/]+)",
+      "dest": "/api/game/status/[gameCode].js?gameCode=$1"
+    },
+    {
+      "src": "/api/game/leave",
+      "dest": "/api/game/leave.js"
+    },
+    {
+      "src": "/api/game/chat",
+      "dest": "/api/game/chat.js"
+    },
+    {
+      "src": "/api/game/new",
+      "dest": "/api/game/new.js"
+    },
+    {
       "src": "/(.*)",
       "dest": "/client/dist/$1"
     }

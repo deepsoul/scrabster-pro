@@ -1,51 +1,49 @@
-const express = require('express');
-const { gameRooms } = require('../shared/gameData');
+const { setCorsHeaders } = require('../shared/gameData');
+const {
+  getGameRoom,
+  setGameRoom,
+} = require('../shared/redisClient');
 
-const app = express();
-
-// Middleware
-app.use(express.json());
-
-// CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
-  res.header('Access-Control-Allow-Credentials', 'true');
-
+module.exports = async (req, res) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
-// Spiel starten
-app.post('/', (req, res) => {
-  const { gameCode, playerId } = req.body;
-
-  const gameRoom = gameRooms.get(gameCode);
-  if (!gameRoom || !gameRoom.players.has(playerId)) {
-    return res.status(400).json({ error: 'Nicht autorisiert' });
+    return setCorsHeaders(res).status(200).end();
   }
 
-  if (gameRoom.players.size < 2) {
-    return res.status(400).json({ error: 'Mindestens 2 Spieler erforderlich' });
+  // Set CORS headers
+  setCorsHeaders(res);
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  gameRoom.gameState = 'playing';
-  gameRoom.gameStartTime = Date.now();
-  gameRoom.lastUpdate = Date.now();
+  try {
+    const { gameCode, playerId } = req.body;
 
-  res.json({
-    success: true,
-    letters: gameRoom.letters,
-    timeLeft: gameRoom.timeLeft,
-    players: Array.from(gameRoom.players.values()),
-  });
-});
+    const gameRoom = await getGameRoom(gameCode);
+    if (!gameRoom || !gameRoom.players.has(playerId)) {
+      return res.status(400).json({ error: 'Nicht autorisiert' });
+    }
 
-module.exports = app;
+    if (gameRoom.players.size < 2) {
+      return res.status(400).json({ error: 'Mindestens 2 Spieler erforderlich' });
+    }
+
+    gameRoom.gameState = 'playing';
+    gameRoom.gameStartTime = Date.now();
+    gameRoom.lastUpdate = Date.now();
+
+    // Speichere aktualisiertes Spiel
+    await setGameRoom(gameCode, gameRoom);
+
+    return res.json({
+      success: true,
+      letters: gameRoom.letters,
+      timeLeft: gameRoom.timeLeft,
+      players: Array.from(gameRoom.players.values()),
+    });
+  } catch (error) {
+    console.error('Start game error:', error);
+    return res.status(500).json({ error: 'Interner Server-Fehler' });
+  }
+};

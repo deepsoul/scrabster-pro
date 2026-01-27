@@ -6,6 +6,15 @@ declare module '*.vue' {
   export default component;
 }
 
+// JSX namespace for Vue templates
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elem: string]: any;
+    }
+  }
+}
+
 // Global window extensions
 declare global {
   interface Window {
