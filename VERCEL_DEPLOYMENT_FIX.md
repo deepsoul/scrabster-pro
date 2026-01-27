@@ -1,115 +1,134 @@
-# Vercel Deployment Fix
+# Vercel Deployment Fix - Commits werden nicht deployed
 
 ## Problem
+Commits werden nicht mehr auf Vercel deployed, CI/CD zeigt "failure" Status.
 
-Das Spiel funktionierte lokal, aber auf Vercel gab es 404-Fehler bei den API-Routen.
+## Mögliche Ursachen
 
-## Lösung
+### 1. Branch nicht in Vercel konfiguriert
+Der Branch `vercel-functions-migration` muss in Vercel aktiviert sein.
 
-Vercel erwartet serverless Functions in einem spezifischen Format. Ich habe die API-Struktur angepasst:
+**Lösung:**
+- Vercel Dashboard → Settings → Git
+- Prüfe, ob der Branch `vercel-functions-migration` in der Branch-Liste ist
+- Falls nicht: Settings → Git → Production Branch = `main`
+- Settings → Git → Preview Branches = Alle Branches aktivieren
 
-### Neue API-Struktur
+### 2. Build-Fehler in Vercel
+Die Build-Einstellungen passen nicht zur neuen Struktur.
 
-```
-api/
-├── shared/
-│   └── gameData.js          # Geteilter Speicher und Hilfsfunktionen
-└── game/
-    ├── create.js            # POST /api/game/create
-    ├── join.js              # POST /api/game/join
-    ├── start.js             # POST /api/game/start
-    ├── submit-word.js       # POST /api/game/submit-word
-    ├── status/
-    │   └── [gameCode].js    # GET /api/game/status/:gameCode
-    └── leave.js             # POST /api/game/leave
-```
+**Lösung:**
+- Vercel Dashboard → Settings → General
+- **Root Directory:** LEER (nicht `client`)
+- **Build Command:** `cd client && npm install && npm run build`
+- **Output Directory:** `client/dist`
+- **Install Command:** `npm install`
 
-### Vercel-Konfiguration
+### 3. vercel.json Fehler
+Die `vercel.json` könnte einen Syntax-Fehler haben.
 
-Die `vercel.json` wurde angepasst, um die API-Routen korrekt zu routen:
-
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/game/create",
-      "dest": "/api/game/create.js"
-    },
-    {
-      "src": "/api/game/join",
-      "dest": "/api/game/join.js"
-    },
-    {
-      "src": "/api/game/start",
-      "dest": "/api/game/start.js"
-    },
-    {
-      "src": "/api/game/submit-word",
-      "dest": "/api/game/submit-word.js"
-    },
-    {
-      "src": "/api/game/status/([^/]+)",
-      "dest": "/api/game/status/[gameCode].js?gameCode=$1"
-    },
-    {
-      "src": "/api/game/leave",
-      "dest": "/api/game/leave.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/client/dist/$1"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
-}
+**Prüfen:**
+```bash
+# JSON validieren
+cat vercel.json | python -m json.tool
 ```
 
-### Wichtige Änderungen
+### 4. Dependencies fehlen
+`@upstash/redis` muss im Root installiert werden.
 
-1. **Serverless Functions**: Jede API-Route ist jetzt eine separate Vercel Function
-2. **Geteilter Speicher**: `api/shared/gameData.js` enthält den geteilten Speicher
-3. **CORS-Konfiguration**: Alle Functions haben CORS-Header für Cross-Origin-Requests
-4. **Routen-Mapping**: Vercel routet API-Requests zu den entsprechenden Functions
+**Lösung:**
+- Install Command muss `npm install` sein (nicht nur `cd client && npm install`)
 
-### Deployment
+## Schritt-für-Schritt Fix
 
-1. **Code committen und pushen**:
+### Schritt 1: Vercel Dashboard prüfen
 
+1. **Gehe zu Vercel Dashboard**
+2. **Wähle dein Projekt**
+3. **Settings → General:**
+   - Root Directory: **LEER**
+   - Build Command: `cd client && npm install && npm run build`
+   - Output Directory: `client/dist`
+   - Install Command: `npm install`
+
+4. **Settings → Git:**
+   - Production Branch: `main`
+   - Preview Branches: **Alle Branches** aktivieren
+   - Oder: Füge `vercel-functions-migration` explizit hinzu
+
+### Schritt 2: Environment Variables prüfen
+
+**Settings → Environment Variables:**
+- `KV_REST_API_URL` = `https://stirred-herring-24466.upstash.io`
+- `KV_REST_API_TOKEN` = `AV-SAAIncDI0YWE5NmM4YWE2ZmI0ODkyYjdmOGNhNTAwY2U0NTg1M3AyMjQ0NjY`
+
+**Für alle Environments:** Production, Preview, Development
+
+### Schritt 3: Manuelles Deployment triggern
+
+1. **Vercel Dashboard → Deployments**
+2. **"Redeploy"** klicken
+3. **Oder:** "Deploy" → Branch `vercel-functions-migration` wählen
+
+### Schritt 4: Build-Logs prüfen
+
+1. **Deployments → [Neuestes Deployment] → Build Logs**
+2. **Suche nach Fehlern:**
+   - `@upstash/redis` wird installiert?
+   - `api/` Functions werden erkannt?
+   - Build erfolgreich?
+
+## Häufige Fehler
+
+### ❌ "Cannot find module '@upstash/redis'"
+**Ursache:** Install Command installiert nur client-Dependencies
+**Lösung:** Install Command = `npm install`
+
+### ❌ "404 Not Found" für Frontend
+**Ursache:** Root Directory falsch oder Output Directory falsch
+**Lösung:** Root Directory = LEER, Output Directory = `client/dist`
+
+### ❌ "404 Not Found" für API
+**Ursache:** `api/` Verzeichnis wird nicht erkannt
+**Lösung:** Root Directory = LEER (nicht `client`)
+
+### ❌ "Build failed"
+**Ursache:** Build Command oder Dependencies fehlen
+**Lösung:** Prüfe Build-Logs für spezifische Fehler
+
+## Alternative: Branch zu main mergen
+
+Falls das Problem weiterhin besteht:
+
+1. **Änderungen zu main mergen:**
    ```bash
-   git add .
-   git commit -m "Fix Vercel deployment - convert to serverless functions"
-   git push origin develop
+   git checkout main
+   git merge vercel-functions-migration
+   git push origin main
    ```
 
-2. **Vercel automatisch deployen**: Vercel erkennt Änderungen und deployed automatisch
+2. **Vercel deployed automatisch** bei Push auf `main`
 
-3. **Testen**: Die API sollte jetzt unter `https://scrabster-pro.vercel.app/api/game/create` funktionieren
+## Debugging
 
-### Hinweise
+### Build-Logs prüfen
+- Vercel Dashboard → Deployments → [Deployment] → Build Logs
+- Suche nach Errors/Warnings
 
-- **Speicher**: Der geteilte Speicher funktioniert nur innerhalb einer Vercel-Instanz
-- **Skalierung**: Für echte Produktion sollte Redis oder eine Datenbank verwendet werden
-- **Cold Starts**: Serverless Functions können beim ersten Aufruf langsam sein
+### Function-Logs prüfen
+- Vercel Dashboard → Functions
+- Prüfe, ob Functions aufgelistet sind
 
-### API-Endpunkte
+### Lokal testen
+```bash
+npm run vercel:dev
+```
+Dann: `http://localhost:3000` testen
 
-- `POST /api/game/create` - Spiel erstellen
-- `POST /api/game/join` - Spiel beitreten
-- `POST /api/game/start` - Spiel starten
-- `POST /api/game/submit-word` - Wort einreichen
-- `GET /api/game/status/:gameCode` - Spielstatus abrufen
-- `POST /api/game/leave` - Spiel verlassen
+## Nächste Schritte
 
-Alle Endpunkte unterstützen CORS und geben JSON-Responses zurück.
+1. **Vercel Dashboard Settings prüfen** (siehe oben)
+2. **Environment Variables setzen** (siehe oben)
+3. **Manuelles Deployment triggern**
+4. **Build-Logs prüfen**
+5. **Falls Fehler:** Spezifische Fehlermeldung aus Build-Logs analysieren
