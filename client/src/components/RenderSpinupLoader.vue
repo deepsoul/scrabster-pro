@@ -320,7 +320,7 @@ const loadingMessage = ref('Server wird gestartet...');
 
 // Messages to cycle through
 const messages = [
-  'Server1 wird gestartet...',
+  'Server wird gestartet...',
   'Buchstaben werden geladen...',
   'Wörter werden vorbereitet...',
   'Spieler werden verbunden...',
