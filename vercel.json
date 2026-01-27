@@ -43,8 +43,18 @@
       "dest": "/api/game/new.js"
     },
     {
+      "src": "/index.html",
+      "dest": "/client/dist/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/client/dist/$1"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/client/dist/$1"
     }
   ],
   "env": {
