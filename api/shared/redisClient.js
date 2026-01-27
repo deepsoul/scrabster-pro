@@ -9,8 +9,9 @@ const fallbackMap = new Map();
 function initRedis() {
   if (redis) return redis; // Bereits initialisiert
 
-  const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  // Unterstütze beide Varianten: UPSTASH_* und KV_* (für Upstash Redis)
+  const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 
   if (redisUrl && redisToken) {
     try {
@@ -27,9 +28,11 @@ function initRedis() {
     } catch (error) {
       console.log('Redis: Package not found, using in-memory fallback');
       console.log('Install @upstash/redis for production: npm install @upstash/redis');
+      console.error('Redis init error:', error.message);
     }
   } else {
     console.log('Redis: Using in-memory fallback (no Redis credentials found)');
+    console.log('Expected: UPSTASH_REDIS_REST_URL/UPSTASH_REDIS_REST_TOKEN or KV_REST_API_URL/KV_REST_API_TOKEN');
   }
   return null;
 }

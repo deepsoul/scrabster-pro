@@ -13,7 +13,8 @@
     "client:build": "cd client && npm run build",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "vercel-build": "cd client && npm install && npm run build",
-    "vercel:dev": "npx vercel dev",
+    "vercel:dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 npx vercel dev",
+    "vercel:dev:secure": "npx vercel dev",
     "lint:css": "cd client && npm run lint:css",
     "lint:css:check": "cd client && npm run lint:css:check"
   },

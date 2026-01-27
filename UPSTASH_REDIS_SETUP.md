@@ -27,8 +27,10 @@ Nach der Installation:
 ### 3. Environment Variables
 
 Vercel setzt automatisch folgende Environment Variables:
-- `UPSTASH_REDIS_REST_URL`
-- `UPSTASH_REDIS_REST_TOKEN`
+- `UPSTASH_REDIS_REST_URL` oder `KV_REST_API_URL`
+- `UPSTASH_REDIS_REST_TOKEN` oder `KV_REST_API_TOKEN`
+
+**Hinweis:** Je nach Upstash-Konfiguration können die Variablen entweder `UPSTASH_*` oder `KV_*` heißen. Der Code unterstützt beide Varianten automatisch.
 
 Diese sind automatisch in allen Vercel Functions verfügbar.
 
@@ -48,6 +50,12 @@ Für lokale Entwicklung mit `vercel dev`:
 
 1. Erstelle eine `.env.local` Datei im Root-Verzeichnis
 2. Kopiere die Environment Variables aus dem Vercel Dashboard:
+   ```
+   KV_REST_API_URL=https://...
+   KV_REST_API_TOKEN=...
+   ```
+   
+   Oder falls vorhanden:
    ```
    UPSTASH_REDIS_REST_URL=https://...
    UPSTASH_REDIS_REST_TOKEN=...
