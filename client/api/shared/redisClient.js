@@ -41,9 +41,38 @@ async function get(key) {
   if (useRedis && redisInstance) {
     try {
       const value = await redisInstance.get(key);
-      return value ? JSON.parse(value) : null;
+      if (value === null || value === undefined) {
+        return null;
+      }
+      // @upstash/redis gibt Strings zurück
+      // Prüfe, ob es ein String ist und versuche zu parsen
+      if (typeof value === 'string') {
+        // Prüfe auf ungültige "[object Object]" Strings
+        if (value === '[object Object]') {
+          console.warn(`Redis: Invalid value stored for key ${key} - appears to be stringified object`);
+          return null;
+        }
+        // Prüfe, ob es wie JSON aussieht (beginnt mit { oder [)
+        if (value.trim().startsWith('{') || value.trim().startsWith('[')) {
+          try {
+            return JSON.parse(value);
+          } catch (parseError) {
+            console.warn(`Redis: Failed to parse JSON for key ${key}:`, parseError.message);
+            return null;
+          }
+        }
+        // Wenn es kein JSON ist, gib den String zurück
+        return value;
+      }
+      // Wenn es bereits ein Objekt ist (sollte nicht passieren, aber sicherheitshalber)
+      if (typeof value === 'object') {
+        return value;
+      }
+      return value;
     } catch (error) {
       console.error('Redis get error:', error);
+      console.error('Key:', key);
+      console.error('Value type:', typeof value);
       return fallbackMap.get(key) || null;
     }
   }
@@ -54,7 +83,15 @@ async function set(key, value, options = {}) {
   const redisInstance = await initRedis();
   if (useRedis && redisInstance) {
     try {
-      const serialized = JSON.stringify(value);
+      // @upstash/redis erwartet Strings
+      // Serialisiere Objekte zu JSON-Strings
+      let serialized;
+      if (typeof value === 'string') {
+        serialized = value;
+      } else {
+        serialized = JSON.stringify(value);
+      }
+      
       if (options.ex) {
         // TTL in Sekunden
         await redisInstance.setex(key, options.ex, serialized);
@@ -64,6 +101,8 @@ async function set(key, value, options = {}) {
       return;
     } catch (error) {
       console.error('Redis set error:', error);
+      console.error('Key:', key);
+      console.error('Value type:', typeof value);
       // Fallback zu in-memory
       fallbackMap.set(key, value);
     }
