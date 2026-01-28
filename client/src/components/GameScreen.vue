@@ -1280,7 +1280,7 @@ onUnmounted(() => {
 /* Voice recording visual feedback */
 .voice-recording {
   border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3) !important;
+  box-shadow: 0 0 0 3px rgb(239 68 68 / 0.3) !important;
   background-color: #fef2f2 !important;
 }
 
@@ -1290,13 +1290,15 @@ onUnmounted(() => {
 
 @keyframes voice-pulse {
   0% {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.3);
   }
+
   50% {
-    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 0 8px rgb(239 68 68 / 0.6);
   }
+
   100% {
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.3);
   }
 }
 
@@ -1307,15 +1309,17 @@ onUnmounted(() => {
 @keyframes voice-button-pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 0 0 rgb(239 68 68 / 0.7);
   }
+
   50% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 10px rgb(239 68 68 / 0);
   }
+
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    box-shadow: 0 0 0 0 rgb(239 68 68 / 0);
   }
 }
 </style>
