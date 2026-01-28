@@ -55,4 +55,7 @@ jspm_packages/
 
 # Yarn Integrity file
 .yarn-integrity
+
+# Vercel (CLI / local)
+.vercel/
 .vercel
