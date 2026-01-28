@@ -49,6 +49,9 @@
             </div>
             <div class="text-2xl font-bold mb-2">{{ winner.username }}</div>
             <div class="text-lg">{{ winner.words.length }} Wörter</div>
+            <div class="text-xl font-bold text-yellow-200">
+              {{ winner.score }} Punkte
+            </div>
             <div
               v-if="gameResult.reason === 'scrabster'"
               class="text-sm mt-2 bg-yellow-600 rounded px-2 py-1"
@@ -70,7 +73,7 @@
             :key="player.id"
             class="flex items-center justify-between p-4 rounded-lg border-2"
             :class="
-              gameResult.winners.some((w) => w.id === player.id)
+              gameResult.winners.some(w => w.id === player.id)
                 ? 'border-yellow-400 bg-yellow-50'
                 : 'border-gray-200 bg-gray-50'
             "
@@ -96,18 +99,21 @@
                   <span
                     v-if="
                       gameResult.reason === 'scrabster' &&
-                      gameResult.winners.some((w) => w.id === player.id)
+                      gameResult.winners.some(w => w.id === player.id)
                     "
                     class="text-yellow-600 font-bold"
                   >
                     (+2 Scrabster Bonus)
                   </span>
                 </div>
+                <div class="text-xs text-gray-500">
+                  {{ player.score }} Punkte
+                </div>
               </div>
             </div>
             <div class="text-right">
               <div class="text-2xl font-bold text-primary-600">
-                {{ player.words.length }}
+                {{ player.score }}
               </div>
               <div class="text-xs text-gray-500">Punkte</div>
             </div>
@@ -191,40 +197,46 @@
   </div>
 </template>
 
-<script setup>
-import {computed} from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue';
+import type { GameResult, Player } from '@/types';
 
-const props = defineProps({
-  gameResult: Object,
-});
+// Define props with proper typing
+const props = defineProps<{
+  gameResult: GameResult;
+}>();
 
-const emit = defineEmits(['playAgain', 'backToLobby']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  playAgain: [];
+  backToLobby: [];
+}>();
 
 // Computed properties
-const sortedPlayers = computed(() => {
+const sortedPlayers = computed((): Player[] => {
   return [...props.gameResult.players].sort(
-    (a, b) => a.words.length - b.words.length,
+    (a, b) => b.score - a.score // Nach Punkten sortieren (höchste zuerst)
   );
 });
 
-const totalWords = computed(() => {
+const totalWords = computed((): number => {
   return props.gameResult.players.reduce(
     (total, player) => total + player.words.length,
-    0,
+    0
   );
 });
 
-const averageWords = computed(() => {
+const averageWords = computed((): number => {
   if (props.gameResult.players.length === 0) return 0;
   return (
     Math.round((totalWords.value / props.gameResult.players.length) * 10) / 10
   );
 });
 
-const longestWord = computed(() => {
+const longestWord = computed((): number => {
   let longest = 0;
-  props.gameResult.players.forEach((player) => {
-    player.words.forEach((word) => {
+  props.gameResult.players.forEach(player => {
+    player.words.forEach(word => {
       if (word.length > longest) {
         longest = word.length;
       }
@@ -234,11 +246,11 @@ const longestWord = computed(() => {
 });
 
 // Methods
-const playAgain = () => {
+const playAgain = (): void => {
   emit('playAgain');
 };
 
-const backToLobby = () => {
+const backToLobby = (): void => {
   emit('backToLobby');
 };
 </script>

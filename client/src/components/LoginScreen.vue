@@ -4,10 +4,14 @@
   >
     <div class="max-w-md w-full space-y-8">
       <div class="text-center">
-        <div
-          class="mx-auto h-20 w-20 bg-primary-500 rounded-full flex items-center justify-center mb-6"
-        >
-          <span class="text-3xl font-bold text-white">S</span>
+        <div class="mx-auto mb-6">
+          <img
+            src="/logo.svg"
+            alt="Scrabster Pro Logo - Multiplayer Wortspiel mit Buchstaben-Tiles"
+            class="h-20 w-20 mx-auto"
+            width="80"
+            height="80"
+          />
         </div>
         <h2 class="text-3xl font-bold text-gray-900">
           Willkommen bei Scrabster Pro
@@ -118,22 +122,40 @@
           </div>
         </div>
       </div>
+
+      <!-- Footer Links -->
+      <div class="mt-8 text-center">
+        <button
+          @click="handleShowImprint"
+          class="text-sm text-gray-500 hover:text-gray-700 px-3 py-1 rounded-md hover:bg-gray-100 transition-colors duration-200"
+        >
+          📄 Impressum
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import {ref} from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue';
 
-const emit = defineEmits(['login']);
+// Define emits with proper typing
+const emit = defineEmits<{
+  login: [username: string];
+  showImprint: [];
+}>();
 
-const username = ref('');
+const username = ref<string>('');
 
-const handleLogin = () => {
+const handleLogin = (): void => {
   if (username.value.trim()) {
     // Save username to localStorage
     localStorage.setItem('scrabster-username', username.value.trim());
     emit('login', username.value.trim());
   }
+};
+
+const handleShowImprint = (): void => {
+  emit('showImprint');
 };
 </script>

@@ -1,0 +1,1 @@
+const express = require("express"); const cors = require("cors"); const app = express(); app.use(cors({origin: true, credentials: true})); app.use(express.json()); const gameApi = require("./api/game"); app.use("/api", gameApi); app.listen(3000, () => console.log("Server running on port 3000"));

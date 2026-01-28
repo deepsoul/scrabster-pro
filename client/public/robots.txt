@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://scrabster-pro.de/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Disallow admin or private areas (if any)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+
+# Allow important game assets
+Allow: /assets/
+Allow: /images/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.svg
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.webp
+
+# Host
+Host: https://scrabster-pro.de
